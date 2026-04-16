@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>trycode 文檔 - 完整語法參考</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6C5CE7;
+            --primary-dark: #5B4BC4;
+            --secondary: #00CEC9;
+            --dark: #1E1E2E;
+            --darker: #12121A;
+            --light: #F8F9FA;
+            --gray: #6C757D;
+            --success: #00B894;
+            --warning: #FDCB6E;
+            --danger: #FF7675;
+            --code-bg: #282A36;
+            --sidebar-width: 280px;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            line-height: 1.6;
+            display: flex;
+        }
+
+        /* 側邊欄 */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            background: rgba(30, 30, 46, 0.98);
+            border-right: 1px solid rgba(108, 92, 231, 0.2);
+            overflow-y: auto;
+            padding: 2rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(108, 92, 231, 0.2);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .sidebar-logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-version {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .sidebar-nav {
+            padding: 0 1rem;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+            padding: 0.5rem 0.8rem;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.5rem 0.8rem;
+            color: #B2BEC3;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--light);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.2), rgba(0, 206, 201, 0.1));
+            color: var(--secondary);
+            border-left: 3px solid var(--primary);
+        }
+
+        /* 主內容 */
+        .main-content {
+            flex: 1;
+            padding: 2rem 3rem;
+            max-width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(108, 92, 231, 0.2);
+        }
+
+        .content-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .content-header p {
+            color: #B2BEC3;
+            font-size: 1.1rem;
+        }
+
+        /* 搜尋欄 */
+        .search-box {
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            background: var(--code-bg);
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            border-radius: 12px;
+            color: var(--light);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+
+        .search-input::placeholder {
+            color: var(--gray);
+        }
+
+        /* 文件區塊 */
+        .doc-section {
+            margin-bottom: 3rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .doc-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(108, 92, 231, 0.2);
+        }
+
+        .doc-section h2::before {
+            content: "# ";
+            color: var(--primary);
+        }
+
+        .doc-section h3 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: var(--secondary);
+        }
+
+        .doc-section h4 {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 1rem;
+            color: #B2BEC3;
+        }
+
+        /* 代碼區塊 */
+        .code-block {
+            background: var(--code-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem 1.5rem;
+            background: #1E1E2E;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-title {
+            color: #8892B0;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            color: #8892B0;
+            padding: 0.3rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(108, 92, 231, 0.2);
+            color: var(--light);
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            margin: 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .code-content code {
+            color: #E6E6E6;
+        }
+
+        .code-keyword { color: #C792EA; }
+        .code-string { color: #C3E88D; }
+        .code-comment { color: #546E7A; }
+        .code-variable { color: #FFCB6B; }
+        .code-function { color: #82AAFF; }
+        .code-number { color: #F78C6C; }
+        .code-operator { color: #89DDFF; }
+
+        /* 表格 */
+        .doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: rgba(30, 30, 46, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .doc-table th {
+            background: rgba(108, 92, 231, 0.2);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .doc-table td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid rgba(108, 92, 231, 0.1);
+        }
+
+        .doc-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* 提示框 */
+        .note {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .note-info {
+            background: rgba(0, 206, 201, 0.1);
+            border-color: var(--secondary);
+        }
+
+        .note-warning {
+            background: rgba(253, 203, 110, 0.1);
+            border-color: var(--warning);
+        }
+
+        .note-danger {
+            background: rgba(255, 118, 117, 0.1);
+            border-color: var(--danger);
+        }
+
+        .note-success {
+            background: rgba(0, 184, 148, 0.1);
+            border-color: var(--success);
+        }
+
+        .note-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 標籤 */
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .badge-new {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-deprecated {
+            background: var(--danger);
+            color: white;
+        }
+
+        .badge-experimental {
+            background: var(--warning);
+            color: var(--dark);
+        }
+
+        /* 響應式 */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 1rem;
+            }
+            .main-content {
+                max-width: 100%;
+                padding: 1.5rem;
+            }
+        }
+
+        /* 動畫 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .doc-section {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        /* 返回頂部 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <!-- 側邊欄 -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">{ }</div>
+                <span class="sidebar-logo-text">trycode</span>
+            </div>
+            <span class="sidebar-version">v2.0.0 文檔</span>
+        </div>
+        <div class="search-box" style="padding: 0 1rem;">
+            <input type="text" class="search-input" placeholder="搜尋文檔..." id="searchInput">
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">入門指南</div>
+                <a href="#introduction" class="nav-item active">介紹</a>
+                <a href="#installation" class="nav-item">安裝</a>
+                <a href="#quickstart" class="nav-item">快速開始</a>
+                <a href="#structure" class="nav-item">程式結構</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">基礎語法</div>
+                <a href="#variables" class="nav-item">變量</a>
+                <a href="#data-types" class="nav-item">資料型別</a>
+                <a href="#operators" class="nav-item">運算符</a>
+                <a href="#comments" class="nav-item">註解</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">控制流程</div>
+                <a href="#if-else" class="nav-item">if-else</a>
+                <a href="#for-loop" class="nav-item">for 循環</a>
+                <a href="#while-loop" class="nav-item">while 循環</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">函數</div>
+                <a href="#function-def" class="nav-item">定義函數</a>
+                <a href="#function-call" class="nav-item">調用函數</a>
+                <a href="#return" class="nav-item">返回值</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">模組</div>
+                <a href="#require" class="nav-item">require</a>
+                <a href="#using" class="nav-item">using</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">內建函數</div>
+                <a href="#builtin-io" class="nav-item">輸入輸出</a>
+                <a href="#builtin-string" class="nav-item">字串處理</a>
+                <a href="#builtin-math" class="nav-item">數學函數</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">資料結構</div>
+                <a href="#arraylist" class="nav-item">ArrayList</a>
+                <a href="#linkedlist" class="nav-item">LinkedList</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">範例</div>
+                <a href="#example-basic" class="nav-item">基礎範例</a>
+                <a href="#example-advanced" class="nav-item">進階範例</a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- 主內容 -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1>trycode 文檔</h1>
+            <p>完整的語法參考與使用指南</p>
+        </div>
+
+        <!-- 介紹 -->
+        <section id="introduction" class="doc-section">
+            <h2>介紹</h2>
+            <p>trycode 是一門專為初學者和快速開發設計的 DSL（領域特定語言）。它擁有簡潔的語法、直觀的結構，讓你能夠專注於解決問題，而不是被複雜的語法困擾。</p>
+            
+            <div class="note note-info">
+                <div class="note-title">💡 設計理念</div>
+                <p>trycode 的設計目標是「簡單、直覺、易學」。無論你是程式新手還是有經驗的開發者，都能在幾分鐘內上手。</p>
+            </div>
+
+            <h3>主要特點</h3>
+            <table class="doc-table">
+                <tr><th>特點</th><th>說明</th></tr>
+                <tr><td>🚀 簡單語法</td><td>類似自然語言的語法，易讀易寫</td></tr>
+                <tr><td>📦 內建 IDE</td><td>專業的編輯器，支援語法高亮與即時執行</td></tr>
+                <tr><td>🔄 模組化</td><td>支援 require 引入外部檔案</td></tr>
+                <tr><td>🌐 跨平台</td><td>Windows、macOS、Linux 皆可運行</td></tr>
+            </table>
+        </section>
+
+        <!-- 安裝 -->
+        <section id="installation" class="doc-section">
+            <h2>安裝</h2>
+            <h3>系統需求</h3>
+            <table class="doc-table">
+                <tr><th>項目</th><th>需求</th></tr>
+                <tr><td>作業系統</td><td>Windows 10/11, macOS 11+, Linux</td></tr>
+                <tr><td>Java</td><td>Java 11 或以上版本</td></tr>
+                <tr><td>記憶體</td><td>至少 512 MB</td></tr>
+                <tr><td>硬碟空間</td><td>50 MB</td></tr>
+            </table>
+
+            <h3>下載與安裝</h3>
+            <ol style="margin-left: 1.5rem; color: #B2BEC3;">
+                <li>從官方網站下載 <code>trycode-setup.exe</code></li>
+                <li>雙擊執行安裝程式</li>
+                <li>依照安裝精靈的指示完成安裝</li>
+                <li>安裝完成後，可在開始選單找到 trycode IDE</li>
+            </ol>
+
+            <div class="note note-warning">
+                <div class="note-title">⚠️ 注意</div>
+                <p>如果沒有安裝 Java，請先從 <a href="https://www.oracle.com/java/technologies/downloads/" target="_blank" style="color: var(--secondary);">Oracle 官網</a> 下載並安裝 Java 11+。</p>
+            </div>
+        </section>
+
+        <!-- 快速開始 -->
+        <section id="quickstart" class="doc-section">
+            <h2>快速開始</h2>
+            <p>讓我們寫第一個 trycode 程式！</p>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">hello.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">code</span>.main
+   <span class="code-keyword">puts</span> <span class="code-string">"Hello, trycode!"</span></code></pre>
+                </div>
+            </div>
+
+            <p>點擊工具欄的「執行」按鈕或按 <kbd>F5</kbd>，你會看到終端輸出：</p>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">輸出結果</span>
+                </div>
+                <div class="code-content">
+                    <pre><code>Hello, trycode!</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 程式結構 -->
+        <section id="structure" class="doc-section">
+            <h2>程式結構</h2>
+            <p>一個典型的 trycode 程式包含以下部分：</p>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">structure.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-comment">// 1. 引入模組（可選）</span>
+<span class="code-keyword">require</span> <span class="code-string">"math.tc"</span>
+<span class="code-keyword">using</span> trycode.core.*;
+
+<span class="code-comment">// 2. 全域變量（可選）</span>
+<span class="code-keyword">set</span> appName -> <span class="code-string">"My App"</span>;
+<span class="code-keyword">set</span> version -> 1.0;
+
+<span class="code-comment">// 3. 函數定義（可選）</span>
+<span class="code-keyword">func</span> <span class="code-function">greet</span>(name)
+   <span class="code-keyword">puts</span> <span class="code-string">"Hello, $name!"</span>
+
+<span class="code-comment">// 4. 初始化區塊（可選）</span>
+<span class="code-keyword">code</span>.init
+   <span class="code-keyword">puts</span> <span class="code-string">"初始化中..."</span>
+
+<span class="code-comment">// 5. 主程式（必須）</span>
+<span class="code-keyword">code</span>.main
+   greet(<span class="code-string">"World"</span>)
+   <span class="code-keyword">puts</span> <span class="code-string">"程式結束"</span></code></pre>
+                </div>
+            </div>
+
+            <table class="doc-table">
+                <tr><th>區塊</th><th>說明</th><th>是否必須</th></tr>
+                <tr><td><code>require</code></td><td>引入外部模組</td><td>❌</td></tr>
+                <tr><td><code>using</code></td><td>導入命名空間</td><td>❌</td></tr>
+                <tr><td>全域變量</td><td>在 code.main 外定義的變量</td><td>❌</td></tr>
+                <tr><td><code>func</code></td><td>函數定義</td><td>❌</td></tr>
+                <tr><td><code>code.init</code></td><td>初始化區塊，在 main 之前執行</td><td>❌</td></tr>
+                <tr><td><code>code.main</code></td><td>主程式入口</td><td>✅</td></tr>
+            </table>
+        </section>
+
+        <!-- 變量 -->
+        <section id="variables" class="doc-section">
+            <h2>變量</h2>
+            <p>使用 <code>set</code> 關鍵字定義變量。</p>
+            
+            <h3>語法</h3>
+            <div class="code-block">
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">set</span> 變量名 -> 值;
+<span class="code-keyword">set</span> 變量名 = 值;  <span class="code-comment">// 也可以使用 =</span></code></pre>
+                </div>
+            </div>
+
+            <h3>範例</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">variables.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">set</span> name -> <span class="code-string">"Alice"</span>;
+<span class="code-keyword">set</span> age -> 25;
+<span class="code-keyword">set</span> score = 95.5;
+
+<span class="code-keyword">code</span>.main
+   <span class="code-keyword">puts</span> <span class="code-string">"姓名: $name"</span>
+   <span class="code-keyword">puts</span> <span class="code-string">"年齡: $age"</span>
+   <span class="code-keyword">puts</span> <span class="code-string">"分數: $score"</span></code></pre>
+                </div>
+            </div>
+
+            <div class="note note-info">
+                <div class="note-title">💡 變量命名規則</div>
+                <p>變量名只能包含字母、數字和底線，且不能以數字開頭。</p>
+            </div>
+        </section>
+
+        <!-- 資料型別 -->
+        <section id="data-types" class="doc-section">
+            <h2>資料型別</h2>
+            <p>trycode 支援以下基本資料型別：</p>
+            
+            <table class="doc-table">
+                <tr><th>型別</th><th>範例</th><th>說明</th></tr>
+                <tr><td>整數 (Integer)</td><td><code>42</code>, <code>-10</code></td><td>整數數值</td></tr>
+                <tr><td>浮點數 (Float)</td><td><code>3.14</code>, <code>-0.5</code></td><td>小數數值</td></tr>
+                <tr><td>字串 (String)</td><td><code>"Hello"</code></td><td>文字內容</td></tr>
+                <tr><td>布林 (Boolean)</td><td><code>true</code>, <code>false</code></td><td>真或假</td></tr>
+            </table>
+        </section>
+
+        <!-- 運算符 -->
+        <section id="operators" class="doc-section">
+            <h2>運算符</h2>
+            
+            <h3>算術運算符</h3>
+            <table class="doc-table">
+                <tr><th>運算符</th><th>說明</th><th>範例</th></tr>
+                <tr><td><code>+</code></td><td>加法</td><td><code>$a + $b</code></td></tr>
+                <tr><td><code>-</code></td><td>減法</td><td><code>$a - $b</code></td></tr>
+                <tr><td><code>*</code></td><td>乘法</td><td><code>$a * $b</code></td></tr>
+                <tr><td><code>/</code></td><td>除法</td><td><code>$a / $b</code></td></tr>
+                <tr><td><code>%</code></td><td>取餘數</td><td><code>$a % $b</code></td></tr>
+            </table>
+
+            <h3>比較運算符</h3>
+            <table class="doc-table">
+                <tr><th>運算符</th><th>說明</th></tr>
+                <tr><td><code>==</code></td><td>等於</td></tr>
+                <tr><td><code>!=</code></td><td>不等於</td></tr>
+                <tr><td><code>&lt;</code></td><td>小於</td></tr>
+                <tr><td><code>&lt;=</code></td><td>小於等於</td></tr>
+                <tr><td><code>&gt;</code></td><td>大於</td></tr>
+                <tr><td><code>&gt;=</code></td><td>大於等於</td></tr>
+            </table>
+        </section>
+
+        <!-- if-else -->
+        <section id="if-else" class="doc-section">
+            <h2>if-else 條件判斷</h2>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">if-else.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">set</span> score -> 85;
+
+<span class="code-keyword">code</span>.main
+   <span class="code-keyword">if</span> ($score >= 90)
+      <span class="code-keyword">puts</span> <span class="code-string">"優秀！"</span>
+   <span class="code-keyword">else</span> <span class="code-keyword">if</span> ($score >= 60)
+      <span class="code-keyword">puts</span> <span class="code-string">"及格"</span>
+   <span class="code-keyword">else</span>
+      <span class="code-keyword">puts</span> <span class="code-string">"不及格"</span></code></pre>
+                </div>
+            </div>
+
+            <div class="note note-warning">
+                <div class="note-title">⚠️ 注意</div>
+                <p>if 區塊內的代碼必須縮進 <strong>3 個空格</strong>。</p>
+            </div>
+        </section>
+
+        <!-- for 循環 -->
+        <section id="for-loop" class="doc-section">
+            <h2>for 循環</h2>
+            
+            <h3>語法</h3>
+            <div class="code-block">
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">for</span> (初始化; 條件; 步進)
+   <span class="code-comment">// 循環體</span></code></pre>
+                </div>
+            </div>
+
+            <h3>範例</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">for-loop.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">code</span>.main
+   <span class="code-keyword">set</span> sum -> 0;
+   <span class="code-keyword">for</span> (i=0; i&lt;10; i++)
+      <span class="code-keyword">set</span> sum -> $sum + $i;
+      <span class="code-keyword">puts</span> <span class="code-string">"i=$i, sum=$sum"</span>
+   <span class="code-keyword">puts</span> <span class="code-string">"總和: $sum"</span></code></pre>
+                </div>
+            </div>
+
+            <div class="note note-info">
+                <div class="note-title">💡 提示</div>
+                <p>建議使用 <code>&lt;</code> 而不是 <code>&lt;=</code> 來避免邊界問題。</p>
+            </div>
+        </section>
+
+        <!-- while 循環 -->
+        <section id="while-loop" class="doc-section">
+            <h2>while 循環</h2>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">while-loop.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">code</span>.main
+   <span class="code-keyword">set</span> count -> 5;
+   <span class="code-keyword">while</span> ($count > 0)
+      <span class="code-keyword">puts</span> <span class="code-string">"倒數: $count"</span>
+      <span class="code-keyword">set</span> count -> $count - 1;
+   <span class="code-keyword">puts</span> <span class="code-string">"發射！"</span></code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 函數定義 -->
+        <section id="function-def" class="doc-section">
+            <h2>定義函數</h2>
+            
+            <h3>語法</h3>
+            <div class="code-block">
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">func</span> 函數名(參數1, 參數2)
+   <span class="code-comment">// 函數體</span>
+   <span class="code-keyword">return</span> 返回值  <span class="code-comment">// 可選</span></code></pre>
+                </div>
+            </div>
+
+            <h3>範例</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">function.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">func</span> <span class="code-function">add</span>(a, b)
+   <span class="code-keyword">return</span> $a + $b;
+
+<span class="code-keyword">func</span> <span class="code-function">greet</span>(name)
+   <span class="code-keyword">puts</span> <span class="code-string">"Hello, $name!"</span>
+
+<span class="code-keyword">func</span> <span class="code-function">factorial</span>(n)
+   <span class="code-keyword">if</span> ($n &lt;= 1)
+      <span class="code-keyword">return</span> 1
+   <span class="code-keyword">return</span> $n * factorial($n - 1)
+
+<span class="code-keyword">code</span>.main
+   greet(<span class="code-string">"Alice"</span>)
+   <span class="code-keyword">set</span> result -> add(3, 5);
+   <span class="code-keyword">puts</span> <span class="code-string">"3 + 5 = $result"</span>
+   <span class="code-keyword">puts</span> <span class="code-string">"5! = "</span> + factorial(5)</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- require -->
+        <section id="require" class="doc-section">
+            <h2>require - 引入模組</h2>
+            <p>使用 <code>require</code> 引入外部 <code>.tc</code> 檔案。</p>
+            
+            <h3>語法</h3>
+            <div class="code-block">
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">require</span> <span class="code-string">"檔案路徑"</span></code></pre>
+                </div>
+            </div>
+
+            <h3>範例</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">main.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">require</span> <span class="code-string">"math.tc"</span>
+<span class="code-keyword">require</span> <span class="code-string">"./lib/string.tc"</span>
+
+<span class="code-keyword">code</span>.main
+   <span class="code-keyword">set</span> result -> add(10, 20);
+   greet(<span class="code-string">"World"</span>)</code></pre>
+                </div>
+            </div>
+
+            <div class="note note-info">
+                <div class="note-title">💡 路徑說明</div>
+                <p>相對路徑相對於當前檔案的位置。同一檔案只會引入一次，避免重複。</p>
+            </div>
+        </section>
+
+        <!-- ArrayList -->
+        <section id="arraylist" class="doc-section">
+            <h2>ArrayList 資料結構</h2>
+            <p>trycode 內建 ArrayList 資料結構，提供動態陣列功能。</p>
+            
+            <h3>引入</h3>
+            <div class="code-block">
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">require</span> <span class="code-string">"arraylist.tc"</span></code></pre>
+                </div>
+            </div>
+
+            <h3>常用方法</h3>
+            <table class="doc-table">
+                <tr><th>方法</th><th>說明</th><th>返回值</th></tr>
+                <tr><td><code>add(val)</code></td><td>添加元素到末尾</td><td>1=成功</td></tr>
+                <tr><td><code>insert(idx, val)</code></td><td>在指定位置插入</td><td>1=成功</td></tr>
+                <tr><td><code>removeAt(idx)</code></td><td>刪除指定位置</td><td>被刪除的值</td></tr>
+                <tr><td><code>get(idx)</code></td><td>獲取元素</td><td>值</td></tr>
+                <tr><td><code>size()</code></td><td>獲取大小</td><td>數量</td></tr>
+                <tr><td><code>indexOf(val)</code></td><td>查找索引</td><td>索引或-1</td></tr>
+                <tr><td><code>sort()</code></td><td>升序排序</td><td>1</td></tr>
+                <tr><td><code>reverse()</code></td><td>反轉</td><td>1</td></tr>
+                <tr><td><code>sum()</code></td><td>計算總和</td><td>總和</td></tr>
+                <tr><td><code>max()</code></td><td>最大值</td><td>最大值</td></tr>
+            </table>
+
+            <h3>範例</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">arraylist-example.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">require</span> <span class="code-string">"arraylist.tc"</span>
+
+<span class="code-keyword">code</span>.main
+   add(55); add(11); add(88); add(33);
+   puts <span class="code-string">"原始: "</span>; printAll()
+   
+   sort()
+   puts <span class="code-string">"排序後: "</span>; printAll()
+   
+   puts <span class="code-string">"總和: "</span> + sum()
+   puts <span class="code-string">"最大值: "</span> + max()</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 基礎範例 -->
+        <section id="example-basic" class="doc-section">
+            <h2>基礎範例</h2>
+            
+            <h3>計算 1 到 100 的總和</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">sum-1-to-100.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">code</span>.main
+   <span class="code-keyword">set</span> sum -> 0;
+   <span class="code-keyword">for</span> (i=1; i&lt;=100; i++)
+      <span class="code-keyword">set</span> sum -> $sum + $i;
+   <span class="code-keyword">puts</span> <span class="code-string">"1 到 100 的總和: $sum"</span></code></pre>
+                </div>
+            </div>
+
+            <h3>九九乘法表</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">multiplication-table.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">code</span>.main
+   <span class="code-keyword">for</span> (i=1; i&lt;=9; i++)
+      <span class="code-keyword">for</span> (j=1; j&lt;=9; j++)
+         <span class="code-keyword">set</span> result -> $i * $j;
+         <span class="code-keyword">puts</span> <span class="code-string">"$i x $j = $result"</span>
+      <span class="code-keyword">puts</span> <span class="code-string">"---"</span></code></pre>
+                </div>
+            </div>
+
+            <h3>費氏數列</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">fibonacci.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">func</span> <span class="code-function">fib</span>(n)
+   <span class="code-keyword">if</span> ($n &lt;= 1)
+      <span class="code-keyword">return</span> $n
+   <span class="code-keyword">return</span> fib($n - 1) + fib($n - 2)
+
+<span class="code-keyword">code</span>.main
+   <span class="code-keyword">for</span> (i=0; i&lt;10; i++)
+      <span class="code-keyword">puts</span> <span class="code-string">"fib($i) = "</span> + fib($i)</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 進階範例 -->
+        <section id="example-advanced" class="doc-section">
+            <h2>進階範例</h2>
+            
+            <h3>氣泡排序</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">bubble-sort.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">require</span> <span class="code-string">"arraylist.tc"</span>
+
+<span class="code-keyword">code</span>.main
+   add(64); add(34); add(25); add(12); add(22);
+   puts <span class="code-string">"排序前: "</span>; printAll()
+   sort()
+   puts <span class="code-string">"排序後: "</span>; printAll()</code></pre>
+                </div>
+            </div>
+
+            <h3>質數判斷</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">prime.tc</span>
+                    <button class="copy-btn" onclick="copyCode(this)">複製</button>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">func</span> <span class="code-function">isPrime</span>(n)
+   <span class="code-keyword">if</span> ($n &lt; 2)
+      <span class="code-keyword">return</span> 0
+   <span class="code-keyword">for</span> (i=2; i*$i&lt;=$n; i++)
+      <span class="code-keyword">if</span> ($n % $i == 0)
+         <span class="code-keyword">return</span> 0
+   <span class="code-keyword">return</span> 1
+
+<span class="code-keyword">code</span>.main
+   <span class="code-keyword">for</span> (n=1; n&lt;=20; n++)
+      <span class="code-keyword">if</span> (isPrime($n))
+         <span class="code-keyword">puts</span> <span class="code-string">"$n 是質數"</span></code></pre>
+                </div>
+            </div>
+        </section>
+
+        <div style="height: 100px;"></div>
+    </main>
+
+    <!-- 返回頂部 -->
+    <a href="#" class="back-to-top" id="backToTop">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="18 15 12 9 6 15"/>
+        </svg>
+    </a>
+
+    <script>
+        // 複製代碼功能
+        function copyCode(btn) {
+            const codeBlock = btn.closest('.code-block');
+            const code = codeBlock.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                btn.textContent = '已複製！';
+                setTimeout(() => {
+                    btn.textContent = '複製';
+                }, 2000);
+            });
+        }
+
+        // 平滑滾動
+        document.querySelectorAll('.nav-item').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // 更新 active 狀態
+                    document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // 返回頂部
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+            
+            // 更新導航 active 狀態
+            const sections = document.querySelectorAll('.doc-section');
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (window.scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+            document.querySelectorAll('.nav-item').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // 搜尋功能
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            const sections = document.querySelectorAll('.doc-section');
+            
+            sections.forEach(section => {
+                const text = section.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+            
+            if (query === '') {
+                sections.forEach(s => s.style.display = 'block');
+            }
+        });
+
+        // 鍵盤快捷鍵
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
+    </script>
+</body>
+</html>
