@@ -8,15 +8,16 @@
             <key>assets</key>
             <array>
                 <dict>
-                    <key>kind</key>string>software-package</key>
+                    <key>kind</key>
+                    <string>software-package</string>
                     <key>url</key>
-                    <string>https://github.com/WTech-Inc/WTech-Inc.github.io/raw/refs/heads/main/trycode.ipa</string>
+                    <string>https://wtech-inc.github.io/trycode.ipa</string>
                 </dict>
             </array>
             <key>metadata</key>
             <dict>
                 <key>bundle-identifier</key>
-                <string>com.wtech.trycode</string>
+                <string>com.trycode.app</string>
                 <key>bundle-version</key>
                 <string>1.0</string>
                 <key>kind</key>
@@ -27,4 +28,3 @@
         </dict>
     </array>
 </dict>
-</plist>
