@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>授權條款 - trycode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6C5CE7;
+            --primary-dark: #5B4BC4;
+            --secondary: #00CEC9;
+            --dark: #1E1E2E;
+            --darker: #12121A;
+            --light: #F8F9FA;
+            --gray: #6C757D;
+            --success: #00B894;
+            --warning: #FDCB6E;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: var(--light);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 5%;
+            background: rgba(18, 18, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(108, 92, 231, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(108, 92, 231, 0.3);
+        }
+
+        .page-header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header .badge {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: var(--success);
+            color: white;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-header .version {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .license-box {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 20px;
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .license-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .license-section h2 {
+            color: var(--secondary);
+            font-size: 1.5rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(108, 92, 231, 0.2);
+        }
+
+        .license-section h3 {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin: 1.5rem 0 1rem;
+        }
+
+        .license-section p {
+            margin-bottom: 1rem;
+            color: #B2BEC3;
+        }
+
+        .license-section ul, .license-section ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: #B2BEC3;
+        }
+
+        .license-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .license-section a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        .license-section a:hover {
+            text-decoration: underline;
+        }
+
+        .license-text {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #B2BEC3;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            margin: 1.5rem 0;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.2), rgba(0, 206, 201, 0.1));
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            color: var(--light);
+        }
+
+        .note {
+            background: rgba(0, 206, 201, 0.1);
+            border-left: 4px solid var(--secondary);
+            padding: 1.2rem 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
+        }
+
+        .note.success {
+            background: rgba(0, 184, 148, 0.1);
+            border-left-color: var(--success);
+        }
+
+        .note.warning {
+            background: rgba(253, 203, 110, 0.1);
+            border-left-color: var(--warning);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+        }
+
+        .feature-item .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-item.allowed {
+            border-color: var(--success);
+        }
+
+        .feature-item.restricted {
+            border-color: var(--warning);
+        }
+
+        .copyright {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            color: #B2BEC3;
+        }
+
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(108, 92, 231, 0.1);
+        }
+
+        th {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            color: #8892B0;
+            padding: 0.3rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            margin-left: 1rem;
+        }
+
+        .copy-btn:hover {
+            background: rgba(108, 92, 231, 0.2);
+            color: var(--light);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .container {
+                padding: 2rem 1rem;
+            }
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            .license-box {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">{ }</div>
+            <span class="logo-text">trycode</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">首頁</a>
+            <a href="docs.html">文檔</a>
+            <a href="license.html">授權</a>
+            <a href="https://github.com">GitHub</a>
+        </div>
+    </nav>
+
+    <!-- 主要內容 -->
+    <div class="container">
+        <div class="page-header">
+            <div class="badge">📜 開源授權</div>
+            <h1>Apache License 2.0</h1>
+            <p class="version">trycode 採用 Apache License 2.0 | 版本 2.0，2004年1月</p>
+        </div>
+
+        <div class="license-box">
+            <div class="license-section">
+                <h2>📋 授權摘要</h2>
+                <p>這是一個易於理解的摘要，<strong>並非正式授權條款</strong>。完整法律條文請見下方。</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-item allowed">
+                        <div class="icon">✅</div>
+                        <strong>商業使用</strong>
+                        <p style="font-size: 0.85rem; margin-top: 0.3rem;">可用於商業目的</p>
+                    </div>
+                    <div class="feature-item allowed">
+                        <div class="icon">✅</div>
+                        <strong>分發</strong>
+                        <p style="font-size: 0.85rem; margin-top: 0.3rem;">可自由分發</p>
+                    </div>
+                    <div class="feature-item allowed">
+                        <div class="icon">✅</div>
+                        <strong>修改</strong>
+                        <p style="font-size: 0.85rem; margin-top: 0.3rem;">可修改原始碼</p>
+                    </div>
+                    <div class="feature-item allowed">
+                        <div class="icon">✅</div>
+                        <strong>專利授權</strong>
+                        <p style="font-size: 0.85rem; margin-top: 0.3rem;">明確的專利授權</p>
+                    </div>
+                    <div class="feature-item allowed">
+                        <div class="icon">✅</div>
+                        <strong>私人使用</strong>
+                        <p style="font-size: 0.85rem; margin-top: 0.3rem;">可私下使用</p>
+                    </div>
+                    <div class="feature-item restricted">
+                        <div class="icon">⚠️</div>
+                        <strong>授權聲明</strong>
+                        <p style="font-size: 0.85rem; margin-top: 0.3rem;">需保留授權聲明</p>
+                    </div>
+                    <div class="feature-item restricted">
+                        <div class="icon">⚠️</div>
+                        <strong>變更聲明</strong>
+                        <p style="font-size: 0.85rem; margin-top: 0.3rem;">修改需標註</p>
+                    </div>
+                    <div class="feature-item restricted">
+                        <div class="icon">❌</div>
+                        <strong>商標使用</strong>
+                        <p style="font-size: 0.85rem; margin-top: 0.3rem;">不可使用商標</p>
+                    </div>
+                    <div class="feature-item restricted">
+                        <div class="icon">❌</div>
+                        <strong>責任擔保</strong>
+                        <p style="font-size: 0.85rem; margin-top: 0.3rem;">無擔保責任</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="license-section">
+                <h2>📄 Apache License 2.0 完整條文</h2>
+                <p style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Version 2.0, January 2004 | http://www.apache.org/licenses/</span>
+                    <button class="copy-btn" onclick="copyLicense()">📋 複製授權條文</button>
+                </p>
+                
+                <div class="license-text" id="licenseText">
+                                 Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "[]"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright [yyyy] [name of copyright owner]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+                </div>
+            </div>
+
+            <div class="license-section">
+                <h2>© 版權聲明</h2>
+                <p>trycode 專案的版權歸屬如下：</p>
+                
+                <table>
+                    <tr>
+                        <th>元件</th>
+                        <th>版權所有</th>
+                        <th>年份</th>
+                    </tr>
+                    <tr>
+                        <td>trycode 編譯器核心</td>
+                        <td>泓技（香港）科技有限公司</td>
+                        <td>2024-2026</td>
+                    </tr>
+                    <tr>
+                        <td>trycode Studio Pro (IDE)</td>
+                        <td>泓技（香港）科技有限公司</td>
+                        <td>2024-2026</td>
+                    </tr>
+                    <tr>
+                        <td>trycode CLI 工具</td>
+                        <td>泓技（香港）科技有限公司</td>
+                        <td>2024-2026</td>
+                    </tr>
+                    <tr>
+                        <td>trycode 標準函式庫</td>
+                        <td>泓技（香港）科技有限公司及貢獻者</td>
+                        <td>2024-2026</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="license-section">
+                <h2>📁 NOTICE 檔案</h2>
+                <p>根據 Apache License 2.0 第 4(d) 條，trycode 包含以下 NOTICE 內容：</p>
+                
+                <div class="license-text" style="max-height: 200px;">
+trycode
+Copyright 2024-2026 泓技（香港）科技有限公司
+
+本產品包含由以下開源專案開發的軟體：
+- OpenJDK (https://openjdk.org/) - GPL v2 with Classpath Exception
+- Launch4j (http://launch4j.sourceforge.net/) - MIT License
+- Inno Setup (https://jrsoftware.org/isinfo.php) - Inno Setup License
+
+本產品中包含的第三方軟體的完整授權資訊可在以下位置找到：
+/docs/third-party-licenses.txt
+                </div>
+            </div>
+
+            <div class="license-section">
+                <h2>❓ 常見問題</h2>
+                
+                <h3>Q: 我可以用 trycode 開發商業應用嗎？</h3>
+                <p>A: <strong>可以！</strong>Apache License 2.0 明確允許商業使用。您用 trycode 編寫的程式完全屬於您自己，不需要公開原始碼。</p>
+                
+                <h3>Q: 我需要在我的專案中包含 Apache License 嗎？</h3>
+                <p>A: 如果您<strong>分發 trycode 本身</strong>（例如將 trycode 嵌入您的產品），則需要包含授權條款。如果您只是<strong>使用 trycode 編寫程式</strong>，則不需要包含授權條款。</p>
+                
+                <h3>Q: 我可以修改 trycode 的原始碼嗎？</h3>
+                <p>A: <strong>可以！</strong>您可以自由修改。如果您分發修改後的版本，需要標註您所做的變更。</p>
+                
+                <h3>Q: 什麼情況下專利授權會終止？</h3>
+                <p>A: 如果您對 trycode 提起專利訴訟，聲稱 trycode 侵犯了您的專利，則 Apache License 2.0 授予您的專利授權將會終止。</p>
+                
+                <h3>Q: 我可以使用 trycode 的名稱和標誌嗎？</h3>
+                <p>A: <strong>不可以。</strong>Apache License 2.0 不授予商標使用權。"trycode" 名稱和標誌是泓技（香港）科技有限公司的商標。</p>
+            </div>
+
+            <div class="note success">
+                <strong>✅ 簡單總結</strong><br>
+                trycode 採用 Apache License 2.0，這是一個對商業友好的開源授權：
+                <ul style="margin-top: 0.5rem;">
+                    <li>✅ 您可以自由使用、修改、分發</li>
+                    <li>✅ 您可以用於商業目的，無需付費</li>
+                    <li>✅ 您用 trycode 寫的程式 100% 屬於您</li>
+                    <li>✅ 有明確的專利授權保護</li>
+                    <li>⚠️ 分發時需保留版權和授權聲明</li>
+                    <li>⚠️ 修改原始碼需標註變更</li>
+                </ul>
+            </div>
+
+            <div class="action-buttons">
+                <a href="#" class="btn" onclick="downloadLicense()">📥 下載授權文件 (TXT)</a>
+                <a href="https://www.apache.org/licenses/LICENSE-2.0" class="btn btn-outline" target="_blank">🌐 Apache 官方網站</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 頁尾 -->
+    <footer class="copyright">
+        <p>© 2024-2026 泓技（香港）科技有限公司. 採用 Apache License 2.0 授權.</p>
+        <p style="margin-top: 0.5rem;">
+            <a href="index.html" style="color: var(--secondary);">首頁</a> · 
+            <a href="docs.html" style="color: var(--secondary);">文檔</a> · 
+            <a href="license.html" style="color: var(--secondary);">授權</a>
+        </p>
+    </footer>
+
+    <script>
+        function copyLicense() {
+            const licenseText = document.getElementById('licenseText').innerText;
+            navigator.clipboard.writeText(licenseText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = '✅ 已複製！';
+                setTimeout(() => {
+                    btn.textContent = '📋 複製授權條文';
+                }, 2000);
+            });
+        }
+        
+        function downloadLicense() {
+            const licenseText = document.getElementById('licenseText').innerText;
+            const blob = new Blob([licenseText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'APACHE-LICENSE-2.0.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // 平滑滾動
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href === '#') {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
