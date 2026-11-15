@@ -23,25 +23,13 @@
   }
   body.locked{overflow:hidden}
   #app{width:100%;max-width:680px;padding-top:calc(14px + env(safe-area-inset-top))}
-
   .serif{font-family:Georgia,"Songti TC","STSong",serif}
-  .num{font-variant-numeric:tabular-nums}
 
-  /* ─── 頂欄 ─── */
-  .top{
-    display:flex;align-items:flex-end;gap:12px;
-    padding-bottom:12px;border-bottom:1px solid var(--line);
-  }
+  .top{display:flex;align-items:flex-end;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
   .who{flex:1;min-width:0}
-  .who-name{
-    font-size:11.5px;color:var(--ink3);letter-spacing:.5px;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  }
+  .who-name{font-size:11.5px;color:var(--ink3);letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .who-age{display:flex;align-items:baseline;gap:4px;line-height:1}
-  .who-age b{
-    font-family:Georgia,"Songti TC",serif;font-size:38px;font-weight:400;
-    color:var(--ink);font-variant-numeric:tabular-nums;
-  }
+  .who-age b{font-family:Georgia,"Songti TC",serif;font-size:38px;font-weight:400;color:var(--ink);font-variant-numeric:tabular-nums}
   .who-age i{font-style:normal;font-size:12px;color:var(--ink3);padding-bottom:5px}
   .who-age b.bump{animation:bump .4s cubic-bezier(.34,1.56,.64,1)}
   @keyframes bump{0%{transform:scale(1)}45%{transform:scale(1.22)}100%{transform:scale(1)}}
@@ -52,41 +40,20 @@
   .purses .p.zero b{color:var(--rust)}
   .purses .p .lbl{font-size:11px;color:var(--ink3)}
 
-  .reset{
-    width:32px;height:32px;flex-shrink:0;border-radius:8px;cursor:pointer;
-    border:1px solid var(--line2);background:transparent;color:var(--ink2);
-    font-size:15px;display:grid;place-items:center;transition:.15s;
-    margin-bottom:1px;
-  }
+  .reset{width:32px;height:32px;flex-shrink:0;border-radius:8px;cursor:pointer;border:1px solid var(--line2);background:transparent;color:var(--ink2);font-size:15px;display:grid;place-items:center;transition:.15s;margin-bottom:1px}
   .reset:hover{border-color:var(--rust);color:var(--rust)}
 
-  /* 金錢浮動 */
-  .fnum{
-    position:absolute;right:0;top:-1px;font-size:11.5px;font-weight:700;
-    pointer-events:none;white-space:nowrap;
-    animation:fnum 1.1s ease-out forwards;
-  }
+  .fnum{position:absolute;right:0;top:-1px;font-size:11.5px;font-weight:700;pointer-events:none;white-space:nowrap;animation:fnum 1.1s ease-out forwards}
   .fnum.up{color:var(--sage)} .fnum.down{color:var(--rust)}
-  @keyframes fnum{0%{opacity:0;transform:translateY(3px)}20%{opacity:1}
-    100%{opacity:0;transform:translateY(-16px)}}
+  @keyframes fnum{0%{opacity:0;transform:translateY(3px)}20%{opacity:1}100%{opacity:0;transform:translateY(-16px)}}
 
-  /* ─── 身份條 ─── */
-  .idbar{
-    display:flex;flex-wrap:wrap;gap:0;align-items:center;
-    font-size:12px;color:var(--ink2);padding:10px 0 12px;
-  }
+  .idbar{display:flex;flex-wrap:wrap;gap:0;align-items:center;font-size:12px;color:var(--ink2);padding:10px 0 12px}
   .idbar .cell{padding:0 12px;border-right:1px solid var(--line)}
   .idbar .cell:first-child{padding-left:0}
   .idbar .cell:last-child{border-right:0}
-  .idbar .cell.warn{color:var(--amber)}
-  .idbar .cell button{
-    font:inherit;background:none;border:0;color:var(--amber);cursor:pointer;
-    padding:0;border-bottom:1px dashed var(--amber2);
-  }
+  .idbar .cell button{font:inherit;background:none;border:0;color:var(--amber);cursor:pointer;padding:0;border-bottom:1px dashed var(--amber2)}
 
-  /* ─── 屬性 ─── */
   .attrs{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;margin-bottom:14px}
-  .attr{}
   .attr-h{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2);margin-bottom:4px}
   .attr-h .v{color:var(--ink);font-variant-numeric:tabular-nums;font-size:12.5px}
   .attr-h .v .d{font-size:10.5px;font-weight:700;margin-left:3px;animation:dp 1.6s ease-out forwards}
@@ -95,93 +62,50 @@
   .track{height:4px;background:#262b32;border-radius:2px;overflow:hidden}
   .track i{display:block;height:100%;border-radius:2px;transition:width .5s cubic-bezier(.4,0,.2,1)}
 
-  /* ─── 日誌 ─── */
-  .diary{
-    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-    height:214px;overflow-y:auto;margin-bottom:14px;padding:2px 0;
-  }
+  .diary{border-top:1px solid var(--line);border-bottom:1px solid var(--line);height:214px;overflow-y:auto;margin-bottom:14px;padding:2px 0}
   .diary::-webkit-scrollbar{width:4px}
   .diary::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
-  .e{
-    display:flex;gap:10px;padding:7px 2px 7px 0;font-size:12.8px;line-height:1.55;
-    animation:fe .3s ease;border-bottom:1px dashed rgba(58,64,74,.45);
-  }
+  .e{display:flex;gap:10px;padding:7px 2px 7px 0;font-size:12.8px;line-height:1.55;animation:fe .3s ease;border-bottom:1px dashed rgba(58,64,74,.45)}
   .e:last-child{border-bottom:0}
-  .e .t{
-    flex-shrink:0;width:40px;font-size:11px;color:var(--ink3);
-    font-variant-numeric:tabular-nums;padding-top:2px;text-align:right;
-  }
+  .e .t{flex-shrink:0;width:40px;font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums;padding-top:2px;text-align:right}
   .e .x{flex:1;color:var(--ink2)}
   .e.good .x{color:#a8c4b4}
   .e.bad  .x{color:#d4a29a}
   .e.big  .x{color:var(--ink);font-weight:600}
   .e.big .t{color:var(--amber)}
   @keyframes fe{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-  .diary:empty::after{
-    content:'你的人生剛剛開始。';color:var(--ink3);font-size:12.5px;
-    display:flex;align-items:center;justify-content:center;height:100%;
-    font-family:Georgia,"Songti TC",serif;letter-spacing:.5px;
-  }
+  .diary:empty::after{content:'你的人生剛剛開始。';color:var(--ink3);font-size:12.5px;display:flex;align-items:center;justify-content:center;height:100%;font-family:Georgia,"Songti TC",serif;letter-spacing:.5px}
 
-  /* ─── 按鈕 ─── */
-  .menu{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}
-  .menu button,.advance{
-    font-family:inherit;font-size:12.5px;padding:11px 4px;border-radius:8px;cursor:pointer;
-    border:1px solid var(--line2);background:transparent;color:var(--ink2);
-    font-weight:500;transition:.15s;letter-spacing:.2px;
-  }
+  .menu{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}
+  .menu button,.advance{font-family:inherit;font-size:12px;padding:11px 3px;border-radius:8px;cursor:pointer;border:1px solid var(--line2);background:transparent;color:var(--ink2);font-weight:500;transition:.15s;letter-spacing:.2px}
   .menu button:hover:not(:disabled){border-color:var(--amber2);color:var(--amber);background:rgba(212,160,90,.06)}
   .menu button:active:not(:disabled){transform:scale(.97)}
   .menu button:disabled{opacity:.28;cursor:not-allowed}
-  .menu button .sub{display:block;font-size:10px;color:var(--ink3);margin-top:2px}
-  .advance{
-    width:100%;padding:14px;font-size:14px;font-weight:600;
-    border-color:var(--amber2);color:var(--amber);background:rgba(212,160,90,.08);
-    letter-spacing:1.5px;font-family:Georgia,"Songti TC",serif;
-  }
+  .menu button .sub{display:block;font-size:9.5px;color:var(--ink3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .advance{width:100%;padding:14px;font-size:14px;font-weight:600;border-color:var(--amber2);color:var(--amber);background:rgba(212,160,90,.08);letter-spacing:1.5px;font-family:Georgia,"Songti TC",serif}
   .advance:hover:not(:disabled){background:rgba(212,160,90,.18)}
   .advance:active:not(:disabled){transform:scale(.99)}
   .advance:disabled{opacity:.3;cursor:not-allowed}
   .advance.ready{animation:breathe 2.4s ease-in-out infinite}
   @keyframes breathe{0%,100%{background:rgba(212,160,90,.08)}50%{background:rgba(212,160,90,.2)}}
 
-  /* ─── Modal ─── */
-  #ov{
-    position:fixed;inset:0;background:rgba(10,11,13,.78);
-    display:none;align-items:center;justify-content:center;padding:16px;z-index:99;
-  }
+  #ov{position:fixed;inset:0;background:rgba(10,11,13,.78);display:none;align-items:center;justify-content:center;padding:16px;z-index:99}
   #ov.show{display:flex}
-  .sheet{
-    width:100%;max-width:470px;max-height:84vh;overflow-y:auto;
-    background:var(--card);border:1px solid var(--line2);border-radius:10px;
-    padding:20px;animation:sp .22s cubic-bezier(.34,1.3,.64,1);
-    box-shadow:0 24px 60px rgba(0,0,0,.6);
-  }
+  .sheet{width:100%;max-width:470px;max-height:84vh;overflow-y:auto;background:var(--card);border:1px solid var(--line2);border-radius:10px;padding:20px;animation:sp .22s cubic-bezier(.34,1.3,.64,1);box-shadow:0 24px 60px rgba(0,0,0,.6)}
   .sheet::-webkit-scrollbar{width:4px}
   .sheet::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
   @keyframes sp{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
-  .sheet h2{
-    font-family:Georgia,"Songti TC",serif;font-size:17px;font-weight:500;
-    color:var(--ink);margin-bottom:14px;letter-spacing:.8px;
-    padding-bottom:10px;border-bottom:1px solid var(--line);
-  }
+  .sheet h2{font-family:Georgia,"Songti TC",serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:14px;letter-spacing:.8px;padding-bottom:10px;border-bottom:1px solid var(--line)}
   .sheet .body{font-size:13px;line-height:1.7;color:var(--ink2)}
   .sheet .body p{margin-bottom:8px}
   .sheet .body p:last-child{margin-bottom:0}
-  .sheet .row{
-    display:flex;justify-content:space-between;align-items:center;gap:10px;
-    padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;
-  }
-  .sheet .row:last-child{border-bottom:0}
-  .sheet .row .k{color:var(--ink2);font-size:12.5px}
-  .sheet .row .v{color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .row:last-child{border-bottom:0}
+  .row .k{color:var(--ink2);font-size:12.5px}
+  .row .v{color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums}
 
   .btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
-  .btnrow button{
-    flex:1;min-width:100px;font-family:inherit;font-size:12.5px;padding:11px 10px;
-    border-radius:7px;border:1px solid var(--line2);background:transparent;
-    color:var(--ink2);cursor:pointer;font-weight:500;transition:.15s;
-  }
+  .btnrow button{flex:1;min-width:100px;font-family:inherit;font-size:12.5px;padding:11px 10px;border-radius:7px;border:1px solid var(--line2);background:transparent;color:var(--ink2);cursor:pointer;font-weight:500;transition:.15s}
   .btnrow button:hover:not(:disabled){border-color:var(--amber2);color:var(--amber)}
   .btnrow button:active:not(:disabled){transform:scale(.98)}
   .btnrow button:disabled{opacity:.3;cursor:not-allowed}
@@ -190,28 +114,14 @@
   .btnrow button.warn{border-color:rgba(192,122,109,.55);color:var(--rust)}
   .btnrow button.warn:hover:not(:disabled){background:rgba(192,122,109,.12)}
 
-  /* 人物卡 */
-  .person{
-    display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);
-  }
+  .person{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
   .person:last-child{border-bottom:0}
-  .person .ava{
-    width:38px;height:38px;border-radius:50%;flex-shrink:0;
-    display:grid;place-items:center;font-family:Georgia,"Songti TC",serif;
-    font-size:15px;color:#14161a;font-weight:600;
-    background:var(--amber);opacity:.85;
-  }
+  .person .ava{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-family:Georgia,"Songti TC",serif;font-size:15px;color:#14161a;font-weight:600;background:var(--amber);opacity:.85}
   .person .ava.f{background:var(--plum)}
   .person .ava.dead{background:#3a404a;color:var(--ink3)}
   .person .info{flex:1;min-width:0}
-  .person .n{
-    font-size:13.5px;color:var(--ink);font-weight:600;display:flex;
-    align-items:center;gap:6px;flex-wrap:wrap;
-  }
-  .person .n .tag{
-    font-size:10px;font-weight:500;color:var(--ink3);
-    padding:1px 6px;border:1px solid var(--line2);border-radius:3px;letter-spacing:.3px;
-  }
+  .person .n{font-size:13.5px;color:var(--ink);font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .person .n .tag{font-size:10px;font-weight:500;color:var(--ink3);padding:1px 6px;border:1px solid var(--line2);border-radius:3px;letter-spacing:.3px}
   .person .n .tag.fam{color:var(--plum);border-color:rgba(168,138,184,.4)}
   .person .n .tag.par{color:var(--amber);border-color:rgba(212,160,90,.4)}
   .person .n .tag.chi{color:var(--sage);border-color:rgba(138,168,150,.4)}
@@ -220,32 +130,19 @@
   .person .relbar{height:3px;background:#262b32;border-radius:2px;overflow:hidden}
   .person .relbar i{display:block;height:100%;border-radius:2px;transition:width .4s}
   .person .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
-  .person .acts button{
-    font:inherit;font-size:11.5px;padding:5px 10px;border-radius:5px;
-    border:1px solid var(--line2);background:transparent;color:var(--ink2);
-    cursor:pointer;transition:.15s;
-  }
+  .person .acts button{font:inherit;font-size:11.5px;padding:5px 10px;border-radius:5px;border:1px solid var(--line2);background:transparent;color:var(--ink2);cursor:pointer;transition:.15s}
   .person .acts button:hover:not(:disabled){border-color:var(--amber2);color:var(--amber)}
   .person .acts button:disabled{opacity:.3;cursor:not-allowed}
   .person .acts button.pri{border-color:var(--amber2);color:var(--amber)}
 
-  .tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:6px}
-  .tabs button{
-    font:inherit;font-size:12.5px;padding:9px 14px;border:0;background:none;
-    color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;
-    margin-bottom:-1px;transition:.15s;
-  }
+  .tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:6px;overflow-x:auto}
+  .tabs button{font:inherit;font-size:12.5px;padding:9px 12px;border:0;background:none;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s;white-space:nowrap}
   .tabs button.on{color:var(--amber);border-bottom-color:var(--amber)}
   .tabs button .cnt{font-size:10.5px;color:var(--ink3);margin-left:3px}
 
   .empty{color:var(--ink3);font-size:12.5px;padding:22px 0;text-align:center}
 
-  /* 活動列表 */
-  .acts-list .it{
-    display:flex;justify-content:space-between;align-items:center;gap:10px;
-    padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;
-    transition:.15s;
-  }
+  .acts-list .it{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s}
   .acts-list .it:last-child{border-bottom:0}
   .acts-list .it:hover:not(.off){padding-left:4px}
   .acts-list .it.off{opacity:.35;cursor:not-allowed}
@@ -255,29 +152,40 @@
   .acts-list .it .dg{font-size:11.5px;color:var(--amber);white-space:nowrap;font-variant-numeric:tabular-nums}
   .acts-list .it .dg .w{color:var(--rust)}
 
-  input[type=number]{
-    width:100%;padding:11px 12px;border-radius:7px;border:1px solid var(--line2);
-    background:var(--bg2);color:var(--ink);font-size:14px;font-family:inherit;
-    outline:none;margin:10px 0;font-variant-numeric:tabular-nums;
-  }
-  input[type=number]:focus{border-color:var(--amber2)}
+  input[type=number],input[type=text]{width:100%;padding:11px 12px;border-radius:7px;border:1px solid var(--line2);background:var(--bg2);color:var(--ink);font-size:14px;font-family:inherit;outline:none;margin:10px 0;font-variant-numeric:tabular-nums}
+  input:focus{border-color:var(--amber2)}
 
   .note{font-size:11.5px;color:var(--ink3);margin-top:10px;line-height:1.6}
 
-  #toast{
-    position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));
-    transform:translateX(-50%) translateY(14px);
-    background:var(--card2);border:1px solid var(--line2);color:var(--ink);
-    padding:10px 18px;border-radius:7px;font-size:12.5px;
-    opacity:0;pointer-events:none;transition:.25s;z-index:999;
-    max-width:84vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.5);
-  }
+  .card{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:8px}
+  .card .title{font-size:13px;color:var(--ink);font-weight:600;margin-bottom:4px}
+  .card .desc{font-size:11.5px;color:var(--ink3);line-height:1.55}
+  .card.clickable{cursor:pointer;transition:.15s}
+  .card.clickable:hover{border-color:var(--amber2);background:rgba(212,160,90,.04)}
+  .card.disabled{opacity:.4;cursor:not-allowed}
+
+  .origins{display:flex;flex-direction:column;gap:8px}
+  .origin{padding:12px 14px;border:1px solid var(--line2);border-radius:8px;cursor:pointer;transition:.15s;background:var(--bg2)}
+  .origin:hover{border-color:var(--amber2);background:rgba(212,160,90,.05)}
+  .origin .h{font-size:14px;color:var(--ink);font-weight:600;margin-bottom:3px;font-family:Georgia,"Songti TC",serif;letter-spacing:.5px}
+  .origin .d{font-size:11.5px;color:var(--ink3);margin-bottom:6px}
+  .origin .b{font-size:11.5px;color:var(--amber)}
+
+  .bizstat{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+  .bizstat .b{background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+  .bizstat .b .l{font-size:10.5px;color:var(--ink3)}
+  .bizstat .b .v{font-size:14px;color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums}
+
+  .emp{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-size:12px}
+  .emp:last-child{border-bottom:0}
+
+  #toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(14px);background:var(--card2);border:1px solid var(--line2);color:var(--ink);padding:10px 18px;border-radius:7px;font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:999;max-width:84vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.5)}
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
   @media(max-width:400px){
     .who-age b{font-size:32px}
-    .menu{grid-template-columns:repeat(2,1fr)}
     .attrs{gap:7px 14px}
+    .menu{grid-template-columns:repeat(3,1fr)}
   }
 </style>
 </head>
@@ -294,35 +202,28 @@
     </div>
     <button class="reset" id="resetBtn" title="重新開始">↺</button>
   </header>
-
   <div class="idbar" id="idbar"></div>
-
   <div class="attrs" id="attrs"></div>
-
   <div class="diary" id="diary"></div>
-
   <div class="menu">
     <button id="btnPartner">伴侶</button>
     <button id="btnProperty">財產</button>
     <button id="btnRelation">關係</button>
     <button id="btnActivity">活動</button>
+    <button id="btnCompany">公司</button>
   </div>
   <button class="advance" id="btnNext">度 過 這 一 年</button>
 </div>
-
 <div id="ov"></div>
 <div id="toast"></div>
 
 <script>
-/* ═══════════════════════════════════════════
-   工具
-═══════════════════════════════════════════ */
+/* ══════ 工具 ══════ */
 const $ = id => document.getElementById(id);
 const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 const rnd = (a,b) => a + Math.random()*(b-a);
 const ri = (a,b) => Math.floor(rnd(a, b+1));
 const pick = arr => arr[ri(0, arr.length-1)];
-
 function fmt(n){
   n = Math.round(n);
   const neg = n < 0 ? '−' : '';
@@ -331,7 +232,6 @@ function fmt(n){
   if(n >= 1e4) return neg + (n/1e4).toFixed(1) + '萬';
   return neg + n.toLocaleString();
 }
-
 let _t;
 function toast(msg){
   const el = $('toast');
@@ -341,14 +241,10 @@ function toast(msg){
   _t = setTimeout(()=>el.classList.remove('show'), 1800);
 }
 
-/* ═══════════════════════════════════════════
-   姓名 & 職業池
-═══════════════════════════════════════════ */
-const SURNAME = ['王','李','張','劉','陳','楊','黃','趙','吳','周','徐','孫','馬','朱','胡','郭','何','高','林','羅','鄭','梁','謝','宋','許','鄧','馮','曹','彭','曾'];
-const NAME_M = ['志明','建宏','俊傑','家豪','冠宇','柏翰','承恩','品睿','子軒','宥廷','承翰','冠廷','宇軒','柏均','子毅','明遠','嘉文','書維','廷宇'];
-const NAME_F = ['淑芬','美玲','雅婷','怡君','佳穎','詠晴','詩涵','子晴','語彤','品妍','芯羽','采潔','姵妤','思穎','若曦','雅雯','怡安','書瑤','庭瑄'];
-
-const JOBS_ADULT = ['公司職員','教師','護理師','工程師','業務專員','會計','設計師','廚師','貨車司機','超商店員','公務員','醫師','律師','記者','水電師傅','理髮師','藥師','客服專員'];
+/* ══════ 姓名池 ══════ */
+const SURNAME = ['王','李','張','劉','陳','楊','黃','趙','吳','周','徐','孫','馬','朱','胡','郭','何','高','林','羅','鄭','梁','謝','宋','許','鄧','馮','曹','彭','曾','蔡','葉','蘇','潘','蕭','江','洪'];
+const NAME_M = ['志明','建宏','俊傑','家豪','冠宇','柏翰','承恩','品睿','子軒','宥廷','承翰','冠廷','宇軒','柏均','子毅','明遠','嘉文','書維','廷宇','冠霖','振業','文彬','俊宏'];
+const NAME_F = ['淑芬','美玲','雅婷','怡君','佳穎','詠晴','詩涵','子晴','語彤','品妍','芯羽','采潔','姵妤','思穎','若曦','雅雯','怡安','書瑤','庭瑄','心怡','淑惠','美華','慧敏'];
 
 function randPerson(gender){
   const s = pick(SURNAME);
@@ -356,89 +252,190 @@ function randPerson(gender){
   return { name: s + g, gender, surname: s };
 }
 
+/* ══════ 出身背景 ══════ */
+const ORIGINS = [
+  { id:'rich', name:'富商之家', desc:'父母經商，家底殷實',
+    dadJob:'企業主', momJob:'家庭主婦', money:500000,
+    dadRel:72, momRel:70, iq:50, eq:65, moral:45, health:85,
+    bonus:'💰 起始 50 萬 · 父母經商' },
+  { id:'scholar', name:'書香門第', desc:'父母執教，重視學問',
+    dadJob:'大學教授', momJob:'中學教師', money:50000,
+    dadRel:80, momRel:85, iq:68, eq:55, moral:65, health:85,
+    bonus:'🧠 智商 +18 · 父母高關係' },
+  { id:'normal', name:'小康家庭', desc:'父母上班，溫飽無虞',
+    dadJob:'公司職員', momJob:'會計', money:15000,
+    dadRel:75, momRel:80, iq:52, eq:52, moral:50, health:90,
+    bonus:'⚖️ 各項均衡' },
+  { id:'poor', name:'貧困家庭', desc:'父母務農或打零工',
+    dadJob:'農民', momJob:'家庭主婦', money:1000,
+    dadRel:82, momRel:85, iq:45, eq:45, moral:72, health:82,
+    bonus:'⚖️ 道德 +22 · 家庭關係極好' },
+  { id:'orphan', name:'孤兒', desc:'無父無母，由親戚撫養長大',
+    dadJob:null, momJob:null, money:2000,
+    dadRel:0, momRel:0, iq:55, eq:62, moral:50, health:78,
+    bonus:'💬 情商 +12 · 無父母陪伴' },
+];
+
+/* ══════ 科系 ══════ */
+const MAJORS = [
+  { id:'med', name:'醫學院', score:650, level:3, tag:'六年制 · 高強度',
+    career:['doctor'] },
+  { id:'law', name:'法學院', score:620, level:3, tag:'四年制 · 需口才',
+    career:['lawyer'] },
+  { id:'biz', name:'商學院', score:580, level:3, tag:'四年制 · 商業思維',
+    career:['accountant','manager'] },
+  { id:'tech', name:'理工學院', score:560, level:3, tag:'四年制 · 技術導向',
+    career:['engineer','programmer'] },
+  { id:'art', name:'文學院', score:500, level:3, tag:'四年制 · 人文素養',
+    career:['teacher','journalist'] },
+  { id:'edu', name:'教育學院', score:480, level:3, tag:'四年制 · 培養師資',
+    career:['teacher'] },
+  { id:'college', name:'專科院校', score:400, level:2, tag:'三年制 · 實用取向',
+    career:['nurse','technician','kindergarten'] },
+  { id:'voc', name:'職業學校', score:300, level:1, tag:'三年制 · 技能為主',
+    career:['factory','mechanic','waiter'] },
+];
+
+/* ══════ 職業 ══════ */
+const JOBS = [
+  { id:'waiter',      name:'餐廳服務員', salary:42000, need:0,  cat:'服務' },
+  { id:'factory',     name:'工廠工人',   salary:55000, need:0,  cat:'製造' },
+  { id:'delivery',    name:'外送騎手',   salary:68000, need:0,  cat:'物流' },
+  { id:'clerk',       name:'公司文員',   salary:66000, need:1,  cat:'行政' },
+  { id:'sales',       name:'銷售專員',   salary:82000, need:1,  cat:'業務' },
+  { id:'mechanic',    name:'汽修技師',   salary:72000, need:1,  cat:'技術' },
+  { id:'nurse',       name:'護理師',     salary:92000, need:2,  cat:'醫療' },
+  { id:'technician',  name:'技術員',     salary:85000, need:2,  cat:'技術' },
+  { id:'kindergarten',name:'幼教老師',   salary:75000, need:2,  cat:'教育' },
+  { id:'teacher',     name:'中學教師',   salary:96000, need:3,  cat:'教育', major:'edu' },
+  { id:'engineer',    name:'工程師',     salary:140000,need:3,  cat:'技術', major:'tech' },
+  { id:'programmer',  name:'程式設計師', salary:180000,need:3,  cat:'科技', major:'tech' },
+  { id:'accountant',  name:'會計師',     salary:110000,need:3,  cat:'財務', major:'biz' },
+  { id:'manager',     name:'企業主管',   salary:155000,need:3,  cat:'管理', major:'biz' },
+  { id:'lawyer',      name:'律師',       salary:200000,need:3,  cat:'法律', major:'law' },
+  { id:'doctor',      name:'醫師',       salary:250000,need:3,  cat:'醫療', major:'med' },
+  { id:'journalist',  name:'記者',       salary:80000, need:3,  cat:'媒體', major:'art' },
+  { id:'civil',       name:'公務員',     salary:70000, need:0,  cat:'公職', exam:true },
+  { id:'startup',     name:'創業者',     salary:0,     need:1,  cat:'創業', startup:true },
+];
+
+/* 公務員單位與職級 */
+const CIVIL_UNITS = ['財政部','教育部','衛福部','內政部','外交部','法務部','經濟部','交通部','勞動部','農業部','文化部','科技部','環保署','主計總處'];
+const CIVIL_RANKS = [
+  { name:'科員', salary:70000 },
+  { name:'專員', salary:92000 },
+  { name:'科長', salary:125000 },
+  { name:'處長', salary:168000 },
+  { name:'局長', salary:225000 },
+  { name:'部長', salary:310000 },
+];
+
+/* 公司業務 */
+const BIZ_TYPES = [
+  { id:'food',  name:'餐飲業', base:60000, risk:0.6, desc:'競爭激烈，現金流快' },
+  { id:'retail',name:'零售業', base:80000, risk:0.5, desc:'穩定但利潤薄' },
+  { id:'tech',  name:'科技業', base:180000,risk:0.8, desc:'高成長高風險' },
+  { id:'mfg',   name:'製造業', base:150000,risk:0.4, desc:'重資產，回報穩' },
+  { id:'service',name:'服務業',base:70000, risk:0.35,desc:'輕資產，起飛慢' },
+];
+
+const JOB_POOL = ['公司職員','教師','護理師','工程師','業務專員','會計','設計師','廚師','貨車司機','超商店員','公務員','醫師','律師','記者','水電師傅','理髮師','藥師','客服專員','工廠工人','農民','家庭主婦','退休'];
+
 function identityOf(age, job){
   if(age < 3)  return '嬰兒';
   if(age < 6)  return '幼兒';
   if(age < 12) return '小學生';
   if(age < 15) return '國中生';
   if(age < 18) return '高中生';
-  if(age < 22) return '大學生';
   if(age >= 65) return '退休';
-  return job || '待業';
+  if(job) return job;
+  if(age >= 22) return '待業';
+  return '學生';
 }
 
-/* ═══════════════════════════════════════════
-   遊戲狀態
-═══════════════════════════════════════════ */
+/* ══════ 狀態 ══════ */
 let S;
 let _prev = {};
+let _prevAgeShown, _prevMoneyShown;
 let _uid = 1;
 const uid = () => _uid++;
+let _relTab = 'fam';
 
-function newGame(){
+function newGameWithOrigin(origin){
   const myGender = Math.random() < .5 ? 'M' : 'F';
   const me = randPerson(myGender);
+  const base = ORIGINS.find(o => o.id === origin) || ORIGINS[2];
 
-  const dadAge = ri(27, 36);
-  const momAge = ri(25, 34);
-  const dad = { id:uid(), ...randPerson('M'), surname:me.surname, name:me.surname + pick(NAME_M),
-                age:dadAge, rel:ri(65,85), alive:true, role:'父親', job:pick(JOBS_ADULT) };
-  const mom = { id:uid(), ...randPerson('F'), name:pick(SURNAME) + pick(NAME_F),
-                age:momAge, rel:ri(70,90), alive:true, role:'母親', job: Math.random()<.5 ? '家庭主婦' : pick(JOBS_ADULT) };
+  const dadAge = ri(28, 38);
+  const momAge = ri(26, 36);
+
+  let dad, mom;
+  if(base.dadJob === null){
+    dad = { id:uid(), name:'—', gender:'M', age:0, rel:0, alive:false, role:'父親', job:null, absent:true };
+    mom = { id:uid(), name:'—', gender:'F', age:0, rel:0, alive:false, role:'母親', job:null, absent:true };
+  } else {
+    dad = { id:uid(), ...randPerson('M'), name:me.surname + pick(NAME_M),
+            age:dadAge, rel:base.dadRel, alive:true, role:'父親', job:base.dadJob };
+    mom = { id:uid(), ...randPerson('F'), name:pick(SURNAME) + pick(NAME_F),
+            age:momAge, rel:base.momRel, alive:true, role:'母親', job:base.momJob };
+  }
 
   S = {
-    name: me.name, gender: myGender,
+    name: me.name, gender: myGender, origin: base.id,
     age: 0,
-    money: 0,
-    mood: 75, health: 90, iq: 50, eq: 50, moral: 50,
+    money: base.money,
+    mood: 75, health: base.health, iq: base.iq, eq: base.eq, moral: base.moral,
     ap: 3, maxAp: 3,
-    eduName: '嬰兒', eduLevel: 0, school: '',
+    eduName: '嬰兒', eduLevel: 0, school: '', major: null,
     job: null, salary: 0, working: false, startup: false,
+    civil: null,
+    company: null,
     deposit: 0, invest: 0,
-    married: false,
-    partner: null,
+    married: false, partner: null,
     people: { dad, mom, friends: [], children: [] },
     logs: [], over: false,
     pendingOffer: false,
     civilExamAt: -1,
+    confessionTried: [],
   };
   _prev = {};
   _uid = 100;
-  log(`你出生了。父親是${dad.name}（${dad.age}歲，${dad.job}），母親是${mom.name}（${mom.age}歲，${mom.job}）。`, 'big');
+  S.people.friends = [];
+
+  if(base.id === 'orphan'){
+    log(`你是個孤兒，由親戚撫養長大。沒有父母陪伴，但你很獨立。`, 'big');
+  } else {
+    log(`你出生在一個${base.name}。父親是${dad.name}（${dad.age}歲，${dad.job}），母親是${mom.name}（${mom.age}歲，${mom.job}）。`, 'big');
+  }
+
   closeSheet();
   render();
   _prev = snap();
 }
 
-function snap(){
-  return { mood:S.mood, health:S.health, iq:S.iq, eq:S.eq, moral:S.moral };
-}
-
+function snap(){ return { mood:S.mood, health:S.health, iq:S.iq, eq:S.eq, moral:S.moral }; }
 function log(text, cls=''){
   S.logs.unshift({ age:S.age, text, cls });
   if(S.logs.length > 200) S.logs.length = 200;
 }
-
 function normalize(){
-  S.mood   = clamp(S.mood, 0, 100);
+  S.mood = clamp(S.mood, 0, 100);
   S.health = clamp(S.health, 0, 100);
-  S.iq     = clamp(S.iq, 0, 100);
-  S.eq     = clamp(S.eq, 0, 100);
-  S.moral  = clamp(S.moral, 0, 100);
-  S.money  = Math.max(0, S.money);
-  S.deposit= Math.max(0, S.deposit);
+  S.iq = clamp(S.iq, 0, 100);
+  S.eq = clamp(S.eq, 0, 100);
+  S.moral = clamp(S.moral, 0, 100);
+  S.money = Math.max(0, S.money);
+  S.deposit = Math.max(0, S.deposit);
   S.invest = Math.max(0, S.invest);
   const p = S.people;
-  if(p.dad) p.dad.rel = clamp(p.dad.rel, 0, 100);
-  if(p.mom) p.mom.rel = clamp(p.mom.rel, 0, 100);
+  if(p.dad && !p.dad.absent) p.dad.rel = clamp(p.dad.rel, 0, 100);
+  if(p.mom && !p.mom.absent) p.mom.rel = clamp(p.mom.rel, 0, 100);
   p.friends.forEach(f => f.rel = clamp(f.rel, 0, 100));
   p.children.forEach(c => c.rel = clamp(c.rel, 0, 100));
   if(S.partner) S.partner.rel = clamp(S.partner.rel, 0, 100);
 }
 
-/* ═══════════════════════════════════════════
-   渲染
-═══════════════════════════════════════════ */
+/* ══════ 渲染 ══════ */
 const ATTR_DEF = [
   { k:'mood',   label:'心情', color:'var(--amber)' },
   { k:'health', label:'健康', color:'var(--rust)' },
@@ -448,7 +445,6 @@ const ATTR_DEF = [
 ];
 
 function render(){
-  /* 姓名與年齡 */
   $('whoName').textContent = S.name;
   const ageEl = $('ageNum');
   if(S.age !== _prevAgeShown && _prevAgeShown !== undefined){
@@ -457,7 +453,6 @@ function render(){
   ageEl.textContent = S.age;
   _prevAgeShown = S.age;
 
-  /* 金錢 */
   const moneyEl = $('moneyTxt');
   const oldMoney = _prevMoneyShown;
   moneyEl.textContent = fmt(S.money);
@@ -471,15 +466,21 @@ function render(){
   }
   _prevMoneyShown = S.money;
   $('purseCash').classList.toggle('zero', S.money === 0);
-
-  /* 行動點 */
   $('apTxt').textContent = S.ap;
   $('purseAP').classList.toggle('zero', S.ap === 0);
 
   /* 身份條 */
   const idc = [];
-  idc.push(`<span class="cell">${S.school ? S.school : S.eduName}</span>`);
-  idc.push(`<span class="cell">${S.job ? S.job.name : (S.age >= 16 && !S.school ? '<button onclick="openJobSearch()">求職中</button>' : '無業')}</span>`);
+  idc.push(`<span class="cell">${S.school || S.eduName}</span>`);
+  if(S.civil){
+    idc.push(`<span class="cell">${S.civil.unit} · ${S.civil.rank.name}</span>`);
+  } else if(S.job){
+    idc.push(`<span class="cell">${S.job.name}</span>`);
+  } else {
+    const can = S.age >= 16 && !S.school;
+    idc.push(`<span class="cell">${can ? '<button onclick="openJobSearch()">求職中</button>' : '無業'}</span>`);
+  }
+  if(S.company) idc.push(`<span class="cell">🏢 ${S.company.name}</span>`);
   if(S.married) idc.push(`<span class="cell">已婚 · ${S.people.children.length} 子女</span>`);
   else if(S.partner) idc.push(`<span class="cell">戀愛中</span>`);
   else idc.push(`<span class="cell">單身</span>`);
@@ -514,17 +515,16 @@ function render(){
   $('btnProperty').disabled = S.age < 16 || S.over;
   $('btnRelation').disabled = S.over;
   $('btnActivity').disabled = S.over;
+  $('btnCompany').disabled = !S.company || S.over;
+  $('btnCompany').innerHTML = S.company ? `公司<span class="sub">${S.company.name}</span>` : '公司<span class="sub">—</span>';
+
   const nb = $('btnNext');
   nb.disabled = S.over;
   nb.classList.toggle('ready', !S.over && S.ap === 0);
   nb.textContent = S.over ? '人 生 已 落 幕' : '度 過 這 一 年';
 }
 
-let _prevAgeShown, _prevMoneyShown;
-
-/* ═══════════════════════════════════════════
-   Modal
-═══════════════════════════════════════════ */
+/* ══════ Modal ══════ */
 function sheet({ title, body, buttons, onMount, closable = true }){
   const ov = $('ov');
   ov.innerHTML = `<div class="sheet">
@@ -549,71 +549,104 @@ function sheet({ title, body, buttons, onMount, closable = true }){
   ov.onclick = e => { if(e.target === ov && closable) closeSheet(); };
   if(onMount) onMount();
 }
-
 function closeSheet(){
   $('ov').classList.remove('show');
   $('ov').innerHTML = '';
   document.body.classList.remove('locked');
 }
 
-/* ═══════════════════════════════════════════
-   活動
-═══════════════════════════════════════════ */
+/* ══════ 開場選出身 ══════ */
+function openOriginSelect(){
+  const body = `
+    <p style="margin-bottom:14px">選擇你的出身，展開全新的人生。</p>
+    <div class="origins">
+      ${ORIGINS.map(o => `<div class="origin" data-id="${o.id}">
+        <div class="h">${o.name}</div>
+        <div class="d">${o.desc}</div>
+        <div class="b">${o.bonus}</div>
+      </div>`).join('')}
+    </div>`;
+  sheet({
+    title:'選擇出身',
+    body,
+    buttons:[],
+    closable:false,
+    onMount(){
+      document.querySelectorAll('.origin').forEach(el => {
+        el.onclick = () => {
+          newGameWithOrigin(el.dataset.id);
+        };
+      });
+    }
+  });
+}
+
+/* ══════ 活動 ══════ */
 const ACTIONS = [
   { id:'rest',  name:'休息放鬆', desc:'心情 +8，健康 +2', ap:1, min:0,
     run:s => { s.mood += 8; s.health += 2; log('你好好休息了一段時間，身心舒暢。','good'); } },
-
   { id:'play',  name:'盡情玩耍', desc:'心情 +7，健康 +1', ap:1, min:0, max:12,
     run:s => { s.mood += 7; s.health += 1; log('你玩得很開心，笑聲迴盪了一整天。','good'); } },
-
   { id:'sport', name:'運動鍛鍊', desc:'健康 +6，心情 +3', ap:1, min:4,
     run:s => { s.health += 6; s.mood += 3; log('你堅持運動，身體越來越結實。','good'); } },
-
   { id:'study', name:'埋頭苦讀', desc:'智商 +4，心情 −4', ap:1, min:6, max:24,
     run:s => { s.iq += 4; s.mood -= 4; log('你埋頭苦讀，智商 +4。'); } },
-
   { id:'read',  name:'閱讀書籍', desc:'智商 +2，情商 +1', ap:1, min:8,
     run:s => { s.iq += 2; s.eq += 1; log('你讀完一本好書，受益匪淺。','good'); } },
-
   { id:'social',name:'與朋友聚會', desc:'情商 +4，心情 +6，花費 300 元', ap:1, min:6, cost:300,
     run:s => { s.eq += 4; s.mood += 6;
-               const f = s.people.friends[0];
-               if(f) f.rel = clamp(f.rel + 6, 0, 100);
-               log('你和朋友們聚在一起，聊得很開心。','good'); } },
-
+      const f = s.people.friends.filter(x => x.alive);
+      if(f.length){ const t = pick(f); t.rel = clamp(t.rel + 6, 0, 100); }
+      log('你和朋友們聚在一起，聊得很開心。','good'); } },
   { id:'game',  name:'打遊戲', desc:'心情 +10，健康 −2', ap:1, min:6,
     run:s => { s.mood += 10; s.health -= 2; log('你痛快地玩了一天遊戲，心情 +10。'); } },
-
   { id:'help',  name:'做義工', desc:'道德 +5，心情 +4', ap:1, min:10,
     run:s => { s.moral += 5; s.mood += 4; log('你去幫助了需要幫助的人，內心溫暖。','good'); } },
-
   { id:'travel',name:'出門旅行', desc:'心情 +18，健康 +3，花費 3000 元', ap:1, min:10, cost:3000,
     run:s => { s.mood += 18; s.health += 3; log('你去了很遠的地方旅行，見到了不一樣的風景。','good'); } },
-
-  { id:'visit', name:'探望父母', desc:'家人關係 +5，心情 +3', ap:1, min:16,
+  { id:'visit', name:'探望父母', desc:'家人關係 +6，心情 +3', ap:1, min:16,
     run:s => {
-      const who = s.people.dad.alive ? s.people.dad : (s.people.mom.alive ? s.people.mom : null);
-      if(!who){ log('你已經沒有可以探望的父母了。','bad'); return; }
-      who.rel = clamp(who.rel + 6, 0, 100);
+      const alive = [s.people.dad, s.people.mom].filter(p => p && !p.absent && p.alive);
+      if(!alive.length){ log('你已經沒有可以探望的父母了。','bad'); return; }
+      alive.forEach(p => p.rel = clamp(p.rel + 6, 0, 100));
       s.mood += 3; s.moral += 1;
-      log(`你去探望了${who.role}，聊了很多家常。`,'good');
+      log('你去探望了父母，聊了很多家常。','good');
     } },
-
   { id:'parttime', name:'兼職打工', desc:'賺 2000–6000 元，健康 −4', ap:1, min:16, max:65,
     run:s => { const m = ri(2000, 6000); s.money += m; s.health -= 4; s.mood -= 3;
-               log(`你兼職打工，賺了 ${fmt(m)} 元。`); } },
-
+      log(`你兼職打工，賺了 ${fmt(m)} 元。`); } },
   { id:'finance', name:'研究理財', desc:'情商 +2，智商 +2', ap:1, min:16,
     run:s => { s.eq += 2; s.iq += 2; log('你研究了一些理財知識，收穫不少。'); } },
-
   { id:'meditate', name:'靜心冥想', desc:'心情 +5，道德 +2，健康 +1', ap:1, min:14,
     run:s => { s.mood += 5; s.moral += 2; s.health += 1; log('你靜心冥想，內心恢復了平靜。','good'); } },
+  { id:'newfriend', name:'認識新朋友', desc:'結交一位新朋友', ap:1, min:6, max:65,
+    run:s => {
+      if(s.people.friends.length >= 10){ log('你的朋友圈已經很滿了。','bad'); return; }
+      addNewFriend(true);
+    } },
 ];
+
+function addNewFriend(active){
+  if(S.people.friends.length >= 10) return;
+  const gender = Math.random() < .5 ? 'M' : 'F';
+  const base = { id:uid(), ...randPerson(gender),
+    age: clamp(S.age + ri(-2, 3), 6, 90),
+    rel: active ? ri(45, 60) : ri(30, 50),
+    alive:true, job:null };
+  if(base.age >= 22 && base.age < 65) base.job = pick(JOB_POOL);
+  S.people.friends.push(base);
+  log(`你認識了新朋友${base.name}（${base.age}歲，${identityOf(base.age, base.job)}）。`,'good');
+}
+
+function actReason(a){
+  if(S.ap < a.ap) return '行動點不足';
+  if(a.cost && S.money < a.cost) return '金錢不足';
+  return '';
+}
 
 function openActivities(){
   if(S.over) return;
   const list = ACTIONS.filter(a => S.age >= a.min && (!a.max || S.age <= a.max));
-
   const html = `<p style="color:var(--ink3);font-size:12px;margin-bottom:8px">剩餘行動點 <b style="color:var(--amber)" id="apLine">${S.ap}</b> / ${S.maxAp}</p>
     <div class="acts-list" id="actList">
       ${list.map(a => {
@@ -624,7 +657,6 @@ function openActivities(){
         </div>`;
       }).join('')}
     </div>`;
-
   sheet({
     title:'做點什麼',
     body: html,
@@ -646,13 +678,6 @@ function openActivities(){
     }
   });
 }
-
-function actReason(a){
-  if(S.ap < a.ap) return '行動點不足';
-  if(a.cost && S.money < a.cost) return '金錢不足';
-  return '';
-}
-
 function refreshActList(){
   const el = $('apLine');
   if(el) el.textContent = S.ap;
@@ -666,31 +691,23 @@ function refreshActList(){
   });
 }
 
-/* ═══════════════════════════════════════════
-   關係面板
-═══════════════════════════════════════════ */
-let _relTab = 'fam';
-
+/* ══════ 關係 ══════ */
 function openRelations(tab){
   if(S.over) return;
   if(tab) _relTab = tab;
-
   const p = S.people;
-  const famCount = (p.dad.alive ? 1 : 0) + (p.mom.alive ? 1 : 0);
+  const famCount = (p.dad && !p.dad.absent ? 1 : 0) + (p.mom && !p.mom.absent ? 1 : 0);
   const tabs = [
     { k:'fam',  label:'家人', n:famCount },
-    { k:'fri',  label:'朋友', n:p.friends.length },
+    { k:'fri',  label:'朋友', n:p.friends.filter(f => f.alive).length },
     { k:'par',  label:'伴侶', n:S.partner ? 1 : 0 },
     { k:'chi',  label:'子女', n:p.children.length },
   ];
-
-  let body = `<div class="tabs">
+  const body = `<div class="tabs">
     ${tabs.map(t => `<button data-tab="${t.k}" class="${_relTab===t.k?'on':''}">${t.label}<span class="cnt">${t.n}</span></button>`).join('')}
   </div><div id="tabBody"></div>`;
-
   sheet({
-    title:'關係',
-    body,
+    title:'關係', body,
     buttons:[{ text:'關閉' }],
     onMount(){
       const renderTab = () => {
@@ -714,8 +731,8 @@ function openRelations(tab){
   });
 }
 
-function personCard({ ava, name, tag, tagCls, meta, rel, acts, dead }){
-  const avaCls = dead ? 'ava dead' : (ava.f ? 'ava f' : 'ava');
+function personCard({ name, gender, tag, tagCls, meta, rel, acts, dead }){
+  const avaCls = dead ? 'ava dead' : (gender === 'F' ? 'ava f' : 'ava');
   const relColor = rel >= 66 ? 'var(--sage)' : rel >= 33 ? 'var(--amber)' : 'var(--rust)';
   return `<div class="person">
     <div class="${avaCls}">${dead ? '—' : name.charAt(0)}</div>
@@ -730,8 +747,12 @@ function personCard({ ava, name, tag, tagCls, meta, rel, acts, dead }){
 
 function tabFamily(){
   const p = S.people;
+  if(p.dad.absent && p.mom.absent){
+    return `<div class="empty">你沒有父母，一路走來都是靠自己。</div>`;
+  }
   const out = [];
   [p.dad, p.mom].forEach(who => {
+    if(who.absent) return;
     const ageTxt = who.alive ? `${who.age} 歲 · ${identityOf(who.age, who.job)}` : `<span class="dead">已故</span>`;
     const acts = who.alive ? `
       <button data-act="chat" data-id="${who.id}">聊天</button>
@@ -739,33 +760,30 @@ function tabFamily(){
       ${S.age < 16 ? `<button data-act="ask" data-id="${who.id}">要零用錢</button>` : ''}
     ` : '';
     out.push(personCard({
-      name: who.name,
+      name: who.name, gender: who.gender,
       tag: who.role, tagCls:'par',
       meta: ageTxt,
       rel: Math.round(who.rel),
-      acts,
-      dead: !who.alive,
+      acts, dead: !who.alive,
     }));
   });
   return out.join('');
 }
 
 function tabFriends(){
-  const p = S.people.friends;
-  if(!p.length) return `<div class="empty">你還沒有朋友。多出門走走吧。</div>`;
-  return p.map(f => {
-    const acts = `
+  const list = S.people.friends;
+  if(!list.length) return `<div class="empty">你還沒有朋友。在「活動」中認識新朋友吧。</div>`;
+  return list.map(f => {
+    const dead = !f.alive;
+    const acts = dead ? '' : `
       <button data-act="fri_chat" data-id="${f.id}">聯絡</button>
       ${canConfess(f) ? `<button class="pri" data-act="confess" data-id="${f.id}">告白</button>` : ''}
     `;
-    const dead = !f.alive;
     return personCard({
-      name: f.name,
-      tag: null,
+      name: f.name, gender: f.gender,
       meta: dead ? `<span class="dead">已故</span>` : `${f.age} 歲 · ${identityOf(f.age, f.job)}`,
       rel: Math.round(f.rel),
-      acts: dead ? '' : acts,
-      dead,
+      acts, dead,
     });
   }).join('');
 }
@@ -776,19 +794,17 @@ function tabPartner(){
   const rel = Math.round(p.rel);
   let acts = `<button data-act="date" data-id="${p.id}">約會 1000</button>`;
   if(!S.married){
-    acts += `<button class="${rel >= 80 ? 'pri' : ''}" data-act="propose" data-id="${p.id}" ${rel < 80 ? 'disabled' : ''}>求婚${rel < 80 ? '（關係需 80）' : ''}</button>`;
+    acts += `<button class="${rel >= 80 ? 'pri' : ''}" data-act="propose" data-id="${p.id}" ${rel < 80 ? 'disabled' : ''}>求婚${rel < 80 ? '（需 80）' : ''}</button>`;
   } else {
     const canBirth = S.age >= 22 && S.age <= 48 && p.age >= 20 && p.age <= 45 && S.money >= 30000;
     acts += `<button class="${canBirth ? 'pri' : ''}" data-act="birth" data-id="${p.id}" ${canBirth ? '' : 'disabled'}>生孩子 3萬</button>`;
   }
   acts += `<button data-act="breakup" data-id="${p.id}" style="border-color:rgba(192,122,109,.4);color:var(--rust)">${S.married ? '離婚' : '分手'}</button>`;
-
   return personCard({
-    name: p.name,
+    name: p.name, gender: p.gender,
     tag: S.married ? '配偶' : '戀人', tagCls:'fam',
     meta: `${p.age} 歲 · ${identityOf(p.age, p.job)}${S.married ? ' · 已婚' : ''}`,
-    rel,
-    acts,
+    rel, acts,
   });
 }
 
@@ -798,11 +814,10 @@ function tabChildren(){
   return c.map(ch => {
     const acts = `<button data-act="child_care" data-id="${ch.id}">關心</button>`;
     return personCard({
-      name: ch.name,
+      name: ch.name, gender: ch.gender,
       tag: ch.gender === 'M' ? '兒子' : '女兒', tagCls:'chi',
       meta: `${ch.age} 歲 · ${identityOf(ch.age, ch.job)}`,
-      rel: Math.round(ch.rel),
-      acts,
+      rel: Math.round(ch.rel), acts,
     });
   }).join('');
 }
@@ -823,104 +838,80 @@ function canConfess(f){
   if(S.age < 16) return false;
   if(!f.alive) return false;
   if(f.gender === S.gender) return false;
-  if(Math.abs(f.age - S.age) > 8) return false;
-  if(f.rel < 55) return false;
+  if(Math.abs(f.age - S.age) > 10) return false;
+  if(f.rel < 50) return false;
   return true;
 }
 
 function handlePersonAction(act, id){
   const p = findPerson(id);
   if(!p) return;
-
   switch(act){
-    case 'chat': {
+    case 'chat':
       if(S.ap < 1) return toast('行動點不足');
-      S.ap--;
-      p.rel = clamp(p.rel + 5, 0, 100);
-      S.mood += 3; S.eq += 1;
+      S.ap--; p.rel = clamp(p.rel + 5, 0, 100); S.mood += 3; S.eq += 1;
       log(`你和${p.role || p.name}聊了很久，彼此都感到溫暖。`,'good');
-      normalize(); render(); openRelations(_relTab);
-      break;
-    }
-    case 'gift': {
-      if(S.money < 500) return toast('金錢不足（需 500 元）');
+      normalize(); render(); openRelations(_relTab); break;
+    case 'gift':
+      if(S.money < 500) return toast('金錢不足');
       if(S.ap < 1) return toast('行動點不足');
       S.ap--; S.money -= 500;
-      p.rel = clamp(p.rel + 10, 0, 100);
-      S.moral += 2;
+      p.rel = clamp(p.rel + 10, 0, 100); S.moral += 2;
       log(`你送了一份禮物給${p.role || p.name}，對方很開心。`,'good');
-      normalize(); render(); openRelations(_relTab);
-      break;
-    }
-    case 'ask': {
+      normalize(); render(); openRelations(_relTab); break;
+    case 'ask':
       if(S.ap < 1) return toast('行動點不足');
       S.ap--;
-      const m = ri(200, 800);
-      S.money += m;
+      const m = ri(200, 800); S.money += m;
       p.rel = clamp(p.rel - 6, 0, 100);
       log(`你向${p.role}要了 ${fmt(m)} 元零用錢。`);
-      normalize(); render(); openRelations(_relTab);
-      break;
-    }
-    case 'fri_chat': {
+      normalize(); render(); openRelations(_relTab); break;
+    case 'fri_chat':
       if(S.ap < 1) return toast('行動點不足');
-      S.ap--;
-      p.rel = clamp(p.rel + 6, 0, 100);
-      S.mood += 3; S.eq += 1;
+      S.ap--; p.rel = clamp(p.rel + 6, 0, 100); S.mood += 3; S.eq += 1;
       log(`你和${p.name}聊了一會兒，關係更近了。`,'good');
-      normalize(); render(); openRelations(_relTab);
-      break;
-    }
-    case 'confess': {
+      normalize(); render(); openRelations(_relTab); break;
+    case 'confess':
       if(!canConfess(p)) return toast('條件不符');
       if(S.ap < 1) return toast('行動點不足');
       S.ap--;
-      const chance = clamp(0.35 + (p.rel - 55) * 0.018 + S.eq * 0.004, 0.1, 0.92);
+      const chance = clamp(0.35 + (p.rel - 50) * 0.022 + S.eq * 0.004, 0.15, 0.94);
       if(Math.random() < chance){
         S.partner = { ...p, rel: clamp(p.rel + 10, 0, 100) };
         S.people.friends = S.people.friends.filter(x => x.id !== p.id);
         S.mood += 28; S.eq += 2;
         log(`你向${p.name}告白，對方紅著臉答應了。你們開始交往。`,'big');
       } else {
-        p.rel = clamp(p.rel - 12, 0, 100);
-        S.mood -= 14; S.eq += 2;
+        p.rel = clamp(p.rel - 12, 0, 100); S.mood -= 14; S.eq += 2;
         log(`你向${p.name}告白，卻被婉拒了。心情 −14，情商 +2。`,'bad');
       }
-      normalize(); render(); openRelations(_relTab);
-      break;
-    }
-    case 'date': {
-      if(S.money < 1000) return toast('金錢不足（需 1000 元）');
+      normalize(); render(); openRelations(_relTab); break;
+    case 'date':
+      if(S.money < 1000) return toast('金錢不足');
       if(S.ap < 1) return toast('行動點不足');
       S.ap--; S.money -= 1000;
-      S.partner.rel = clamp(S.partner.rel + ri(8, 15), 0, 100);
-      S.mood += 12;
+      S.partner.rel = clamp(S.partner.rel + ri(8, 15), 0, 100); S.mood += 12;
       log(`你和${S.partner.name}度過了一個美好的約會。`,'good');
-      normalize(); render(); openRelations(_relTab);
-      break;
-    }
-    case 'propose': {
+      normalize(); render(); openRelations(_relTab); break;
+    case 'propose':
       if(S.married) return;
-      if(S.partner.rel < 80) return toast('關係不夠（需 80）');
+      if(S.partner.rel < 80) return toast('關係不夠');
       if(S.ap < 1) return toast('行動點不足');
       S.ap--;
-      const chance = clamp(0.65 + (S.partner.rel - 80) * 0.015 + S.eq * 0.004, 0.3, 0.97);
-      if(Math.random() < chance){
+      const pChance = clamp(0.65 + (S.partner.rel - 80) * 0.018 + S.eq * 0.004, 0.3, 0.97);
+      if(Math.random() < pChance){
         S.married = true;
         S.partner.rel = clamp(S.partner.rel + 10, 0, 100);
         S.mood += 40; S.moral += 3;
         log(`你向${S.partner.name}求婚，對方含著眼淚點了點頭。你們結婚了。`,'big');
       } else {
-        S.partner.rel = clamp(S.partner.rel - 15, 0, 100);
-        S.mood -= 25;
+        S.partner.rel = clamp(S.partner.rel - 15, 0, 100); S.mood -= 25;
         log(`你向${S.partner.name}求婚，對方猶豫了很久，最後拒絕了。`,'bad');
       }
-      normalize(); render(); openRelations(_relTab);
-      break;
-    }
-    case 'birth': {
+      normalize(); render(); openRelations(_relTab); break;
+    case 'birth':
       if(!S.married) return toast('必須已婚');
-      if(S.money < 30000) return toast('金錢不足（需 3 萬）');
+      if(S.money < 30000) return toast('金錢不足');
       if(S.age < 22 || S.age > 48) return toast('年齡不適合');
       if(S.ap < 1) return toast('行動點不足');
       S.ap--; S.money -= 30000;
@@ -928,48 +919,31 @@ function handlePersonAction(act, id){
       const child = { id:uid(), name:S.name.charAt(0) + (g === 'M' ? pick(NAME_M) : pick(NAME_F)),
                       gender:g, age:0, rel:80, alive:true, job:null };
       S.people.children.push(child);
-      S.partner.rel = clamp(S.partner.rel + 8, 0, 100);
-      S.mood += 26;
+      S.partner.rel = clamp(S.partner.rel + 8, 0, 100); S.mood += 26;
       log(`你們迎來了${g === 'M' ? '兒子' : '女兒'}${child.name}。`,'big');
-      normalize(); render(); openRelations(_relTab);
-      break;
-    }
-    case 'breakup': {
+      normalize(); render(); openRelations(_relTab); break;
+    case 'breakup':
       const wasMarried = S.married;
-      S.partner = null;
-      S.married = false;
-      S.mood -= 30;
+      S.partner = null; S.married = false; S.mood -= 30;
       log(wasMarried ? '你結束了這段婚姻。' : '你們分手了。','bad');
-      normalize(); render(); openRelations(_relTab);
-      break;
-    }
-    case 'child_care': {
+      normalize(); render(); openRelations(_relTab); break;
+    case 'child_care':
       if(S.ap < 1) return toast('行動點不足');
-      S.ap--;
-      p.rel = clamp(p.rel + 7, 0, 100);
-      S.mood += 4; S.moral += 1;
+      S.ap--; p.rel = clamp(p.rel + 7, 0, 100); S.mood += 4; S.moral += 1;
       log(`你花時間陪伴${p.name}，親子關係更緊密了。`,'good');
-      normalize(); render(); openRelations(_relTab);
-      break;
-    }
+      normalize(); render(); openRelations(_relTab); break;
   }
 }
 
-/* ═══════════════════════════════════════════
-   伴侶快捷入口
-═══════════════════════════════════════════ */
 function openPartnerPanel(){
   if(!S.partner) return toast('你目前是單身');
   openRelations('par');
 }
 
-/* ═══════════════════════════════════════════
-   財產
-═══════════════════════════════════════════ */
+/* ══════ 財產 ══════ */
 function openProperty(){
   if(S.age < 16) return toast('未滿 16 歲，無法管理財產');
   if(S.over) return;
-
   const html = `
     <div class="row"><span class="k">現金</span><span class="v">${fmt(S.money)} 元</span></div>
     <div class="row"><span class="k">定期存款 · 年利 3.5%</span><span class="v">${fmt(S.deposit)} 元</span></div>
@@ -981,18 +955,14 @@ function openProperty(){
       <button data-a="iin">投入投資</button>
       <button data-a="iout">贖回投資</button>
     </div>
-    <div class="note">定期存款每年穩定增值 3.5%。投資組合每年波動 −45% 至 +65%，心臟要夠大。</div>
-  `;
-
+    <div class="note">定期存款每年穩定增值 3.5%。投資組合每年波動 −45% 至 +65%。</div>`;
   const readAmt = () => {
     const v = Math.floor(parseFloat($('amt').value));
     if(!v || v <= 0){ toast('請輸入有效金額'); return 0; }
     return v;
   };
-
   sheet({
-    title:'財產',
-    body: html,
+    title:'財產', body: html,
     buttons:[{ text:'關閉' }],
     onMount(){
       document.querySelectorAll('.btnrow [data-a]').forEach(b => {
@@ -1012,9 +982,7 @@ function openProperty(){
   });
 }
 
-/* ═══════════════════════════════════════════
-   學業里程碑
-═══════════════════════════════════════════ */
+/* ══════ 學業里程碑 ══════ */
 function examScore(){
   return Math.round(clamp(300 + S.iq * 3 + S.eq + rnd(-30, 30), 0, 750));
 }
@@ -1041,58 +1009,99 @@ function examGaokao(){
     return;
   }
   const sc = examScore();
-  if(sc >= 650){
-    S.school = '名牌大學'; S.eduName = '名牌大學'; S.eduLevel = 3;
-    log(`高考成績 ${sc} 分，恭喜你考上了名牌大學。`,'big');
-  } else if(sc >= 550){
-    S.school = '本科大學'; S.eduName = '本科大學'; S.eduLevel = 3;
-    log(`高考成績 ${sc} 分，你考上了本科大學。`,'big');
-  } else if(sc >= 450){
-    S.school = '專科院校'; S.eduName = '專科院校'; S.eduLevel = 2;
-    log(`高考成績 ${sc} 分，你考上了專科院校。`);
-  } else {
+  log(`高考成績出爐：${sc} 分。`,'big');
+  // 可選科系
+  const available = MAJORS.filter(m => m.score <= sc);
+  if(!available.length){
     S.school = ''; S.eduName = '畢業'; S.eduLevel = 1;
-    log(`高考成績 ${sc} 分，你落榜了。`,'bad');
+    log('你的分數未達任何學校的錄取線，決定先進入社會工作。','bad');
     S.pendingOffer = true;
+    return;
   }
+  // 打開選科系面板
+  setTimeout(()=>openMajorSelect(sc, available), 340);
+}
+
+function openMajorSelect(score, list){
+  const html = `
+    <p style="margin-bottom:6px">你的高考成績為 <b style="color:var(--amber)">${score}</b> 分。</p>
+    <p style="color:var(--ink3);font-size:12px;margin-bottom:12px">以下科系可供你選擇：</p>
+    <div class="acts-list" id="majorList">
+      ${list.map(m => `<div class="it" data-id="${m.id}">
+        <div class="l">
+          <div class="nm">${m.name}</div>
+          <div class="ds">${m.tag} · 錄取線 ${m.score} 分</div>
+        </div>
+        <div class="dg">選擇</div>
+      </div>`).join('')}
+    </div>`;
+  sheet({
+    title:'選擇科系',
+    body: html,
+    closable: false,
+    buttons:[{ text:'放棄升學，直接就業', cls:'warn', onClick:()=>{
+      S.school = ''; S.eduName = '畢業'; S.eduLevel = 1;
+      log('你放棄升學，選擇直接就業。','bad');
+      S.pendingOffer = true;
+      closeSheet();
+      setTimeout(()=>openJobSearch(), 340);
+    }}],
+    onMount(){
+      $('majorList').addEventListener('click', e => {
+        const it = e.target.closest('.it');
+        if(!it) return;
+        const m = MAJORS.find(x => x.id === it.dataset.id);
+        if(!m) return;
+        S.major = m.id;
+        S.school = m.name;
+        S.eduName = m.name;
+        S.eduLevel = m.level;
+        if(m.id === 'med') S.iq += 5;
+        if(m.id === 'law') S.eq += 5;
+        if(m.id === 'biz') S.eq += 3;
+        if(m.id === 'tech') S.iq += 3;
+        if(m.id === 'art') { S.eq += 2; S.moral += 3; }
+        if(m.id === 'edu') { S.eq += 3; S.moral += 2; }
+        log(`你選擇了${m.name}，開啟大學生活。`,'big');
+        normalize(); render(); closeSheet();
+      });
+    }
+  });
 }
 
 function graduate(){
   S.school = ''; S.eduName = '畢業';
+  const major = S.major ? MAJORS.find(m => m.id === S.major) : null;
+  if(major && major.id === 'med') S.iq += 8;
+  if(major && major.id === 'law') S.eq += 8;
   log('你大學畢業了，是時候找份工作了。','big');
   S.pendingOffer = true;
 }
 
-/* ═══════════════════════════════════════════
-   職業
-═══════════════════════════════════════════ */
-const JOBS = [
-  { id:'waiter',    name:'餐廳服務員', salary:42000,  need:0 },
-  { id:'factory',   name:'工廠工人',   salary:60000,  need:0 },
-  { id:'delivery',  name:'外送騎手',   salary:72000,  need:0 },
-  { id:'clerk',     name:'公司文員',   salary:66000,  need:1 },
-  { id:'sales',     name:'銷售專員',   salary:84000,  need:1 },
-  { id:'nurse',     name:'護理師',     salary:90000,  need:2 },
-  { id:'teacher',   name:'教師',       salary:96000,  need:2 },
-  { id:'civil',     name:'公務員',     salary:130000, need:3, exam:true },
-  { id:'programmer',name:'程式設計師', salary:180000, need:3 },
-  { id:'doctor',    name:'醫師',       salary:220000, need:3 },
-  { id:'startup',   name:'創業者',     salary:0,      need:3, startup:true },
-];
+/* ══════ 求職 ══════ */
+function jobAvailable(j){
+  if(j.need > S.eduLevel) return false;
+  if(j.major && S.major !== j.major) return false;
+  if(j.startup && S.money < 50000) return false;
+  return true;
+}
 
 function openJobSearch(){
   if(S.over) return;
   if(S.age < 16) return toast('未滿 16 歲，無法工作');
   if(S.school) return toast('求學期間無法全職工作');
 
-  if(S.job){
+  if(S.job || S.civil || S.company){
+    // 已在工作中
+    const title = S.civil ? `${S.civil.unit} · ${S.civil.rank.name}` : S.company ? `創業者 · ${S.company.name}` : S.job.name;
     sheet({
       title:'目前的工作',
-      body:`<p>你是一名 <b style="color:var(--sage)">${S.job.name}</b>。</p>
-            <p>年薪 <b style="color:var(--amber)">${S.startup ? '不固定' : fmt(S.salary) + ' 元'}</b>。</p>`,
+      body:`<p>你目前的身份是 <b style="color:var(--sage)">${title}</b>。</p>
+            <p>${S.civil ? '年薪 ' + fmt(S.civil.rank.salary) + ' 元。' : S.company ? '' : '年薪 ' + fmt(S.salary) + ' 元。'}</p>`,
       buttons:[
         { text:'辭職', cls:'warn', onClick:()=>{
-          log(`你辭去了「${S.job.name}」的工作。`,'bad');
+          log(`你辭去了「${title}」的工作。`,'bad');
+          if(S.civil) S.civil = null;
           S.job = null; S.salary = 0; S.working = false; S.startup = false;
           S.mood -= 8;
           normalize(); render();
@@ -1104,22 +1113,27 @@ function openJobSearch(){
     return;
   }
 
-  const list = JOBS.filter(j => j.need <= S.eduLevel);
+  const list = JOBS.filter(j => {
+    if(j.startup){
+      return S.eduLevel >= 1 && S.money >= 50000;
+    }
+    if(j.exam) return true;
+    return jobAvailable(j);
+  });
+
   const html = `
-    <p style="color:var(--ink3);font-size:12px;margin-bottom:8px">依你的學歷（${S.eduName}），以下工作向你敞開大門。</p>
+    <p style="color:var(--ink3);font-size:12px;margin-bottom:8px">依你的學歷（${S.eduName}${S.major ? ' · ' + (MAJORS.find(m=>m.id===S.major)?.name||'') : ''}），以下工作可供選擇。</p>
     <div class="acts-list" id="jobList">
       ${list.map(j => {
-        const locked = j.startup && S.money < 50000;
         const tried = j.exam && S.civilExamAt === S.age;
-        const reason = tried ? '今年考試已失敗' : (locked ? '資金不足' : '');
+        const reason = tried ? '今年考試已失敗' : '';
         return `<div class="it ${reason?'off':''}" data-id="${j.id}">
           <div class="l"><div class="nm">${j.name}</div>
-          <div class="ds">年薪 ${j.startup ? '不固定（需 5 萬啟動）' : fmt(j.salary) + ' 元'}${j.exam ? ' · 需通過考試' : ''}</div></div>
+          <div class="ds">${j.cat} · 年薪 ${j.startup ? '不固定（需 5 萬啟動）' : fmt(j.salary) + ' 元'}${j.exam ? ' · 需通過考試' : ''}</div></div>
           <div class="dg">${reason ? `<span class="w">${reason}</span>` : '應徵'}</div>
         </div>`;
       }).join('')}
-    </div>
-  `;
+    </div>`;
 
   sheet({
     title:'求職',
@@ -1131,7 +1145,10 @@ function openJobSearch(){
         if(!it || it.classList.contains('off')) return;
         const job = JOBS.find(j => j.id === it.dataset.id);
         if(!job) return;
-        if(job.startup && S.money < 50000) return toast('資金不足');
+        if(job.startup){
+          startBusiness();
+          return;
+        }
         if(job.exam){
           if(S.civilExamAt === S.age) return toast('今年已考過');
           S.civilExamAt = S.age;
@@ -1141,30 +1158,194 @@ function openJobSearch(){
             setTimeout(()=>toast('考試未通過，明年再來吧。'), 120);
             return;
           }
-          log('你順利通過公務員考試。','good');
+          chooseCivilUnit(job);
+          return;
         }
-        if(job.startup) S.money -= 50000;
         S.job = job;
         S.salary = job.salary;
         S.working = true;
-        S.startup = !!job.startup;
+        S.startup = false;
         S.mood += 10;
-        log(`你成為了一名「${job.name}」${job.startup ? '，開始了創業之路。' : '，年薪 ' + fmt(job.salary) + ' 元。'}`,'big');
+        log(`你成為了一名「${job.name}」，年薪 ${fmt(job.salary)} 元。`,'big');
         normalize(); render(); closeSheet();
       });
     }
   });
 }
 
-/* ═══════════════════════════════════════════
-   人物年度更新
-═══════════════════════════════════════════ */
+function chooseCivilUnit(job){
+  const html = `
+    <p style="margin-bottom:8px">恭喜你通過公務員考試！請選擇分發單位。</p>
+    <div class="acts-list" id="unitList">
+      ${CIVIL_UNITS.map(u => `<div class="it" data-unit="${u}">
+        <div class="l"><div class="nm">${u}</div>
+        <div class="ds">科員起 · 年薪 7 萬</div></div>
+        <div class="dg">選擇</div>
+      </div>`).join('')}
+    </div>`;
+  sheet({
+    title:'選擇單位',
+    body: html,
+    buttons:[],
+    closable:false,
+    onMount(){
+      $('unitList').addEventListener('click', e => {
+        const it = e.target.closest('.it');
+        if(!it) return;
+        const unit = it.dataset.unit;
+        S.civil = { unit, rank: { ...CIVIL_RANKS[0] }, rankIndex:0, score: 60 + S.iq * 0.3 + S.eq * 0.2 };
+        S.job = job;
+        S.salary = S.civil.rank.salary;
+        S.working = true;
+        S.startup = false;
+        S.mood += 15;
+        log(`你成為${unit}的科員，正式踏入公職。`,'big');
+        normalize(); render(); closeSheet();
+      });
+    }
+  });
+}
+
+/* ══════ 創業 & 公司管理 ══════ */
+function startBusiness(){
+  const html = `
+    <p style="margin-bottom:8px">選擇你的創業方向：</p>
+    <div class="acts-list" id="bizList">
+      ${BIZ_TYPES.map(b => `<div class="it" data-id="${b.id}">
+        <div class="l"><div class="nm">${b.name}</div>
+        <div class="ds">${b.desc} · 基礎營收 ${fmt(b.base)}</div></div>
+        <div class="dg">投入 5 萬</div>
+      </div>`).join('')}
+    </div>`;
+  sheet({
+    title:'創業方向',
+    body: html,
+    buttons:[{ text:'取消' }],
+    onMount(){
+      $('bizList').addEventListener('click', e => {
+        const it = e.target.closest('.it');
+        if(!it) return;
+        const b = BIZ_TYPES.find(x => x.id === it.dataset.id);
+        if(!b) return;
+        if(S.money < 50000) return toast('資金不足');
+        S.money -= 50000;
+        S.company = {
+          name: pick(['星辰','啟航','興盛','遠大','方舟','鼎盛','朝陽','雲端']) + b.name.charAt(0) + '業有限公司',
+          type: b.id,
+          typeName: b.name,
+          capital: 50000,
+          employees: [],
+          reputation: 50,
+          years: 0,
+        };
+        S.job = { id:'startup', name:'創業者', salary:0 };
+        S.working = true;
+        S.startup = true;
+        S.salary = 0;
+        S.mood += 20;
+        log(`你投入 5 萬元，創辦了「${S.company.name}」，開始了創業之路。`,'big');
+        normalize(); render(); closeSheet();
+      });
+    }
+  });
+}
+
+function openCompany(){
+  if(!S.company) return toast('你沒有公司');
+  if(S.over) return;
+  const c = S.company;
+  const totalSalary = c.employees.reduce((a, e) => a + e.salary, 0);
+  const html = `
+    <div class="bizstat">
+      <div class="b"><div class="l">公司名稱</div><div class="v" style="font-size:12px">${c.name}</div></div>
+      <div class="b"><div class="l">行業</div><div class="v" style="font-size:13px">${c.typeName}</div></div>
+      <div class="b"><div class="l">員工數</div><div class="v">${c.employees.length} 人</div></div>
+      <div class="b"><div class="l">年人事支出</div><div class="v">${fmt(totalSalary)}</div></div>
+      <div class="b"><div class="l">聲譽</div><div class="v">${Math.round(c.reputation)}</div></div>
+      <div class="b"><div class="l">創業年數</div><div class="v">${c.years} 年</div></div>
+    </div>
+    <div class="btnrow" style="margin-top:0">
+      <button data-a="hire" class="pri">招聘 1 萬</button>
+      <button data-a="fire">裁員</button>
+      <button data-a="market" >行銷 2 萬</button>
+      <button data-a="list">查看員工</button>
+    </div>
+    <div class="note">每年結算：營收 = 基礎營收 × 員工產能 × 聲譽係數。員工薪資會從公司帳戶扣除。</div>`;
+  sheet({
+    title:`公司管理`,
+    body: html,
+    buttons:[{ text:'關閉' }],
+    onMount(){
+      document.querySelectorAll('.btnrow [data-a]').forEach(b => {
+        b.onclick = () => {
+          const a = b.dataset.a;
+          if(a === 'hire'){
+            if(S.money < 10000) return toast('資金不足（需 1 萬）');
+            if(S.company.employees.length >= 20) return toast('員工已滿');
+            S.money -= 10000;
+            const p = randPerson(Math.random() < .5 ? 'M' : 'F');
+            const salary = ri(36000, 60000);
+            S.company.employees.push({ id:uid(), name:p.name, salary, role: pick(['業務','技術','行政','行銷']) });
+            log(`你招聘了 ${p.name}，年薪 ${fmt(salary)} 元。`);
+            normalize(); render(); openCompany();
+          }
+          if(a === 'fire'){
+            if(!S.company.employees.length) return toast('沒有員工可裁');
+            const e = S.company.employees.pop();
+            S.money -= 5000;
+            log(`你裁掉了 ${e.name}，支付資遣費 5000 元。`,'bad');
+            normalize(); render(); openCompany();
+          }
+          if(a === 'market'){
+            if(S.money < 20000) return toast('資金不足（需 2 萬）');
+            S.money -= 20000;
+            S.company.reputation = clamp(S.company.reputation + ri(5, 12), 0, 100);
+            log('你投入 2 萬進行市場行銷，聲譽提升。','good');
+            normalize(); render(); openCompany();
+          }
+          if(a === 'list'){
+            const listHtml = S.company.employees.length
+              ? S.company.employees.map(e => `<div class="emp"><span>${e.name} · ${e.role}</span><span style="color:var(--amber)">${fmt(e.salary)}</span></div>`).join('')
+              : `<div class="empty">尚無員工</div>`;
+            sheet({
+              title:'員工列表',
+              body: listHtml,
+              buttons:[{ text:'返回', onClick:()=>{ setTimeout(openCompany, 60); return true; } }]
+            });
+          }
+        };
+      });
+    }
+  });
+}
+
+/* ══════ 公務員年度考核 ══════ */
+function civilYearlyReview(){
+  if(!S.civil) return;
+  const c = S.civil;
+  const perf = c.score + rnd(-10, 15);
+  if(perf > 75 && c.rankIndex < CIVIL_RANKS.length - 1){
+    c.rankIndex++;
+    c.rank = { ...CIVIL_RANKS[c.rankIndex] };
+    S.salary = c.rank.salary;
+    log(`公務員考核優秀，你晉升為「${c.rank.name}」，年薪 ${fmt(c.rank.salary)} 元。`,'big');
+    S.mood += 12;
+  } else if(perf > 50){
+    log('公務員考核通過，維持原職。');
+  } else {
+    c.score = clamp(c.score - 5, 0, 100);
+    log('公務員考核成績不理想，表現受到影響。','bad');
+    S.mood -= 6;
+  }
+}
+
+/* ══════ 人物年度更新 ══════ */
 function ageUpPeople(){
   const p = S.people;
   [p.dad, p.mom].forEach(who => {
-    if(!who.alive) return;
+    if(who.absent || !who.alive) return;
     who.age++;
-    if(who.age >= 65) who.job = '退休';
+    if(who.age >= 65 && who.job !== '退休') who.job = '退休';
     if(who.age >= 62 && Math.random() < (who.age - 62) * 0.014){
       who.alive = false;
       S.mood -= 30; S.moral += 3;
@@ -1176,25 +1357,24 @@ function ageUpPeople(){
   p.friends.forEach(f => {
     if(!f.alive) return;
     f.age++;
-    if(f.age >= 22 && !f.job && f.age < 65) f.job = pick(JOBS_ADULT);
+    if(f.age >= 22 && !f.job && f.age < 65) f.job = pick(JOB_POOL);
     if(f.age >= 65) f.job = '退休';
     f.rel = clamp(f.rel - 2, 0, 100);
     if(f.age >= 75 && Math.random() < 0.03){
-      f.alive = false;
-      f.rel = 0;
+      f.alive = false; f.rel = 0;
       log(`朋友${f.name}離開了人世。`,'bad');
       S.mood -= 8;
     }
   });
   p.children.forEach(c => {
     c.age++;
-    if(c.age >= 22 && !c.job && c.age < 65) c.job = pick(JOBS_ADULT);
+    if(c.age >= 22 && !c.job && c.age < 65) c.job = pick(JOB_POOL);
     if(c.age >= 65) c.job = '退休';
     c.rel = clamp(c.rel - 1, 0, 100);
   });
   if(S.partner){
     S.partner.age++;
-    if(S.partner.age >= 22 && !S.partner.job && S.partner.age < 65) S.partner.job = pick(JOBS_ADULT);
+    if(S.partner.age >= 22 && !S.partner.job && S.partner.age < 65) S.partner.job = pick(JOB_POOL);
     if(S.partner.age >= 65) S.partner.job = '退休';
     S.partner.rel = clamp(S.partner.rel - 1, 0, 100);
     if(S.partner.age >= 80 && Math.random() < 0.04){
@@ -1205,49 +1385,39 @@ function ageUpPeople(){
 }
 
 function maybeNewFriend(){
-  const rate = S.age >= 6 && S.age <= 22 ? 0.28 : (S.age > 22 && S.age < 55 ? 0.13 : 0.05);
-  if(S.people.friends.length >= 8) return;
+  const rate = S.age >= 6 && S.age <= 22 ? 0.22 : (S.age > 22 && S.age < 55 ? 0.1 : 0.04);
+  if(S.people.friends.length >= 10) return;
   if(Math.random() >= rate) return;
   const gender = Math.random() < .5 ? 'M' : 'F';
   const base = { id:uid(), ...randPerson(gender),
-                 age: clamp(S.age + ri(-2, 2), 6, 90),
-                 rel: ri(32, 55), alive:true, job:null };
-  if(base.age >= 22 && base.age < 65) base.job = pick(JOBS_ADULT);
+    age: clamp(S.age + ri(-2, 2), 6, 90),
+    rel: ri(32, 55), alive:true, job:null };
+  if(base.age >= 22 && base.age < 65) base.job = pick(JOB_POOL);
   S.people.friends.push(base);
   log(`你認識了新朋友${base.name}（${base.age}歲，${identityOf(base.age, base.job)}）。`,'good');
 }
 
-/* ═══════════════════════════════════════════
-   隨機事件
-═══════════════════════════════════════════ */
+/* ══════ 隨機事件 ══════ */
 const EVENTS = [
   { w:8, min:0, run:s => { const m = 200 + s.age * 120; s.money += m;
       log(`過年收到紅包 ${fmt(m)} 元。`,'good'); } },
-
   { w:6, min:0, run:s => { s.health -= 6; s.mood -= 5;
       log('你感冒發燒了，健康 −6，心情 −5。','bad'); } },
-
   { w:5, min:6, run:s => { s.iq += 3; s.mood += 6;
       log('你偶然讀到一本好書，智商 +3，心情 +6。','good'); } },
-
   { w:5, min:6, run:s => { s.eq += 4; s.mood -= 5;
       log('你和同學起了衝突，情商 +4，心情 −5。'); } },
-
   { w:4, min:6, run:s => { s.mood += 12; s.moral += 2;
       log('你的表現被老師當眾表揚，心情 +12。','good'); } },
-
   { w:4, min:0, run:s => { s.mood += 10;
       log('今天天氣特別好，你心情格外舒暢。','good'); } },
-
   { w:3, min:16, cond:s => s.money > 3000, run:s => {
       const m = Math.min(s.money, ri(2000, 8000));
       s.money -= m; s.mood -= 15; s.iq += 2;
       log(`你遭遇了網路詐騙，損失 ${fmt(m)} 元。`,'bad'); } },
-
   { w:2, min:10, run:s => { const m = ri(3000, 20000); s.money += m;
       log(`你意外中了一張小獎，獲得 ${fmt(m)} 元獎金。`,'good'); } },
-
-  { w:4, min:16, cond:s => s.working && !s.startup, run:s => {
+  { w:4, min:16, cond:s => s.working && !s.startup && !s.civil, run:s => {
       if(Math.random() < .5){
         s.salary = Math.round(s.salary * 1.15); s.mood += 15;
         log('你表現出色，被公司加薪了。','good');
@@ -1255,8 +1425,7 @@ const EVENTS = [
         s.mood -= 12;
         log('公司業績不佳，你的獎金被砍了。','bad');
       } } },
-
-  { w:3, min:18, cond:s => s.working && !s.startup, run:s => {
+  { w:3, min:18, cond:s => s.working && !s.startup && !s.civil, run:s => {
       if(Math.random() < .22){
         s.working = false; s.job = null; s.salary = 0; s.mood -= 20;
         log('你被公司裁員了，需要重新找工作。','bad');
@@ -1264,43 +1433,42 @@ const EVENTS = [
         s.mood += 5;
         log('職場生活波瀾不驚，你安然度過了一年。');
       } } },
-
   { w:3, min:18, run:s => { s.moral += 5; s.mood += 8;
       log('你幫助了一位陌生人，內心感到溫暖。','good'); } },
-
   { w:2, min:30, run:s => { s.health -= 12; s.money -= 8000;
       log('你生了一場病，住院治療，健康 −12，花費 8000 元。','bad'); } },
-
   { w:2, min:0, run:s => { s.iq += 5; s.mood += 5;
       log('你靈光一閃，想通了很多事，智商 +5。','good'); } },
-
   { w:2, min:6, run:s => { s.moral -= 6; s.money += 1500;
       log('你做了一件不太光彩的事，道德 −6，但賺了 1500 元。','bad'); } },
-
-  { w:2, min:25, cond:s => s.married, run:s => {
+  { w:2, min:25, cond:s => s.married && s.partner, run:s => {
       s.mood += 20; s.partner.rel = clamp(s.partner.rel + 10, 0, 100);
       log('你和伴侶一起度過了一段甜蜜時光。','good'); } },
-
   { w:2, min:35, run:s => { s.mood -= 12; s.moral += 3;
       log('一位親人離世，你感到悲痛，心情 −12。','bad'); } },
-
   { w:1, min:20, cond:s => s.money > 50000, run:s => {
       const m = ri(10000, 60000); s.money += m;
       log(`你抓住了一個商機，額外收入 ${fmt(m)} 元。`,'good'); } },
-
   { w:2, min:8, run:s => { s.mood += 8; s.health += 2;
       log('你遇到一隻可愛的流浪狗，陪牠玩了一下午，心情 +8。','good'); } },
-
-  { w:3, min:10, cond:s => s.people.friends.length > 0, run:s => {
+  { w:3, min:10, cond:s => s.people.friends.filter(f => f.alive).length > 0, run:s => {
       const f = pick(s.people.friends.filter(x => x.alive));
       if(!f) return;
       f.rel = clamp(f.rel + 12, 0, 100); s.mood += 10;
       log(`老朋友${f.name}突然來訪，你們聊了整個下午。`,'good'); } },
-
-  { w:3, min:15, cond:s => s.people.dad.alive || s.people.mom.alive, run:s => {
-      const p = s.people.dad.alive ? s.people.dad : s.people.mom;
+  { w:3, min:15, cond:s => (s.people.dad && s.people.dad.alive && !s.people.dad.absent) || (s.people.mom && s.people.mom.alive && !s.people.mom.absent), run:s => {
+      const cands = [];
+      if(s.people.dad && s.people.dad.alive && !s.people.dad.absent) cands.push(s.people.dad);
+      if(s.people.mom && s.people.mom.alive && !s.people.mom.absent) cands.push(s.people.mom);
+      const p = pick(cands);
       p.rel = clamp(p.rel + 8, 0, 100); s.mood += 8;
       log(`${p.role}${p.name}特地為你準備了一頓飯，你感到很溫暖。`,'good'); } },
+  // 公司事件
+  { w:3, min:20, cond:s => s.company, run:s => {
+      const delta = ri(-20, 25);
+      s.company.reputation = clamp(s.company.reputation + delta, 0, 100);
+      if(delta > 0){ log(`公司口碑上升，聲譽 +${delta}。`,'good'); }
+      else { log(`公司傳出負面消息，聲譽 ${delta}。`,'bad'); } } },
 ];
 
 function fireEvent(){
@@ -1316,9 +1484,7 @@ function fireEvent(){
   }
 }
 
-/* ═══════════════════════════════════════════
-   年度推進
-═══════════════════════════════════════════ */
+/* ══════ 年度推進 ══════ */
 function nextYear(){
   if(S.over) return;
   if(S.ap > 0 && S.age >= 6){
@@ -1344,22 +1510,23 @@ function doNextYear(){
   S.ap = S.maxAp;
   S.pendingOffer = false;
 
-  /* 生理 */
+  // 生理
   if(S.age > 25) S.mood -= 2;
   if(S.age > 30) S.health -= 0.8;
   if(S.age > 45) S.health -= 1.2;
   if(S.age > 65) S.health -= 2.0;
   if(S.age > 80) S.health -= 2.5;
 
-  /* 收入 */
-  if(S.working && S.job){
-    if(S.startup){
-      const skill = (S.iq + S.eq) / 200;
-      const gain = Math.round(-30000 + skill * 120000 + rnd(-60000, 160000));
-      S.money += gain;
-      if(gain >= 0){ log(`你的生意今年賺了 ${fmt(gain)} 元。`,'good'); S.mood += 10; }
-      else { log(`你的生意今年虧損 ${fmt(-gain)} 元。`,'bad'); S.mood -= 15; }
-    } else {
+  // 收入
+  if(S.working){
+    if(S.company){
+      // 公司營運
+      companyYear();
+    } else if(S.civil){
+      civilYearlyReview();
+      S.money += S.civil.rank.salary;
+      log(`公務員薪資入帳 ${fmt(S.civil.rank.salary)} 元。`);
+    } else if(S.job){
       S.money += S.salary;
       log(`你工作一年，獲得薪水 ${fmt(S.salary)} 元。`);
     }
@@ -1369,7 +1536,7 @@ function doNextYear(){
     log(`父母給了你 ${fmt(pocket)} 元零用錢。`);
   }
 
-  /* 財產 */
+  // 財產
   if(S.deposit > 0){
     const it = S.deposit * 0.035;
     S.deposit += it;
@@ -1384,55 +1551,93 @@ function doNextYear(){
     else { log(`投資組合下跌，虧損 ${fmt(-diff)} 元。`,'bad'); S.mood -= 8; }
   }
 
-  /* 家庭開銷 */
+  // 家庭開銷
   if(S.married || S.people.children.length > 0){
     const cost = 12000 + S.people.children.length * 15000;
     S.money -= cost;
     log(`家庭開銷 ${fmt(cost)} 元。`);
   }
 
-  /* 人物年齡 */
   ageUpPeople();
 
-  /* 里程碑 */
+  // 里程碑
   switch(S.age){
-    case 3:  S.school = '幼兒園'; S.eduName = '幼兒園'; log('你進入了幼兒園。','big'); break;
-    case 6:  S.school = '小學'; S.eduName = '小學'; log('你上小學了。','big'); break;
+    case 3: S.school = '幼兒園'; S.eduName = '幼兒園'; log('你進入了幼兒園。','big'); break;
+    case 6: S.school = '小學'; S.eduName = '小學'; log('你上小學了。','big'); break;
     case 12: S.school = '初中'; S.eduName = '初中'; log('你升上了初中。','big'); break;
     case 15: examZhongkao(); break;
     case 18: examGaokao(); break;
     case 21: if(S.school === '專科院校') graduate(); break;
-    case 22: if(S.school === '本科大學' || S.school === '名牌大學') graduate(); break;
-    case 60: if(S.working){ log('你退休了，開始享受退休生活。','big');
-             S.working = false; S.job = null; S.salary = 0; S.startup = false; } break;
+    case 22: if(S.school === '本科大學' || S.school === '名牌大學' || (S.major && ['med','law','biz','tech','art','edu'].includes(S.major))) graduate(); break;
+    case 23: if(S.major === 'med') graduate(); break;
+    case 24: if(S.major === 'med') graduate(); break;
+    case 60: if(S.working && !S.company){
+             log('你退休了，開始享受退休生活。','big');
+             S.working = false; S.job = null; S.salary = 0; S.startup = false; S.civil = null; } break;
   }
 
-  /* 生活壓力 */
   if(S.mood < 20){ S.health -= 3; log('心情長期低落，健康受到影響。','bad'); }
   if(S.health < 30){ S.mood -= 3; }
 
-  /* 新朋友 */
   maybeNewFriend();
-
-  /* 隨機事件 */
   fireEvent();
 
   normalize();
   render();
 
-  /* 死亡 */
   if(S.health <= 0){ gameOver('你的健康徹底崩潰，人生畫下了句點。'); return; }
   if(S.age >= 100){ gameOver('你活到了 100 歲，安詳地走完了這一生。'); return; }
 
-  /* 求職 */
-  if(S.pendingOffer && !S.job && !S.school){
+  if(S.pendingOffer && !S.job && !S.school && !S.civil && !S.company){
     setTimeout(()=>openJobSearch(), 340);
   }
 }
 
-/* ═══════════════════════════════════════════
-   結局
-═══════════════════════════════════════════ */
+function companyYear(){
+  const c = S.company;
+  c.years++;
+  const btype = BIZ_TYPES.find(b => b.id === c.type);
+  // 員工產能
+  const staffCount = c.employees.length;
+  const staffCapacity = 1 + staffCount * 0.35;
+  // 聲譽係數
+  const repFactor = 0.5 + c.reputation / 100;
+  // 營收
+  let revenue = btype.base * staffCapacity * repFactor * rnd(0.7, 1.3);
+  // 支出
+  const totalSalary = c.employees.reduce((a, e) => a + e.salary, 0);
+  const fixedCost = btype.base * 0.15;
+  const expense = totalSalary + fixedCost;
+  const profit = revenue - expense;
+
+  log(`【${c.name}】年營收 ${fmt(revenue)}，支出 ${fmt(expense)}，${profit >= 0 ? '淨利' : '虧損'} ${fmt(Math.abs(profit))} 元。`,
+      profit >= 0 ? 'good' : 'bad');
+
+  S.money += profit;
+
+  // 自動繳稅
+  if(profit > 0){
+    const tax = profit * 0.15;
+    S.money -= tax;
+    log(`公司繳納營所稅 ${fmt(tax)} 元。`);
+  }
+
+  // 聲譽微調
+  c.reputation = clamp(c.reputation + ri(-3, 3), 0, 100);
+
+  // 破產判定
+  if(S.money < -200000){
+    log(`公司資金鏈斷裂，宣告破產。`,'bad');
+    S.company = null;
+    S.job = null;
+    S.working = false;
+    S.startup = false;
+    S.mood -= 40;
+    S.money = 0;
+  }
+}
+
+/* ══════ 結局 ══════ */
 function evaluate(){
   const total = S.money + S.deposit + S.invest;
   const avg = (S.mood + S.health + S.iq + S.eq + S.moral) / 5;
@@ -1450,17 +1655,17 @@ function gameOver(reason){
   S.over = true;
   render();
   const { total, title } = evaluate();
-  const fam = (S.people.dad.alive ? 1 : 0) + (S.people.mom.alive ? 1 : 0);
+  const fam = (S.people.dad && !S.people.dad.absent && S.people.dad.alive ? 1 : 0) +
+              (S.people.mom && !S.people.mom.absent && S.people.mom.alive ? 1 : 0);
   const html = `
     <p style="font-size:14px;color:var(--ink);margin-bottom:14px">${reason}</p>
     <div class="row"><span class="k">人生評價</span><span class="v">${title}</span></div>
     <div class="row"><span class="k">享年</span><span class="v">${S.age} 歲</span></div>
     <div class="row"><span class="k">總資產</span><span class="v">${fmt(total)} 元</span></div>
-    <div class="row"><span class="k">最高學歷</span><span class="v">${S.eduName}</span></div>
-    <div class="row"><span class="k">最後職業</span><span class="v">${S.job ? S.job.name : '無業'}</span></div>
+    <div class="row"><span class="k">最高學歷</span><span class="v">${S.eduName}${S.major ? ' · ' + (MAJORS.find(m=>m.id===S.major)?.name||'') : ''}</span></div>
+    <div class="row"><span class="k">最後職業</span><span class="v">${S.civil ? S.civil.unit+' '+S.civil.rank.name : S.company ? '創業者' : S.job ? S.job.name : '無業'}</span></div>
     <div class="row"><span class="k">婚姻</span><span class="v">${S.married ? '已婚' : (S.partner ? '有伴侶' : '未婚')}</span></div>
     <div class="row"><span class="k">子女</span><span class="v">${S.people.children.length} 位</span></div>
-    <div class="row"><span class="k">在世親人</span><span class="v">${fam} 位</span></div>
     <div class="row"><span class="k">心情 / 道德</span><span class="v">${Math.round(S.mood)} / ${Math.round(S.moral)}</span></div>
   `;
   sheet({
@@ -1468,36 +1673,45 @@ function gameOver(reason){
     body: html,
     closable: false,
     buttons:[
-      { text:'重新開始', cls:'pri', onClick:()=>{ newGame(); } }
+      { text:'重新開始', cls:'pri', onClick:()=>{ openOriginSelect(); } }
     ]
   });
 }
 
-/* ═══════════════════════════════════════════
-   重新開始
-═══════════════════════════════════════════ */
 function confirmReset(){
   sheet({
     title:'重新開始',
     body:`<p>確定要重新開始嗎？</p><p class="note">當前人生的所有進度都會消失。</p>`,
     buttons:[
       { text:'取消' },
-      { text:'確定', cls:'warn', onClick:()=>{ newGame(); } }
+      { text:'確定', cls:'warn', onClick:()=>{ openOriginSelect(); } }
     ]
   });
 }
 
-/* ═══════════════════════════════════════════
-   綁定 & 啟動
-═══════════════════════════════════════════ */
+/* ══════ 綁定 & 啟動 ══════ */
 $('resetBtn').onclick = confirmReset;
 $('btnActivity').onclick = openActivities;
 $('btnProperty').onclick = openProperty;
-$('btnRelation').onclick = ()=>openRelations();
+$('btnRelation').onclick = () => openRelations();
 $('btnPartner').onclick = openPartnerPanel;
+$('btnCompany').onclick = openCompany;
 $('btnNext').onclick = nextYear;
 
-newGame();
+// 初始狀態：先讓 S 有基本結構，避免渲染報錯
+S = {
+  name:'', gender:'M', age:0, money:0, mood:70, health:90, iq:50, eq:50, moral:50,
+  ap:3, maxAp:3, eduName:'嬰兒', eduLevel:0, school:'', major:null,
+  job:null, salary:0, working:false, startup:false,
+  civil:null, company:null, deposit:0, invest:0, married:false, partner:null,
+  people:{ dad:{id:1,name:'—',absent:true,alive:false,role:'父親',rel:0,gender:'M'},
+           mom:{id:2,name:'—',absent:true,alive:false,role:'母親',rel:0,gender:'F'},
+           friends:[], children:[] },
+  logs:[], over:false, pendingOffer:false, civilExamAt:-1, confessionTried:[],
+};
+
+render();
+openOriginSelect();
 </script>
 </body>
 </html>
