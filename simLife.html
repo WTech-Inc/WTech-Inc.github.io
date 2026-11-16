@@ -123,6 +123,7 @@ body.locked{overflow:hidden}
 .acts-list .it .ds{font-size:11.5px;color:var(--ink3);margin-top:1px}
 .acts-list .it .dg{font-size:11.5px;color:var(--amber);white-space:nowrap;font-variant-numeric:tabular-nums}
 .acts-list .it .dg .w{color:var(--rust)}
+.acts-list .it .dg{text-align:right;line-height:1.35}
 input[type=number],input[type=text]{width:100%;padding:11px 12px;border-radius:7px;border:1px solid var(--line2);background:var(--bg2);color:var(--ink);font-size:14px;font-family:inherit;outline:none;margin:10px 0;font-variant-numeric:tabular-nums}
 input:focus{border-color:var(--amber2)}
 .note{font-size:11.5px;color:var(--ink3);margin-top:10px;line-height:1.6}
@@ -205,6 +206,14 @@ function flushQueue(){
   if(!$('ov').classList.contains('show'))setTimeout(flushQueue,80);
 }
 
+// 同一個 key 在佇列中只排一次，避免「入伍」「求職」重複跳出
+function queueOnce(key,fn){if(_q.some(x=>x._k===key))return;const f=()=>fn();f._k=key;queue(f)}
+// 求職彈窗的唯一入口：男生應徵役期未了結時，先跳入伍通知，處理完才輪到求職
+function queueJob(){
+  if(conscriptionDue()&&queueMilitary())return;
+  queueOnce('job',openJobSearch);
+}
+
 /* ══════ 常數（新台幣） ══════ */
 const YEAR_M=13;               // 12 個月 + 年終
 const DEPOSIT_RATE=0.016;      // 定存
@@ -218,6 +227,31 @@ const SURNAME=['王','李','張','劉','陳','楊','黃','趙','吳','周','徐'
 const NAME_M=['志明','建宏','俊傑','家豪','冠宇','柏翰','承恩','品睿','子軒','宥廷','承翰','冠廷','宇軒','柏均','子毅','明遠','嘉文','書維','廷宇','冠霖','振業','文彬','俊宏','冠豪','世傑'];
 const NAME_F=['淑芬','美玲','雅婷','怡君','佳穎','詠晴','詩涵','子晴','語彤','品妍','芯羽','采潔','姵妤','思穎','若曦','雅雯','怡安','書瑤','庭瑄','心怡','淑惠','美華','慧敏','雅芳','怡婷'];
 function randPerson(g){const s=pick(SURNAME);return{name:s+(g==='M'?pick(NAME_M):pick(NAME_F)),gender:g,surname:s}}
+
+/* ══════ 學校資料 ══════ */
+// 名校：依傳統男校／女校分池；一般高中為男女合校；高職獨立一池
+const HS_ELITE_M=['建國中學','成功高中','台中一中','台南一中','高雄中學','師大附中'];
+const HS_ELITE_F=['北一女中','中山女高','景美女中','台中女中','台南女中','高雄女中'];
+const HS_GEN=['松山高中','板橋高中','中正高中','新店高中','永平高中','大同高中','中壢高中','彰化高中','嘉義高中','屏東高中','花蓮高中','竹北高中'];
+const HS_VOC=['大安高工','內湖高工','木柵高工','松山工農','士林高商','台中高工','台中家商','高雄高工','高雄高商','台南高工'];
+const isVoc=s=>s==='高職'||HS_VOC.includes(s);   // '高職' 是舊存檔相容
+const PLACES=['金華','新生','仁愛','敦化','民生','中正','忠孝','信義','大安','福星','中山','成功','光復','建國','和平','復興','興隆','文山','長安','永春','南門','西門','民權','民族','自強','育英','樂群','龍門','五常','中和'];
+// 大學：由好到差排列，依分數相對錄取線的位置抽
+const UNIV_ALL=['台灣大學','清華大學','陽明交通大學','成功大學','政治大學','中央大學','中興大學','中山大學','台灣科技大學','中正大學','台北大學','東華大學','淡江大學','輔仁大學','東吳大學','逢甲大學','中原大學','世新大學','銘傳大學','實踐大學'];
+const UNIV_BY_MAJOR={
+  med:['台灣大學','陽明交通大學','成功大學','台北醫學大學','高雄醫學大學','中國醫藥大學'],
+  law:['台灣大學','政治大學','成功大學','東吳大學','中正大學','輔仁大學'],
+  edu:['台灣師範大學','高雄師範大學','彰化師範大學','台北市立大學','台中教育大學'],
+  artperf:['台北藝術大學','台南藝術大學','台灣藝術大學'],
+  college:['台北科技大學','台灣科技大學','雲林科技大學','高雄科技大學','朝陽科技大學','崑山科技大學'],
+};
+const deptName=m=>m.id==='college'?'':m.name;   // 科大／專科不加系名
+function pickUniversity(m,score){
+  const pool=UNIV_BY_MAJOR[m.id]||UNIV_ALL;
+  const t=clamp((score-m.score)/Math.max(1,700-m.score),0,1);   // 0=剛好上線 1=高分
+  const idx=Math.round((1-t)*(pool.length-1)+rnd(-1,1));
+  return pool[clamp(idx,0,pool.length-1)];
+}
 
 /* ══════ 出身 ══════ */
 const ORIGINS=[
@@ -315,6 +349,7 @@ const JOBS=[
   {id:'psychologist',name:'心理師',m:65000,need:4,cat:'醫療',major:'edu'},
   {id:'pilot',name:'機師',m:180000,need:3,cat:'航空',fee:1000000,minHealth:75},
   {id:'civil',name:'公務員',m:42000,need:1,cat:'公職',lic:'civil'},
+  {id:'military',name:'志願役軍人',m:35000,need:1,cat:'軍職',vol:true,minHealth:60},   // 大學畢業少尉起、否則下士起；m 只用於列表顯示
   {id:'startup',name:'創業者',m:0,need:1,cat:'創業',startup:true},
 ];
 
@@ -346,6 +381,9 @@ const MILITARY_RANKS=[
   {name:'少校',m:78000,years:5},{name:'中校',m:92000,years:6},{name:'上校',m:110000,years:8},
   {name:'少將',m:140000,years:8},{name:'中將',m:165000,years:10},{name:'上將',m:190000,years:12},{name:'一級上將',m:215000,years:15},
 ];
+
+const CONSCRIPT_M=26307;   // 義務役／替代役月津貼（新台幣）
+const MIL_MAX_AGE=36;      // 超過此年齡不再徵集
 
 const BIZ_TYPES=[
   {id:'food',name:'餐飲業',base:1500000,margin:0.55,risk:0.6,desc:'競爭激烈，現金流快'},
@@ -379,7 +417,17 @@ function identityOf(age,job){
   if(age<3)return'嬰兒';if(age<6)return'幼兒';if(age<12)return'國小生';if(age<15)return'國中生';if(age<18)return'高中生';
   if(age>=65)return'退休';if(job)return job;if(age>=22)return'待業';return'學生';
 }
-function schoolForAge(a){if(a>=3&&a<6)return'幼兒園';if(a>=6&&a<12)return'國小';if(a>=12&&a<15)return'國中';if(a>=15&&a<18)return'高中';return''}
+function schoolForAge(a){
+  if(a>=3&&a<6)return'幼兒園';
+  S.sch=S.sch||{elem:'',jr:''};
+  if(a>=6&&a<12){if(!S.sch.elem)S.sch.elem=pick(PLACES)+'國小';return S.sch.elem}
+  if(a>=12&&a<15){
+    if(!S.sch.jr){let n;do{n=pick(PLACES)+'國中'}while(S.sch.elem&&n.slice(0,-2)===S.sch.elem.slice(0,-2));S.sch.jr=n}
+    return S.sch.jr;
+  }
+  if(a>=15&&a<18){if(!S.hs)S.hs=pick(HS_GEN);return S.hs}
+  return'';
+}
 
 /* ══════ 稅、死亡率 ══════ */
 function incomeTax(netReal){ // 綜所稅級距（以實質值計算，近似 113 年度）
@@ -403,7 +451,7 @@ const uid=()=>_uid++;
 const absentP=(role,g)=>({id:uid(),name:'—',gender:g,age:0,rel:0,alive:false,role,job:null,absent:true});
 function blankState(){return{
   name:'',gender:'M',orientation:'hetero',origin:'normal',age:0,money:0,mood:70,health:90,iq:50,eq:50,moral:50,
-  ap:3,maxAp:3,apps:3,eduName:'嬰兒',eduLevel:0,school:'',major:null,gradLeft:0,
+  ap:3,maxAp:3,apps:3,eduName:'嬰兒',eduLevel:0,school:'',major:null,gradLeft:0,university:'',hs:'',sch:{elem:'',jr:''},
   job:null,salary:0,working:false,jobPosition:0,workYears:0,renown:0,payMod:1,
   civil:null,politician:null,military:null,militaryDone:false,
   prison:null,businesses:[],licenses:{driver:false,civil:false,bar:false,md:false,cpa:false},
@@ -450,7 +498,7 @@ function newGameWithOrigin(origin,inh,forcedGender,forcedOri){
   S.home=orphan&&!inh?'rent':'parents';
   if(inh){
     S.age=inh._age;S.cpi=inh._cpi||1;S.houseIdx=inh._houseIdx||1;S.home='rent';
-    if(inh.major){const m=MAJORS.find(x=>x.id===inh.major);S.major=inh.major;S.eduLevel=m?m.level:3;S.eduName=m?m.name:'大學';if(m&&S.age<18+m.years)S.school=m.name}
+    if(inh.major){const m=MAJORS.find(x=>x.id===inh.major);S.major=inh.major;S.eduLevel=m?m.level:3;S.eduName=m?m.name:'大學';if(m&&S.age<18+m.years){S.university=pickUniversity(m,m.score+rnd(0,80));S.school=S.university+deptName(m)}}
     else if(S.age>=18){S.eduLevel=1;S.eduName='高中職畢業'}
     else{S.school=schoolForAge(S.age);S.eduName=S.school||'嬰兒'}
     if(inh.job){const j=JOBS.find(x=>x.name===inh.job);
@@ -461,7 +509,7 @@ function newGameWithOrigin(origin,inh,forcedGender,forcedOri){
   }else if(orphan){log('你是個孤兒，由親戚撫養長大。沒有父母陪伴，但你很獨立。','big')}
   else{log(`你出生在一個${base.name}。父親是${S.people.dad.name}（${S.people.dad.age}歲，${S.people.dad.job}），母親是${S.people.mom.name}（${S.people.mom.age}歲，${S.people.mom.job}）。`,'big')}
   closeSheet();normalize();render();_prev=snap();
-  if(inh&&S.pendingOffer)queue(openJobSearch);
+  if(inh&&S.pendingOffer)queueJob();
 }
 
 /* ══════ 渲染 ══════ */
@@ -511,7 +559,7 @@ function render(){
     return `<div class="attr"><div class="attr-h"><span>${a.label}</span><span class="v">${Math.round(v)}${dv}</span></div><div class="track"><i style="width:${v}%;background:${a.color}"></i></div></div>`;
   }).join('')+(S.renown>0?`<div class="attr" style="grid-column:1/-1"><div class="attr-h"><span>🌟 知名度</span><span class="v">${Math.round(S.renown)}</span></div><div class="track"><i style="width:${S.renown}%;background:var(--plum)"></i></div></div>`:'');
   _prev=snap();
-  $('diary').innerHTML=S.logs.map(l=>`<div class="e ${l.cls}"><span class="t">${l.age}歲</span><span class="x">${l.text}</span></div>`).join('');
+  {const dEl=$('diary'),st=dEl.scrollTop;dEl.innerHTML=S.logs.map(l=>`<div class="e ${l.cls}"><span class="t">${l.age}歲</span><span class="x">${l.text}</span></div>`).join('');dEl.scrollTop=st}
 
   $('btnPartner').disabled=!S.partner||S.over;
   $('btnPartner').innerHTML=S.partner?`伴侶<span class="sub">${S.partner.name}</span>`:'伴侶<span class="sub">—</span>';
@@ -523,7 +571,7 @@ function render(){
   $('btnCareer').disabled=S.over;
   $('btnCareer').innerHTML=(S.civil||S.job||S.military||S.politician)?`職涯<span class="sub">${currentPositionName()}</span>`:'職涯<span class="sub">—</span>';
   const nb=$('btnNext');nb.disabled=S.over;nb.classList.toggle('ready',!S.over&&S.ap===0);
-  nb.textContent=S.over?'人 生 已 落 幕':(S.prison?'服 刑 中':'度 過 這 一 年');
+  nb.textContent=S.over?'人 生 已 落 幕':(S.prison?'服 刑 中':(S.ap>0&&S.age>=6?`度過這一年（還有 ${S.ap} 行動點）`:'度 過 這 一 年'));
   clearTimeout(_sv);_sv=setTimeout(save,300);
 }
 
@@ -531,7 +579,10 @@ function render(){
 function save(){try{if(S&&S.name&&!S.over)localStorage.setItem(SAVE_KEY,JSON.stringify({S,uid:_uid}))}catch(e){}}
 function loadSave(){
   try{const t=localStorage.getItem(SAVE_KEY);if(!t)return false;const d=JSON.parse(t);
-    if(!d||!d.S||d.S.over)return false;S=Object.assign(blankState(),d.S);_uid=d.uid||_uid;return true}catch(e){return false}
+    if(!d||!d.S||d.S.over)return false;S=Object.assign(blankState(),d.S);_uid=d.uid||_uid;
+    // 舊存檔：大學生沒有校名 → 補抽，否則畢業判斷會卡住
+    if(S.school&&S.major&&!S.university&&S.school!=='研究所'){const m=MAJORS.find(x=>x.name===S.school);if(m){S.university=pickUniversity(m,m.score+40);S.school=S.university+deptName(m)}}
+    return true}catch(e){return false}
 }
 function clearSave(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}}
 
@@ -707,6 +758,8 @@ function addNewFriend(active,o){
   if(!o.quiet)log(`你認識了新朋友${f.name}（${f.gender==='M'?'男':'女'}，${f.age}歲，${identityOf(f.age,f.job)}）。`,'good');
 }
 function actReason(a){if(S.ap<a.ap)return'行動點不足';if(a.cost&&S.money<a.cost)return'金錢不足';return a.can?a.can(S):''}
+// 右側顯示「−AP · −金錢」，不可做時在下一行補紅字原因
+const actCostHtml=(a,r)=>'−'+a.ap+(a.cost?' · −'+a.cost.toLocaleString():'')+(r?`<br><span class="w">${r}</span>`:'');
 function dim(key,before,f1,f2){if(S[key]>before){const f=before>85?f2:before>70?f1:1;S[key]=before+(S[key]-before)*f}}
 function openActivities(){
   if(S.over)return;
@@ -717,7 +770,7 @@ function openActivities(){
     if(!byCat[cat])return;
     html+=`<div class="cat-title">${ACT_CATS[cat]}</div>`;
     byCat[cat].forEach(a=>{const r=actReason(a);
-      html+=`<div class="it ${r?'off':''}" data-id="${a.id}"><div class="l"><div class="nm">${a.name}</div><div class="ds">${a.desc}</div></div><div class="dg" style="color:${r?'var(--rust)':'var(--amber)'}">${r?r:'−'+a.ap}</div></div>`});
+      html+=`<div class="it ${r?'off':''}" data-id="${a.id}"><div class="l"><div class="nm">${a.name}</div><div class="ds">${a.desc}</div></div><div class="dg">${actCostHtml(a,r)}</div></div>`});
   });
   html+='</div>';
   sheet({title:'做點什麼',body:html,buttons:[{text:'關閉'}],onMount(){
@@ -739,7 +792,7 @@ function refreshActList(){
   document.querySelectorAll('#actList .it').forEach(it=>{
     const a=ACTIONS.find(x=>x.id===it.dataset.id);if(!a)return;
     const r=actReason(a);it.classList.toggle('off',!!r);
-    const dg=it.querySelector('.dg');if(dg){dg.textContent=r||('−'+a.ap);dg.style.color=r?'var(--rust)':'var(--amber)'}
+    const dg=it.querySelector('.dg');if(dg)dg.innerHTML=actCostHtml(a,r);
   });
 }
 
@@ -927,7 +980,7 @@ function openProperty(){
     </div>
     <div class="sec">🏠 房產（房價指數 ${S.houseIdx.toFixed(2)}）</div>
     ${housesHtml}
-    <div class="btnrow" style="margin-top:8px">${HOUSE_TYPES.map(h=>`<button data-buy-house="${h.id}">${h.name} ${fmt(h.price*S.houseIdx)}</button>`).join('')}</div>
+    <div class="btnrow" style="margin-top:8px">${HOUSE_TYPES.map(h=>{const r=houseBlock(h);return `<button data-buy-house="${h.id}" ${r?'disabled style="opacity:.6"':''}>${h.name} ${fmt(h.price*S.houseIdx)}${r?`<small style="display:block;font-size:10px;color:var(--rust);margin-top:2px">${r}</small>`:''}</button>`}).join('')}</div>
     <div class="sec">🚗 車輛 ${S.licenses.driver?'':'（需先考駕照）'}</div>
     ${carsHtml}
     <div class="btnrow" style="margin-top:8px">${CAR_TYPES.map(c=>`<button data-buy-car="${c.id}" ${!S.licenses.driver||S.money<c.price*S.cpi?'disabled':''}>${c.name} ${fmt(c.price*S.cpi)}</button>`).join('')}</div>
@@ -958,6 +1011,16 @@ function openProperty(){
     document.querySelectorAll('[data-rent-house]').forEach(b=>{b.onclick=()=>{const h=S.assets.houses[+b.dataset.rentHouse];if(!h)return;h.rented=!h.rented;log(h.rented?`你把「${h.name}」出租出去。`:`你收回「${h.name}」自住。`);if(!h.rented)S.home='own';redo()}});
     document.querySelectorAll('[data-sell-house]').forEach(b=>{b.onclick=()=>sellHouse(+b.dataset.sellHouse,redo)});
   }});
+}
+// 回傳不能買的原因；空字串＝可以買（貸款或現金）
+function houseBlock(h){
+  if(S.age<20)return'滿 20 歲才能買房';
+  const price=Math.round(h.price*S.houseIdx),down=Math.round(price*0.2),fee=Math.round(price*0.01);
+  if(S.money>=price+fee)return'';                                       // 現金買得起
+  if(S.money<down+fee)return`自備款不足（需 ${fmt(down+fee)}）`;
+  const loan=price-down,r=MORT_RATE,pay=Math.round(loan*r/(1-Math.pow(1+r,-30)));
+  const income=(S.salary||0)+partnerIncome()*0.8+S.assets.houses.reduce((a,x)=>a+(x.rented?x.price*0.022:0),0);
+  return pay<=income*0.5?'':`貸款 DTI 不過（年還款 ${fmt(pay)} ＞ 年收入一半）`;
 }
 function confirmBuyHouse(id){
   const h=HOUSE_TYPES.find(x=>x.id===id);if(!h)return;
@@ -1010,16 +1073,20 @@ function openWill(){
 function examScore(){return Math.round(clamp(300+S.iq*3+S.eq+rnd(-30,30),0,750))}
 function examHui(){
   const sc=examScore();
-  if(sc>=620){S.school='明星高中';S.eduName='明星高中';S.eduLevel=1;S.iq+=3;log(`國中會考成績 ${sc} 分，你考上了明星高中。`,'big')}
-  else if(sc>=500){S.school='一般高中';S.eduName='一般高中';S.eduLevel=1;log(`國中會考成績 ${sc} 分，你考上了一般高中。`,'big')}
-  else{S.school='高職';S.eduName='高職';S.eduLevel=1;log(`國中會考成績 ${sc} 分，你進入了高職就讀。`,'bad')}
+  let pool,tag;
+  if(sc>=620){pool=S.gender==='M'?HS_ELITE_M:HS_ELITE_F;tag='elite';S.iq+=3}
+  else if(sc>=500){pool=HS_GEN;tag='gen'}
+  else{pool=HS_VOC;tag='voc'}
+  const nm=pick(pool);
+  S.hs=nm;S.school=nm;S.eduName=nm;S.eduLevel=1;
+  log(`國中會考成績 ${sc} 分，你考上了${nm}${tag==='voc'?'（高職）':tag==='elite'?'，是人人稱羨的名校':''}。`,tag==='voc'?'bad':'big');
 }
 function leaveSchool(msg,cls){
-  S.school='';S.eduName='高中職畢業';S.eduLevel=1;log(msg,cls||'big');S.pendingOffer=true;
-  queueMilitary();queue(openJobSearch);
+  S.school='';S.eduName=(S.hs||'高中職')+'畢業';S.eduLevel=1;log(msg,cls||'big');S.pendingOffer=true;
+  queueJob();   // 男生會先跳入伍通知，處理完才輪到求職
 }
 function examXueCe(){
-  if(S.school==='高職'){leaveSchool('你從高職畢業，準備進入社會。');return}
+  if(isVoc(S.school)){leaveSchool('你從高職畢業，準備進入社會。');return}
   const sc=examScore();log(`升學考試放榜：${sc} 分。`,'big');
   const available=MAJORS.filter(m=>m.score<=sc);
   if(!available.length){leaveSchool('你的分數未達任何學校的錄取線，決定先進入社會工作。','bad');return}
@@ -1031,25 +1098,28 @@ function openMajorSelect(score,list){
     $('majorList').addEventListener('click',e=>{
       const it=e.target.closest('.it');if(!it)return;
       const m=MAJORS.find(x=>x.id===it.dataset.id);if(!m)return;
-      S.major=m.id;S.school=m.name;S.eduName=m.name;S.eduLevel=m.level;
+      S.major=m.id;S.university=pickUniversity(m,score);S.school=S.university+deptName(m);S.eduName=S.university;S.eduLevel=m.level;
       if(m.id==='med')S.iq+=5;if(m.id==='law')S.eq+=5;if(m.id==='biz')S.eq+=3;if(m.id==='tech')S.iq+=3;
       if(m.id==='art'){S.eq+=2;S.moral+=3}if(m.id==='edu'){S.eq+=3;S.moral+=2}
       if(m.id==='artperf'){S.eq+=4;S.renown+=5}
-      log(`你選擇了${m.name}，開啟大學生活。`,'big');normalize();render();closeSheet();
+      log(`你考上了${S.university}${deptName(m)}${m.id==='college'?'（'+m.name+'）':''}，開啟大學生活。`,'big');normalize();render();closeSheet();
     });
   }});
 }
 function graduate(){
   const m=MAJORS.find(x=>x.id===S.major);
-  S.school='';S.eduName=(m?m.name:'大學')+'畢業';
+  S.school='';
+  S.eduName=S.university?S.university+'畢業':((m?m.name:'大學')+'畢業');
   if(S.major==='med')S.iq+=6;if(S.major==='law')S.eq+=6;
-  log('你畢業了，是時候找份工作了。'+(['med','law','biz'].includes(S.major)?'別忘了你還有國家考試要考。':''),'big');
-  S.pendingOffer=true;queueMilitary();queue(openJobSearch);
+  log(`你從${S.university||'大學'}畢業了，是時候找份工作了。`+(['med','law','biz'].includes(S.major)?'別忘了你還有國家考試要考。':''),'big');
+  S.pendingOffer=true;
+  queueJob();   // 男生先處理兵役，其他人直接求職
 }
 
 /* ══════ 求職 ══════ */
 function jobReason(j){
   if(j.need>S.eduLevel)return'學歷不足';
+  if(j.vol&&S.age>35)return'超過報考年齡';
   if(j.major&&S.major!==j.major)return'科系不符';
   if(j.lic&&!S.licenses[j.lic])return'需通過國家考試';
   if(j.startup&&S.money<BIZ_START)return`需資金 ${fmt(BIZ_START)}`;
@@ -1061,7 +1131,7 @@ function jobReason(j){
 }
 function openJobSearch(){
   if(S.over||S.prison)return;
-  if(S.age<16){return}
+  if(S.age<16)return toast('滿 16 歲才能求職');
   if(S.school)return toast('求學期間無法全職工作');
   if(S.military)return;
   if(S.civil||S.politician||S.job){
@@ -1090,6 +1160,7 @@ function openJobList(switching){
       if(switching)dropJob(true);
       if(job.fee){S.money-=job.fee;log(`你支付了 ${fmt(job.fee)} 元的飛行訓練費用。`)}
       if(job.id==='civil'){closeSheet();chooseCivilUnit(job);return}
+      if(job.vol){closeSheet();enlist('vol');return}
       S.job=job;S.payMod=1;S.salary=jobPay(job,0,0);S.working=true;S.jobPosition=0;S.workYears=0;S.retired=false;S.mood+=10;
       log(`你成為了一名「${job.name}」，年薪 ${fmt(S.salary)} 元。`,'big');normalize();render();closeSheet();
     });
@@ -1258,39 +1329,97 @@ function politicianYear(){
   }
   return pay;
 }
-function militaryYear(){
-  const m=S.military;
-  const pay=Math.round(m.rank.m*12*S.cpi);
-  m.yearsServed++;m.yearsInRank++;log(`軍中薪資 ${fmt(pay)} 元。`);
-  if(m.volunteer){S.pubYears++;S.lastSalary=pay/S.cpi}
-  const perf=rnd(-5,14)+S.health*0.04+S.iq*0.02+S.eq*0.02;m.performance=clamp(m.performance+perf,0,100);
-  if(m.volunteer&&m.yearsInRank>=m.rank.years&&m.performance>55&&m.rankIndex<MILITARY_RANKS.length-1){
-    m.rankIndex++;m.rank={...MILITARY_RANKS[m.rankIndex]};m.yearsInRank=0;
-    const isGeneral=m.rankIndex>=12;
-    log(`表現優異，晉升為「${m.rank.name}」${isGeneral?'，將星閃耀！':''}。`,'big');S.mood+=isGeneral?25:15;
-  }
-  if(!m.volunteer&&m.yearsServed>=1){
-    log('一年義務役期滿，你光榮退伍。','big');S.military=null;S.salary=0;S.working=false;S.mood+=8;S.pendingOffer=true;queue(openJobSearch);
-  }
-  return pay;
+// ── 兵役 ──────────────────────────────────────────────
+// 徵集條件：男性、滿 18、未服過、不在學（大學／研究所在學緩徵）、未入獄、≤36 歲
+function conscriptionDue(){
+  return S.gender==='M'&&!S.militaryDone&&!S.military&&!S.prison&&!S.school&&S.age>=18&&S.age<=MIL_MAX_AGE;
 }
-function queueMilitary(){queue(openMilitaryEnlist)}
+// 回傳 true＝已排入「入伍通知」；false＝不需要（或已因體位免役）
+function queueMilitary(){
+  if(!conscriptionDue())return false;
+  if(S.health<40){S.militaryDone=true;S.mood+=3;log('體檢判定體位不符（健康 <40），免服兵役。','good');return false}
+  queueOnce('mil',openMilitaryEnlist);
+  return true;
+}
 function openMilitaryEnlist(){
-  if(S.military||S.prison||S.militaryDone||S.school)return;
-  if(S.gender!=='M'||S.age<18||S.age>35){return}
-  const fit=S.health>=60?'常備役':S.health>=45?'替代役':'免役';
-  const html=`<p>你年滿 ${S.age} 歲，收到兵役通知。</p><p style="color:var(--ink3);font-size:12px;margin-top:8px">依現行制度，義務役為期 1 年。表現優異者可轉志願役，一路晉升至將軍。</p><div class="row" style="margin-top:12px"><span class="k">體位判定</span><span class="v">${fit}</span></div>`;
+  if(!conscriptionDue())return;
+  if(S.health<40){S.militaryDone=true;log('體檢判定體位不符，免服兵役。','good');queueJob();return}
+  const exempt=Math.random()<0.05;                      // 少數人因扁平足、過重等免役
+  const fit=exempt?'免役':S.health>=60?'常備役':'替代役';  // 40–59：體位較弱，只能服替代役
+  const altOk=fit==='替代役'||(fit==='常備役'&&Math.random()<0.5);   // 常備役者替代役要抽籤
+  const volOk=fit==='常備役';
+  const vs=S.eduLevel>=3?MILITARY_RANKS[6]:MILITARY_RANKS[3];       // 大學畢業少尉起，否則下士起
+  const html=`<p>你年滿 ${S.age} 歲，收到兵役徵集通知。</p>
+    <div class="row" style="margin-top:8px"><span class="k">體位判定</span><span class="v">${fit}</span></div>
+    ${exempt?'<p class="note">體檢發現體位不合格（例如嚴重扁平足、過重），依法免服兵役。</p>':`
+    ${fit==='常備役'?`<div class="row"><span class="k">義務役</span><span class="v">1 年 · 月津貼 ${CONSCRIPT_M.toLocaleString()}</span></div>`:''}
+    ${altOk?`<div class="row"><span class="k">替代役${fit==='常備役'?'（抽籤中籤）':''}</span><span class="v">1 年 · 道德、情商加成</span></div>`:''}
+    ${volOk?`<div class="row"><span class="k">志願役</span><span class="v">${vs.name}起 · 月薪 ${vs.m.toLocaleString()}</span></div>`:''}
+    <p class="note">義務役、替代役 1 年期滿即退伍；志願役可逐年晉升、年資計入退休金，但軍階受學歷影響（無大學學歷最高升到上士）。${fit==='替代役'?'你的體位較弱，只能服替代役。':''}</p>`}`;
   const buttons=[];
-  if(fit==='免役'){buttons.push({text:'免役（體位不符）',cls:'pri',onClick:()=>{S.militaryDone=true;log('因體位不符，你獲准免役。','good');S.mood+=5;normalize();render()}})}
+  if(exempt)buttons.push({text:'領取免役證明',cls:'pri',onClick:()=>{S.militaryDone=true;S.mood+=5;log('因體位不符，你獲准免役。','good');normalize();render();queueJob()}});
   else{
-    buttons.push({text:fit==='替代役'?'服替代役（1 年）':'入伍服役（1 年）',cls:'pri',onClick:()=>{
-      const r=MILITARY_RANKS[0];S.military={rank:{...r},rankIndex:0,yearsServed:0,yearsInRank:0,performance:60,volunteer:false};S.militaryDone=true;
-      S.job=null;S.civil=null;S.salary=Math.round(r.m*12*S.cpi);S.working=true;log(`你${fit==='替代役'?'開始服替代役':'入伍服役，成為一名二兵'}。`,'big');normalize();render()}});
-    if(S.health>=60)buttons.push({text:'直接投考志願役',onClick:()=>{
-      const r=MILITARY_RANKS[3];S.military={rank:{...r},rankIndex:3,yearsServed:0,yearsInRank:0,performance:60,volunteer:true};S.militaryDone=true;
-      S.job=null;S.civil=null;S.salary=Math.round(r.m*12*S.cpi);S.working=true;log('你投考志願役，成為一名下士，決心在軍中發展。','big');normalize();render()}});
+    if(fit==='常備役')buttons.push({text:'入伍服義務役（1 年）',cls:'pri',onClick:()=>{enlist('conscript')}});
+    if(altOk)buttons.push({text:'服替代役（1 年）',cls:fit==='替代役'?'pri':'',onClick:()=>{enlist('alt')}});
+    if(volOk)buttons.push({text:`投考志願役（${vs.name}起）`,onClick:()=>{enlist('vol')}});
   }
   sheet({title:'兵役通知',body:html,closable:false,buttons});
+}
+// kind: 'conscript' 義務役 | 'alt' 替代役 | 'vol' 志願役
+function enlist(kind){
+  dropJob(true);S.militaryDone=true;S.retired=false;
+  let idx=0,rank,left=1;
+  if(kind==='conscript')rank={...MILITARY_RANKS[0],m:CONSCRIPT_M};
+  else if(kind==='alt')rank={name:'替代役男',m:CONSCRIPT_M,years:1};
+  else{idx=S.eduLevel>=3?6:3;rank={...MILITARY_RANKS[idx]};left=0}
+  S.military={kind,rank,rankIndex:idx,yearsServed:0,yearsInRank:0,performance:60,volunteer:kind==='vol',left};
+  S.salary=Math.round(rank.m*12*S.cpi);S.working=true;
+  log(kind==='conscript'?'你入伍服義務役，成為一名二兵，役期 1 年。':kind==='alt'?'你分發到服務機關服替代役，役期 1 年。':`你考取志願役，以${rank.name}起步，決心在軍中長期發展。`,'big');
+  normalize();render();
+}
+// 義務役中途轉志願役（在「職涯」面板按鈕呼叫）
+function convertVolunteer(){
+  const m=S.military;
+  if(!m||m.kind==='vol'||m.kind==='alt')return toast('只有義務役可以轉志願役');
+  const idx=S.eduLevel>=3?6:3;
+  m.kind='vol';m.volunteer=true;m.rankIndex=idx;m.rank={...MILITARY_RANKS[idx]};m.yearsInRank=0;m.left=0;m.capped=false;
+  S.salary=Math.round(m.rank.m*12*S.cpi);S.mood+=10;
+  log(`你轉為志願役，晉升${m.rank.name}，決心在軍中長期發展。`,'big');
+  normalize();render();
+}
+// 年度結算：doNextYear → workIncome() 會呼叫它，回傳當年軍中收入
+function militaryYear(){
+  const m=S.military;
+  const kind=m.kind||(m.volunteer?'vol':'conscript');m.kind=kind;                 // 舊存檔相容
+  if(m.left===undefined)m.left=kind==='vol'?0:Math.max(0,1-(m.yearsServed||0));
+  const sen=kind==='vol'?1+Math.min(m.yearsInRank,m.rank.years)*0.012:1;        // 志願役：同階每年年資加給 1.2%
+  const pay=Math.round(m.rank.m*sen*12*S.cpi);
+  m.yearsServed++;m.yearsInRank++;S.salary=pay;
+  log(`軍中薪資 ${fmt(pay)} 元（${m.rank.name}${kind==='vol'?'，同階第 '+m.yearsInRank+' 年':''}）。`);
+  if(kind==='vol'){
+    S.pubYears++;S.lastSalary=pay/S.cpi;
+    m.performance=clamp(m.performance+rnd(-5,14)+S.health*0.04+S.iq*0.02+S.eq*0.02,0,100);
+    const cap=S.eduLevel>=3?MILITARY_RANKS.length-1:5;                           // 無大學學歷最高上士
+    if(m.yearsInRank>=m.rank.years&&m.performance>55&&m.rankIndex<cap){
+      m.rankIndex++;m.rank={...MILITARY_RANKS[m.rankIndex]};m.yearsInRank=0;m.capped=false;
+      const g=m.rankIndex>=12;
+      log(`表現優異，晉升為「${m.rank.name}」${g?'，將星閃耀！':''}。`,'big');S.mood+=g?25:15;
+    }else if(m.rankIndex>=cap&&m.rankIndex<MILITARY_RANKS.length-1&&!m.capped){
+      m.capped=true;log('你已升到士官最高階；想晉升軍官，需要大學學歷。','bad');
+    }
+    if(Math.random()<0.04){S.health-=ri(4,10);log('一次操演中你受了傷，休養了一陣子。','bad')}
+  }else{
+    if(kind==='conscript'){S.health+=3;S.eq+=1;S.moral+=1;S.mood-=3;log('一年的軍旅磨練，體能與紀律都進步了。','good');
+      if(Math.random()<0.05){S.health-=ri(3,8);log('訓練中受了點傷。','bad')}}
+    else{S.moral+=6;S.eq+=4;S.mood+=2;log('你在服務機關貢獻所長，道德 +6、情商 +4。','good')}
+    m.left--;
+    if(m.left<=0){
+      log(kind==='conscript'?'一年義務役期滿，你光榮退伍。':'一年替代役期滿，你順利役畢。','big');
+      S.military=null;S.salary=0;S.working=false;S.mood+=8;S.pendingOffer=true;
+      queueJob();
+    }
+  }
+  return pay;
 }
 function openCareer(){
   if(S.over)return;
@@ -1305,7 +1434,7 @@ function openCareer(){
       <div class="row"><span class="k">表現</span><span class="v">${Math.round(m.performance)}</span></div>
       <p class="note">${m.volunteer?'志願役：表現良好可逐年晉升，最高可升至一級上將。':'義務役：服役滿 1 年自動退伍。想留下來，現在可以轉志願役。'}</p>`;
     if(m.volunteer)buttons.push({text:'退伍',cls:'warn',onClick:()=>{voluntaryDischarge()}});
-    else if(S.health>=60)buttons.push({text:'轉志願役',cls:'pri',onClick:()=>{const r=MILITARY_RANKS[3];S.military.volunteer=true;S.military.rankIndex=3;S.military.rank={...r};S.military.yearsInRank=0;log('你轉為志願役，晉升下士，決心在軍中長期發展。','big');S.mood+=10;normalize();render();setTimeout(openCareer,60)}});
+    else if(m.kind!=='alt'&&S.health>=60)buttons.push({text:'轉志願役',cls:'pri',onClick:()=>{convertVolunteer();setTimeout(openCareer,60)}});
   }
   else if(S.politician){
     const p=S.politician;const ranks=pRanks(p);const rk=ranks[p.rankIndex];
@@ -1342,7 +1471,7 @@ function voluntaryDischarge(){
   const years=S.military.yearsServed;const rank=S.military.rank.name;
   S.military=null;S.working=false;S.salary=0;S.mood+=5;S.pendingOffer=true;
   log(`你以${rank}的軍階退伍，結束 ${years} 年的軍旅生涯。`,'big');
-  normalize();render();queue(openJobSearch);
+  normalize();render();queueJob();
 }
 function careerYear(){
   const ladder=CAREER_LADDERS[S.job.id];
@@ -1466,7 +1595,7 @@ function checkPrison(){
 }
 function prisonYear(){
   S.prison.yearsLeft--;log(`你在獄中服刑，剩下 ${S.prison.yearsLeft} 年。`,'bad');S.mood-=8;S.health-=3;
-  if(S.prison.yearsLeft<=0){log('你刑滿出獄，重獲自由。前科讓找工作變得困難。','big');S.prison=null;S.mood+=15;S.renown=Math.max(0,S.renown-20);S.pendingOffer=true;queue(openJobSearch)}
+  if(S.prison.yearsLeft<=0){log('你刑滿出獄，重獲自由。前科讓找工作變得困難。','big');S.prison=null;S.mood+=15;S.renown=Math.max(0,S.renown-20);S.pendingOffer=true;queueJob()}
 }
 
 /* ══════ 疾病 ══════ */
@@ -1543,7 +1672,7 @@ const CHOICES=[
     {t:'依指示轉帳',run:s=>{if(Math.random()<0.7-s.finLit*0.07){const m=Math.min(s.money,Math.round(s.money*0.8));s.money-=m;s.mood-=25;log(`你被詐騙集團騙走了 ${fmt(m)} 元。`,'bad')}else{log('轉帳前銀行行員攔下了你，才知道是詐騙，嚇出一身冷汗。','good');s.finLit+=0.5}}},
     {t:'直接掛斷並撥 165 查證',run:s=>{s.finLit+=0.5;s.mood+=3;log('你直接掛斷並撥打 165 反詐騙專線，果然是詐騙。','good')}}]},
   {id:'layoff',min:25,max:58,cond:s=>s.job&&!s.civil&&!s.military&&!s.politician&&!s.job.startup&&s.workYears>=2,title:'公司宣布裁員',text:'景氣不好，公司宣布組織調整，你的名字在名單邊緣。主管找你談話。',opts:[
-    {t:'領資遣費離開',run:s=>{const sev=Math.round(s.salary/13*0.5*Math.min(s.workYears,15));s.money+=sev;log(`你領了資遣費 ${fmt(sev)} 元，離開了公司，準備另謀出路。`,'bad');dropJob(true);s.mood-=10;s.pendingOffer=true;queue(openJobSearch)}},
+    {t:'領資遣費離開',run:s=>{const sev=Math.round(s.salary/13*0.5*Math.min(s.workYears,15));s.money+=sev;log(`你領了資遣費 ${fmt(sev)} 元，離開了公司，準備另謀出路。`,'bad');dropJob(true);s.mood-=10;s.pendingOffer=true;queueJob()}},
     {t:'接受降薪 15% 留任',run:s=>{s.payMod*=0.85;s.salary=Math.round(s.salary*0.85);s.mood-=8;log('你接受降薪 15% 留了下來。','bad')}}]},
   {id:'hunter',min:24,max:50,cond:s=>s.job&&!s.civil&&!s.military&&!s.politician&&!s.job.startup&&s.workYears>=3&&s.iq+s.eq>=110,title:'獵頭來電',text:'一位獵頭說有家新公司想挖角你，薪水多兩成，但要重新適應環境，資歷歸零。',opts:[
     {t:'跳槽',run:s=>{s.payMod*=1.2;s.workYears=Math.max(1,Math.floor(s.workYears/2));s.mood+=6;s.salary=jobPay(s.job,s.jobPosition,s.workYears);log(`你跳槽到新公司，薪水調整為 ${fmt(s.salary)} 元。`,'good')}},
@@ -1659,7 +1788,7 @@ function doNextYear(){
     L.partner=Math.round(partnerIncome()*0.88);
     if(S.age>=6&&S.age<=22&&!S.job&&!S.military&&parentsAlive()){L.pocket=Math.round((8000+S.age*1500)*S.cpi);log(`父母給了你 ${fmt(L.pocket)} 元零用錢。`)}
     // 學費
-    if(S.school&&S.age>=18&&S.school!=='高職'&&S.school!=='研究所'&&!['明星高中','一般高中'].includes(S.school)){
+    if(S.school&&S.university&&S.school!=='研究所'&&S.age>=18){
       const tu=Math.round(80000*S.cpi);
       if(S.originPay&&parentsAlive())log(`大學學費 ${fmt(tu)} 元由父母支付。`);
       else{L.other+=tu;if(S.origin==='poor'||S.origin==='orphan'){S.money+=Math.round(40000*S.cpi);log('你領到了清寒獎助學金。','good')}}
@@ -1707,24 +1836,24 @@ function doNextYear(){
 
   switch(S.age){
     case 3:S.school='幼兒園';S.eduName='幼兒園';log('你進入了幼兒園。','big');break;
-    case 6:S.school='國小';S.eduName='國小';log('你上小學了。','big');break;
-    case 12:S.school='國中';S.eduName='國中';log('你升上了國中。','big');break;
+    case 6:S.school=schoolForAge(6);S.eduName='國小';log(`你進入${S.school}就讀。`,'big');break;
+    case 12:S.school=schoolForAge(12);S.eduName='國中';log(`你升上了${S.school}。`,'big');break;
     case 15:examHui();break;
     case 18:examXueCe();break;
     case 60:if(S.military&&S.military.volunteer){log('你達到了志願役年齡上限，光榮退役。','big');S.military=null;S.working=false;S.salary=0;S.retired=true}break;
     case 65:retire('你屆齡退休了。');payoutPensions();break;
     case 70:if(S.politician){log('你年事已高，從政壇退下。','big');S.politician=null;S.salary=0;S.retired=true}break;
   }
-  if(S.school==='研究所'){S.gradLeft--;if(S.gradLeft<=0){S.school='';S.eduLevel=4;S.eduName='碩士';S.gradSchool=true;S.iq+=6;S.eq+=3;log('你取得了碩士學位！','big');S.pendingOffer=true;queue(openJobSearch)}}
-  if(S.school&&S.major&&S.school!=='研究所'){const m=MAJORS.find(x=>x.id===S.major);if(m&&S.age===18+m.years&&S.school===m.name)graduate()}
+  if(S.school==='研究所'){S.gradLeft--;if(S.gradLeft<=0){S.school='';S.eduLevel=4;S.eduName='碩士';S.gradSchool=true;S.iq+=6;S.eq+=3;log('你取得了碩士學位！','big');S.pendingOffer=true;queueJob()}}
+  if(S.school&&S.major&&S.university&&S.school!=='研究所'){const m=MAJORS.find(x=>x.id===S.major);if(m&&S.age>=18+m.years)graduate()}
 
   if(S.mood<20){S.health-=3;log('心情長期低落，健康受到影響。','bad')}
   if(S.health<30)S.mood-=3;
 
   maybeNewFriend();checkPrison();illnessYear();
   if(!S.prison){fireEvent();if(S.age>=16&&Math.random()<0.5)fireChoice()}
-  if(S.pendingOffer&&!S.job&&!S.civil&&!S.military&&!S.school&&S.businesses.length===0&&!S.retired&&S.age>=16)queue(openJobSearch);
-  if(!S.militaryDone&&!S.military&&!S.prison&&!S.school&&S.gender==='M'&&S.age>=18&&S.age<=35&&S.eduLevel>=1)queueMilitary();
+  if(S.pendingOffer&&!S.job&&!S.civil&&!S.military&&!S.school&&S.businesses.length===0&&!S.retired&&S.age>=16)queueJob();
+  else if(S.eduLevel>=1)queueMilitary();   // 沒有待處理的求職時，才單獨檢查是否該入伍
 
   normalize();checkAch();render();
   const cause=deathCause();
