@@ -133,9 +133,6 @@ input:focus{border-color:var(--amber2)}
 .origin .d{font-size:11.5px;color:var(--ink3);margin-bottom:6px}
 .origin .b{font-size:11.5px;color:var(--amber)}
 .origins{display:flex;flex-direction:column;gap:8px}
-.gsel{display:flex;gap:8px;margin-bottom:16px}
-.gsel button{flex:1;padding:12px;border-radius:8px;border:1px solid var(--line2);background:transparent;color:var(--ink2);cursor:pointer;font-family:inherit;font-size:13px;font-weight:500;transition:.15s}
-.gsel button.on{border-color:var(--amber2);color:var(--amber);background:rgba(212,160,90,.09)}
 .bizstat{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .bizstat .b{background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
 .bizstat .b .l{font-size:10.5px;color:var(--ink3)}
@@ -379,44 +376,6 @@ const JOBS=[
   {id:'startup',name:'創業者',m:0,need:1,cat:'創業',startup:true},
 ];
 
-const CIVIL_UNITS=['財政部','教育部','衛福部','內政部','外交部','法務部','經濟部','交通部','勞動部','農業部','文化部','數位發展部','環境部','主計總處','中央銀行','故宮博物院'];
-const CIVIL_RANKS=[
-  {name:'科員',m:42000},{name:'專員',m:55000},{name:'科長',m:75000},
-  {name:'處長',m:105000,official:true},{name:'局長',m:140000,official:true},
-  {name:'署長',m:170000,official:true},{name:'次長',m:200000,official:true},{name:'部長',m:230000,official:true},
-];
-const CIVIL_YEARS=[2,3,4,5,5,6,6];
-const CENTRAL_RANKS=[
-  {name:'中央司處長',m:115000},{name:'部會常務次長',m:155000},{name:'部會政務次長',m:185000},
-  {name:'部會首長（部長）',m:230000},{name:'行政院副院長',m:270000},{name:'行政院院長',m:310000},
-  {name:'副總統',m:400000},{name:'總統',m:500000},
-];
-const LOCAL_RANKS=[
-  {name:'區長／鄉鎮市長',m:85000},{name:'縣市政府局處長',m:110000},{name:'縣市副市長',m:145000},
-  {name:'縣市長',m:210000,cost:20000000},{name:'直轄市長',m:260000,cost:45000000},
-  {name:'副總統',m:400000,cost:90000000},{name:'總統',m:500000,cost:200000000},
-];
-const ELECTED_RANKS=[
-  {name:'縣市議員',m:85000,cost:1500000},
-  {name:'立法委員',m:200000,cost:8000000},
-  {name:'縣市長',m:230000,cost:30000000},
-  {name:'直轄市長',m:260000,cost:60000000},
-  {name:'副總統',m:400000,cost:100000000},
-  {name:'總統',m:500000,cost:250000000},
-];
-const pRanks=p=>p.path==='central'?CENTRAL_RANKS:p.path==='local'?LOCAL_RANKS:ELECTED_RANKS;
-
-const MILITARY_RANKS=[
-  {name:'二兵',m:26000,years:1},{name:'一兵',m:28000,years:1},{name:'上兵',m:32000,years:1},
-  {name:'下士',m:38000,years:2},{name:'中士',m:42000,years:3},{name:'上士',m:47000,years:3},
-  {name:'少尉',m:50000,years:3},{name:'中尉',m:54000,years:3},{name:'上尉',m:62000,years:4},
-  {name:'少校',m:78000,years:5},{name:'中校',m:92000,years:6},{name:'上校',m:110000,years:8},
-  {name:'少將',m:140000,years:8},{name:'中將',m:165000,years:10},{name:'上將',m:190000,years:12},{name:'一級上將',m:215000,years:15},
-];
-
-const CONSCRIPT_M=26307;
-const MIL_MAX_AGE=36;
-
 const BIZ_TYPES=[
   {id:'food',name:'餐飲業',base:1500000,margin:0.55,risk:0.6,desc:'競爭激烈，現金流快'},
   {id:'retail',name:'零售業',base:2000000,margin:0.35,risk:0.5,desc:'穩定但利潤薄'},
@@ -440,7 +399,6 @@ const CAR_TYPES=[
   {id:'luxury',name:'豪華進口車',price:4500000,cost:180000},
 ];
 
-/* ── 投資股票清單 ── */
 const STOCK_MARKET=[
   {id:'tsmc',name:'台積電 (2330)',price:600,vol:0.18,desc:'護國神山，波動穩健，長期成長動能強'},
   {id:'nvda',name:'輝達 (NVDA)',price:900,vol:0.32,desc:'AI 算力霸主，高風險高回報'},
@@ -468,21 +426,6 @@ function schoolForAge(a){
   return'';
 }
 
-function incomeTax(netReal){
-  if(netReal<=0)return 0;
-  const B=[[590000,.05,0],[1330000,.12,41300],[2660000,.2,147700],[4980000,.3,413700],[Infinity,.4,911700]];
-  for(const[l,r,d]of B){if(netReal<=l)return netReal*r-d}
-  return 0;
-}
-function estateTax(net,spouse,kids){
-  const ded=13330000+1230000+(spouse?5530000:0)+kids*560000;
-  const t=Math.max(0,net/S.cpi-ded);let tax=0;
-  if(t<=50000000)tax=t*0.1;else if(t<=100000000)tax=t*0.15-2500000;else tax=t*0.2-7500000;
-  return Math.round(tax*S.cpi);
-}
-function baseMort(a){if(a<1)return .004;if(a<15)return .0003;if(a<25)return .0006;if(a<35)return .0007;if(a<45)return .0012;if(a<55)return .003;if(a<65)return .007;if(a<75)return .016;if(a<85)return .042;if(a<95)return .11;return .24}
-function deathChance(a,g,h){let p=baseMort(a);if(g==='M'&&a>=15)p*=1.25;p*=0.5+(100-h)/45;return clamp(p,0,0.85)}
-
 function blankState(){return{
   name:'',gender:'M',orientation:'hetero',origin:'normal',age:0,money:0,mood:70,health:90,iq:50,eq:50,moral:50,
   ap:5,maxAp:5,apps:3,eduName:'嬰兒',eduLevel:0,school:'',major:null,gradLeft:0,university:'',hs:'',sch:{elem:'',jr:''},
@@ -490,7 +433,7 @@ function blankState(){return{
   civil:null,politician:null,military:null,militaryDone:false,
   prison:null,businesses:[],licenses:{driver:false,civil:false,bar:false,md:false,cpa:false},
   assets:{houses:[],cars:[]},deposit:0,etf:0,stk:{},trust:0,trustActive:false,debt:0,
-  stockTradesLeft:3,   // 每年限制 3 次投資變動
+  stockTradesLeft:3,
   cc:{active:false,limit:0,used:0,unpaidYears:0,frozen:false,summons:false},
   crimeRecord:[],studyAbroad:null,
   cpi:1,houseIdx:1,econ:{stock:0,housing:0},lifestyle:1,home:'parents',finLit:0,prep:0,
@@ -519,22 +462,18 @@ function normalize(){
   if(S.partner)S.partner.rel=clamp(S.partner.rel,0,100);
 }
 
-function newGameWithOrigin(origin,inh,forcedGender,forcedOri){
-  const g=inh?inh.gender:(forcedGender||(Math.random()<.5?'M':'F'));
-  const ori=inh?(inh.orientation||'hetero'):(forcedOri||'hetero');
+function newGameWithOrigin(origin,inh){
+  const g=Math.random()<.5?'M':'F';
   const base=inh?ORIGINS[2]:(ORIGINS.find(o=>o.id===origin)||ORIGINS[2]);
   const me=inh?{name:inh.name,surname:inh.name.charAt(0)}:randPerson(g);
   const oldBiz=inh?inh._biz:[];
-  
-  // 保留繼承前的完整關係陣列（伴侶、孩子、父母、朋友）
   const oldPeople=inh&&inh._people?inh._people:null;
 
   S=blankState();_uid=100;_q.length=0;
-  S.name=me.name;S.gender=g;S.orientation=ori;S.origin=inh?'inherit':base.id;
+  S.name=me.name;S.gender=g;S.orientation='hetero';S.origin=inh?'inherit':base.id;
   const orphan=!!inh||base.dadJob===null;
-  
+
   if(oldPeople){
-    // 繼承時完整帶入前代保留的親友網絡
     S.people={
       dad:oldPeople.dad?{...oldPeople.dad}:absentP('父親','M'),
       mom:oldPeople.mom?{...oldPeople.mom}:absentP('母親','F'),
@@ -543,7 +482,6 @@ function newGameWithOrigin(origin,inh,forcedGender,forcedOri){
     };
     if(oldPeople.partner){
       S.partner={...oldPeople.partner};
-      // 若原伴侶還活著且符合身份，可作為本代配偶或維持關係
       if(S.partner.alive&&S.partner.age<65)S.married=true;
     }
   }else if(!orphan){
@@ -556,27 +494,22 @@ function newGameWithOrigin(origin,inh,forcedGender,forcedOri){
   S.iq=inh?60:base.iq;S.eq=inh?60:base.eq;S.moral=inh?60:base.moral;S.mood=inh?70:75;
   S.parentWealth=orphan?0:base.wealth;S.originPay=!orphan&&base.pay;
   S.home=orphan&&!inh?'rent':'parents';
+
   if(inh){
     S.age=inh._age;S.cpi=inh._cpi||1;S.houseIdx=inh._houseIdx||1;S.home='rent';
-    if(inh.major){const m=MAJORS.find(x=>x.id===inh.major);S.major=inh.major;S.eduLevel=m?m.level:3;S.eduName=m?m.name:'大學';if(m&&S.age<18+m.years){S.university=pickUniversity(m,m.score+rnd(0,80));S.school=S.university+deptName(m)}}
+    if(inh.major){const m=MAJORS.find(x=>x.id===inh.major);S.major=inh.major;S.eduLevel=m?m.level:3;S.eduName=m?m.name:'大學'}
     else if(S.age>=18){S.eduLevel=1;S.eduName='高中職畢業'}
     else{S.school=schoolForAge(S.age);S.eduName=S.school||'嬰兒'}
-    if(inh.job){const j=JOBS.find(x=>x.name===inh.job);
-      if(j&&j.need<=S.eduLevel&&!j.lic&&!j.startup&&(!j.major||j.major===S.major)&&!j.renown&&!j.fee){S.job=j;S.working=true;S.salary=jobPay(j,0,0)}}
     S.businesses=(oldBiz||[]).map(b=>({...b,id:uid()}));
-    log(`你以${inh.name}（${S.age}歲）的身份接下這一代的人生，繼承了 ${fmt(S.money)} 元${S.businesses.length?` 與 ${S.businesses.length} 間企業`:''}。`,'big');
+    log(`你以${inh.name}（${S.age}歲）的身份接下這一代的人生，繼承了 ${fmt(S.money)} 元。`,'big');
     if(S.age>=18&&!S.job&&!S.school)S.pendingOffer=true;
-  }else if(orphan){log('你是個孤兒，由親戚撫養長大。沒有父母陪伴，但你很獨立。','big')}
-  else{log(`你出生在一個${base.name}。父親是${S.people.dad.name}（${S.people.dad.age}歲，${S.people.dad.job}），母親是${S.people.mom.name}（${S.people.mom.age}歲，${S.people.mom.job}）。`,'big')}
+  }else if(orphan){log('你是個孤兒，由親戚撫養長大。','big')}
+  else{log(`你出生在一個${base.name}。父親是${S.people.dad.name}，母親是${S.people.mom.name}。`,'big')}
   closeSheet();normalize();render();_prev=snap();
-  if(inh&&S.pendingOffer)queueJob();
 }
 
 const ATTR_DEF=[{k:'mood',label:'心情',color:'var(--amber)'},{k:'health',label:'健康',color:'var(--rust)'},{k:'iq',label:'智商',color:'var(--sky)'},{k:'eq',label:'情商',color:'var(--plum)'},{k:'moral',label:'道德',color:'var(--sage)'}];
 function currentPositionName(){
-  if(S.politician)return pRanks(S.politician)[S.politician.rankIndex].name;
-  if(S.civil)return S.civil.rank.name;
-  if(S.military)return S.military.rank.name;
   if(S.job&&CAREER_LADDERS[S.job.id])return CAREER_LADDERS[S.job.id][Math.min(S.jobPosition,CAREER_LADDERS[S.job.id].length-1)];
   if(S.job)return S.job.name;
   if(S.retired)return'退休';
@@ -595,17 +528,10 @@ function render(){
   $('apTxt').textContent=S.ap;$('apMax').textContent=S.maxAp;$('purseAP').classList.toggle('zero',S.ap===0);
 
   const idc=[];
-  if(S.prison)idc.push(`<span class="cell warn">🔒 服刑中 (${S.prison.yearsLeft}年)</span>`);
-  else if(S.military)idc.push(`<span class="cell">🪖 <button onclick="openCareer()">${S.military.rank.name}</button></span>`);
-  else{
-    idc.push(`<span class="cell">${S.school||S.eduName}</span>`);
-    if(S.politician){const pLbl=S.politician.path==='central'?'中央總政府':S.politician.path==='local'?'地方首長':'選舉';idc.push(`<span class="cell">🏛️ <button onclick="openCareer()">${pLbl} · ${currentPositionName()}</button></span>`);}
-    else if(S.civil)idc.push(`<span class="cell"><button onclick="openCareer()">${S.civil.unit} · ${S.civil.rank.name}</button></span>`);
-    else if(S.job)idc.push(`<span class="cell"><button onclick="openCareer()">${S.job.name} · ${currentPositionName()}</button></span>`);
-    else if(S.retired||S.age>=65)idc.push(`<span class="cell">退休</span>`);
-    else{const can=S.age>=16&&!S.school;idc.push(`<span class="cell">${can?'<button onclick="openJobSearch()">求職中</button>':'無業'}</span>`)}
-    if(S.businesses.length>0)idc.push(`<span class="cell">🏢 ${S.businesses.length} 家公司</span>`);
-  }
+  idc.push(`<span class="cell">${S.school||S.eduName}</span>`);
+  if(S.job)idc.push(`<span class="cell"><button onclick="openCareer()">${S.job.name} · ${currentPositionName()}</button></span>`);
+  else if(S.retired||S.age>=65)idc.push(`<span class="cell">退休</span>`);
+  else idc.push(`<span class="cell"><button onclick="openJobSearch()">求職中</button></span>`);
   if(S.married)idc.push(`<span class="cell">已婚 · ${S.people.children.length} 子女</span>`);
   else if(S.partner)idc.push(`<span class="cell">戀愛中</span>`);
   else idc.push(`<span class="cell">單身</span>`);
@@ -616,7 +542,7 @@ function render(){
     const v=clamp(S[a.k],0,100);const pv=prev[a.k];let dv='';
     if(pv!==undefined&&Math.round(pv)!==Math.round(v)){const d=Math.round(v)-Math.round(pv);dv=`<span class="d ${d>0?'up':'down'}">${d>0?'+':''}${d}</span>`}
     return `<div class="attr"><div class="attr-h"><span>${a.label}</span><span class="v">${Math.round(v)}${dv}</span></div><div class="track"><i style="width:${v}%;background:${a.color}"></i></div></div>`;
-  }).join('')+(S.renown>0?`<div class="attr" style="grid-column:1/-1"><div class="attr-h"><span>🌟 知名度</span><span class="v">${Math.round(S.renown)}</span></div><div class="track"><i style="width:${S.renown}%;background:var(--plum)"></i></div></div>`:'');
+  }).join('');
   _prev=snap();
   {const dEl=$('diary'),st=dEl.scrollTop;dEl.innerHTML=S.logs.map(l=>`<div class="e ${l.cls}"><span class="t">${l.age}歲</span><span class="x">${l.text}</span></div>`).join('');dEl.scrollTop=st}
 
@@ -628,9 +554,9 @@ function render(){
   $('btnBusiness').disabled=S.over||!!S.prison;
   $('btnBusiness').innerHTML=S.businesses.length>0?`產業<span class="sub">${S.businesses.length}間</span>`:'產業<span class="sub">—</span>';
   $('btnCareer').disabled=S.over;
-  $('btnCareer').innerHTML=(S.civil||S.job||S.military||S.politician)?`職涯<span class="sub">${currentPositionName()}</span>`:'職涯<span class="sub">—</span>';
+  $('btnCareer').innerHTML=S.job?`職涯<span class="sub">${currentPositionName()}</span>`:'職涯<span class="sub">—</span>';
   const nb=$('btnNext');nb.disabled=S.over;nb.classList.toggle('ready',!S.over&&S.ap===0);
-  nb.textContent=S.over?'人 生 已 落 幕':(S.prison?'服 刑 中':(S.ap>0&&S.age>=6?`度過這一年（還有 ${S.ap} 行動點）`:'度 過 這 一 年'));
+  nb.textContent=S.over?'人 生 已 落 幕':(S.ap>0&&S.age>=6?`度過這一年（還有 ${S.ap} 行動點）`:'度 過 這 一 年');
   clearTimeout(_sv);_sv=setTimeout(save,300);
 }
 
@@ -638,7 +564,6 @@ function save(){try{if(S&&S.name&&!S.over)localStorage.setItem(SAVE_KEY,JSON.str
 function loadSave(){
   try{const t=localStorage.getItem(SAVE_KEY);if(!t)return false;const d=JSON.parse(t);
     if(!d||!d.S||d.S.over)return false;S=Object.assign(blankState(),d.S);_uid=d.uid||_uid;
-    if(S.school&&S.major&&!S.university&&S.school!=='研究所'){const m=MAJORS.find(x=>x.name===S.school);if(m){S.university=pickUniversity(m,m.score+40);S.school=S.university+deptName(m)}}
     return true}catch(e){return false}
 }
 function clearSave(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}}
@@ -658,28 +583,15 @@ function sheet({title,body,buttons,onMount,closable=true}){
 }
 function closeSheet(){$('ov').classList.remove('show');$('ov').innerHTML='';document.body.classList.remove('locked');setTimeout(flushQueue,160)}
 
+/* ── 原本乾淨俐落的初始選擇 UI ── */
 function openOriginSelect(){
-  let selGender=Math.random()<.5?'M':'F';let selOri='hetero';
-  const body=`
-    <p style="margin-bottom:8px;color:var(--ink);font-weight:600">① 選擇性別</p>
-    <div class="gsel"><button data-g="M" class="${selGender==='M'?'on':''}">♂ 男性</button><button data-g="F" class="${selGender==='F'?'on':''}">♀ 女性</button></div>
-    <p style="margin-bottom:8px;color:var(--ink);font-weight:600">② 選擇性取向</p>
-    <div class="gsel" style="margin-bottom:16px"><button data-o="hetero" class="on" style="font-size:11.5px">異性戀</button><button data-o="homo" style="font-size:11.5px">同性戀</button><button data-o="bi" style="font-size:11.5px">雙性戀</button></div>
-    <p style="margin-bottom:8px;color:var(--ink);font-weight:600">③ 選擇出身</p>
-    <div class="origins">${ORIGINS.map(o=>`<div class="origin" data-id="${o.id}"><div class="h">${o.name}</div><div class="d">${o.desc}</div><div class="b">${o.bonus}</div></div>`).join('')}</div>`;
+  const body=`<p style="margin-bottom:12px;color:var(--ink2)">選擇你的人生起點：</p><div class="origins">${ORIGINS.map(o=>`<div class="origin" data-id="${o.id}"><div class="h">${o.name}</div><div class="d">${o.desc}</div><div class="b">${o.bonus}</div></div>`).join('')}</div>`;
   sheet({title:'開始新人生',body,buttons:[],closable:false,onMount(){
-    document.querySelectorAll('[data-g]').forEach(b=>{b.onclick=()=>{selGender=b.dataset.g;document.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('on',x.dataset.g===selGender))}});
-    document.querySelectorAll('[data-o]').forEach(b=>{b.onclick=()=>{selOri=b.dataset.o;document.querySelectorAll('[data-o]').forEach(x=>x.classList.toggle('on',x.dataset.o===selOri))}});
-    document.querySelectorAll('.origin').forEach(el=>{el.onclick=()=>newGameWithOrigin(el.dataset.id,null,selGender,selOri)});
+    document.querySelectorAll('.origin').forEach(el=>{el.onclick=()=>newGameWithOrigin(el.dataset.id)});
   }});
 }
 
 function jobPay(job,pos,yrs){return Math.round(job.m*YEAR_M*(1+0.18*pos)*(1+Math.min(yrs,15)*0.012)*S.cpi*S.payMod)}
-function rankPay(r){return Math.round(r.m*YEAR_M*S.cpi)}
-function partnerIncome(){
-  const p=S.partner;if(!S.married||!p||p.age<22||p.age>=65)return 0;
-  return Math.round((p.inc||0)*S.cpi);
-}
 function livingCost(){
   const R={food:0,housing:0,kids:0,total:0};
   if(S.age<18)return R;
@@ -687,19 +599,11 @@ function livingCost(){
   const owns=S.assets.houses.some(h=>!h.rented);
   const withParents=S.home==='parents'&&parentsAlive();
   if(S.school&&withParents)return R;
-  R.food=base*lm*(S.married?1.7:1)*(S.age>=65?0.85:1);
+  R.food=base*lm*(S.married?1.7:1);
   if(owns)R.housing=0;
-  else if(withParents){R.housing=base*0.12;R.food*=0.8}
-  else{R.housing=(S.married||S.people.children.length?380000:220000)*S.cpi*(S.school?0.5:1)}
-  if(!S.school&&!S.job&&!S.civil&&!S.military&&withParents)R.food*=0.7;
-  S.people.children.forEach(c=>{
-    if(!c.alive)return;
-    if(c.age>=22&&(c.job||c.spouse))return;
-    let k=c.age<6?200000:c.age<12?150000:c.age<18?180000:250000;
-    k*=S.cpi;if(c.age<5)k-=60000;
-    R.kids+=Math.max(0,k);
-  });
-  R.total=Math.round(R.food+R.housing+R.kids);
+  else if(withParents)R.housing=base*0.12;
+  else R.housing=380000*S.cpi;
+  R.total=Math.round(R.food+R.housing);
   return R;
 }
 function netWorth(){
@@ -710,137 +614,35 @@ function netWorth(){
     const st=STOCK_MARKET.find(s=>s.id===id);
     return sum+(st?shares*st.price:0);
   },0);
-  const ccDebt=(S.cc&&S.cc.used)||0;
-  return Math.round(S.money+S.deposit+S.etf+stockVal+S.trust+h+c+b-S.debt-ccDebt);
+  return Math.round(S.money+S.deposit+S.etf+stockVal+S.trust+h+c+b-S.debt);
 }
 const bizValue=c=>Math.max(c.capital*0.5,(c.lastProfit>0?c.lastProfit*3:0));
 
+/* ── 活動與關係 ── */
 const ACT_CATS={daily:'日常',leisure:'休閒',learn:'學習',social:'社交',life:'生活',career:'職涯'};
-function sitExam(key,chance,name){
-  const ok=Math.random()<chance;
-  if(ok){S.licenses[key]=true;S.prep=0;S.mood+=18;log(`你通過了「${name}」，錄取率只有一成左右，你辦到了！`,'big')}
-  else{S.mood-=8;S.prep=clamp(S.prep,0,8);log(`你報考「${name}」，成績差一點點，未能錄取。（機率約 ${Math.round(chance*100)}%）`,'bad')}
-}
 const ACTIONS=[
-  {id:'rest',cat:'daily',name:'休息放鬆',desc:'心情 +8，健康 +2',ap:1,min:0,run:s=>{s.mood+=8;s.health+=2;log('你好好休息了一段時間，身心舒暢。','good')}},
-  {id:'sport',cat:'daily',name:'運動鍛鍊',desc:'健康 +6，心情 +3',ap:1,min:4,run:s=>{s.health+=6;s.mood+=3;log('你堅持運動，身體越來越結實。','good')}},
-  {id:'meditate',cat:'daily',name:'靜心冥想',desc:'心情 +5，道德 +2，健康 +1',ap:1,min:14,run:s=>{s.mood+=5;s.moral+=2;s.health+=1;log('你靜心冥想，內心恢復了平靜。','good')}},
-  {id:'play',cat:'leisure',name:'盡情玩耍',desc:'心情 +7，健康 +1',ap:1,min:0,max:12,run:s=>{s.mood+=7;s.health+=1;log('你玩得很開心，笑聲迴盪了一整天。','good')}},
-  {id:'game',cat:'leisure',name:'打遊戲',desc:'心情 +10，健康 −2',ap:1,min:6,run:s=>{s.mood+=10;s.health-=2;log('你痛快地玩了一天遊戲。')}},
-  {id:'drama',cat:'leisure',name:'追劇放空',desc:'心情 +8，健康 −1',ap:1,min:10,run:s=>{s.mood+=8;s.health-=1;log('你窩在沙發上追了一整天的劇。','good')}},
-  {id:'onsen',cat:'leisure',name:'泡溫泉',desc:'健康 +8，心情 +10，花費 2,500',ap:1,min:16,cost:2500,run:s=>{s.health+=8;s.mood+=10;log('你泡在熱騰騰的溫泉裡，全身的疲憊都消散了。','good')}},
-  {id:'concert',cat:'leisure',name:'看演唱會',desc:'心情 +20，知名度 +2，花費 4,000',ap:1,min:14,cost:4000,run:s=>{s.mood+=20;s.renown+=2;log('你在演唱會現場跟著偶像大聲歌唱，心情嗨到最高點！','good')}},
-  {id:'movie',cat:'leisure',name:'看電影',desc:'心情 +8，情商 +1，花費 400',ap:1,min:10,cost:400,run:s=>{s.mood+=8;s.eq+=1;log('你看了一部好電影，深受感動。','good')}},
-  {id:'karaoke',cat:'leisure',name:'唱歌',desc:'心情 +10，知名度 +1，花費 800',ap:1,min:12,cost:800,run:s=>{s.mood+=10;s.renown+=1;log('你和朋友們在KTV唱到燒聲，壓力全消。','good')}},
-  {id:'shopping',cat:'leisure',name:'逛街購物',desc:'心情 +10，花費 3,000',ap:1,min:12,cost:3000,run:s=>{s.mood+=10;log('你買了一些喜歡的東西，心情大好。','good')}},
-  {id:'spa',cat:'leisure',name:'按摩舒壓',desc:'健康 +6，心情 +8，花費 2,000',ap:1,min:16,cost:2000,run:s=>{s.health+=6;s.mood+=8;log('你享受了一場專業按摩，筋骨舒暢。','good')}},
-  {id:'fishing',cat:'leisure',name:'釣魚',desc:'心情 +10，道德 +1，健康 +2，花費 300',ap:1,min:8,cost:300,run:s=>{s.mood+=10;s.moral+=1;s.health+=2;log('你在河邊釣了一下午的魚，雖然收穫不多，但心情平靜。','good')}},
-  {id:'cafe',cat:'leisure',name:'咖啡廳發呆',desc:'心情 +6，情商 +2，花費 300',ap:1,min:12,cost:300,run:s=>{s.mood+=6;s.eq+=2;log('你在咖啡廳坐了一下午，觀察來往的人們，思緒沉澱。','good')}},
-  {id:'hike',cat:'leisure',name:'爬山',desc:'健康 +7，心情 +8',ap:1,min:12,run:s=>{s.health+=7;s.mood+=8;log('你爬上了一座小山，俯瞰風景，心胸開闊。','good')}},
-  {id:'study',cat:'learn',name:'埋頭苦讀',desc:'智商 +4，心情 −4',ap:1,min:6,max:24,run:s=>{s.iq+=4;s.mood-=4;log('你埋頭苦讀，智商 +4。')}},
-  {id:'read',cat:'learn',name:'閱讀書籍',desc:'智商 +2，情商 +1',ap:1,min:8,run:s=>{s.iq+=2;s.eq+=1;log('你讀完一本好書，受益匪淺。','good')}},
-  {id:'chess',cat:'learn',name:'下棋',desc:'智商 +2，情商 +1',ap:1,min:8,run:s=>{s.iq+=2;s.eq+=1;log('你和棋友廝殺了幾盤，腦筋靈活了不少。','good')}},
-  {id:'instrument',cat:'learn',name:'學樂器',desc:'情商 +4，知名度 +2，花費 20,000',ap:1,min:10,cost:20000,run:s=>{s.eq+=4;s.renown+=2;log('你開始學習樂器，雖然手指痠痛，但彈出旋律時很有成就感。','good')}},
-  {id:'lecture',cat:'learn',name:'聽講座',desc:'智商 +3，情商 +2，花費 800',ap:1,min:14,cost:800,run:s=>{s.iq+=3;s.eq+=2;log('你聽了一場精彩的講座，學到不少新知識。','good')}},
-  {id:'continuing',cat:'learn',name:'持續進修',desc:'智商 +5，情商 +3，花費 3 萬',ap:1,min:18,cost:30000,run:s=>{s.iq+=5;s.eq+=3;s.mood+=5;log('你報名了專業進修課程，知識與人脈都有所增長。','good')}},
-  {id:'gradschool',cat:'learn',name:'讀研究所（兩年）',desc:'需大學畢業且離職，花 15 萬，全職就讀兩年取得碩士',ap:1,min:22,cost:150000,
-    can:s=>s.eduLevel<3?'需大學學歷':s.eduLevel>=4?'已取得碩士':s.school?'就學中':(s.job||s.civil||s.military||s.politician)?'需先離職':'',
-    run:s=>{s.school='研究所';s.gradLeft=2;log('你考上了研究所，開始兩年的全職研究生生活。（期間無法全職工作）','big')}},
-  {id:'certificate',cat:'learn',name:'考取專業證照',desc:'智商 +3，累積資歷（每年最多一次加分），花費 8,000',ap:1,min:18,cost:8000,
-    can:s=>s.certAt===s.age?'今年已考過':'',
-    run:s=>{s.certAt=s.age;s.iq+=3;s.mood+=5;s.workYears=(s.workYears||0)+1;log('你考取了專業證照，履歷更漂亮，年資加成 +1。','good')}},
-  {id:'prep',cat:'learn',name:'準備國家考試',desc:'累積備考（最多 8），提高公務員/律師/會計師錄取機率',ap:1,min:18,
-    run:s=>{s.prep=Math.min(8,s.prep+1);s.iq+=1;s.mood-=3;log(`你苦讀國考科目，備考進度 ${s.prep}/8。`)}},
-  {id:'examCivil',cat:'learn',name:'報考公務員考試',desc:'錄取率偏低，備考越多機率越高，報名費 1,500',ap:1,min:18,cost:1500,
-    can:s=>s.licenses.civil?'已取得資格':s.eduLevel<1?'需高中職畢業':'',
-    run:s=>{sitExam('civil',clamp(0.06+(s.eduLevel>=3?0.04:0)+s.prep*0.055+(s.iq-50)*0.002,0.03,0.65),'公務員考試')}},
-  {id:'examBar',cat:'learn',name:'報考律師國考',desc:'需法律系畢業，報名費 3,000',ap:1,min:22,cost:3000,
-    can:s=>s.licenses.bar?'已取得資格':(s.major!=='law'||s.school)?'需法律系畢業':'',
-    run:s=>{sitExam('bar',clamp(0.07+s.prep*0.045+(s.iq-50)*0.003,0.03,0.55),'律師考試')}},
-  {id:'examCpa',cat:'learn',name:'報考會計師國考',desc:'需商管系畢業，報名費 3,000',ap:1,min:22,cost:3000,
-    can:s=>s.licenses.cpa?'已取得資格':(s.major!=='biz'||s.school)?'需商管系畢業':'',
-    run:s=>{sitExam('cpa',clamp(0.08+s.prep*0.045+(s.iq-50)*0.003,0.03,0.55),'會計師考試')}},
-  {id:'examMd',cat:'learn',name:'報考醫師國考',desc:'需醫學系畢業，報名費 3,000',ap:1,min:23,cost:3000,
-    can:s=>s.licenses.md?'已取得資格':(s.major!=='med'||s.school)?'需醫學系畢業':'',
-    run:s=>{sitExam('md',clamp(0.8+s.prep*0.02+(s.iq-50)*0.002,0.7,0.97),'醫師國考')}},
-  {id:'social',cat:'social',name:'與朋友聚會',desc:'情商 +4，心情 +6，花費 1,200',ap:1,min:6,cost:1200,run:s=>{s.eq+=4;s.mood+=6;const f=s.people.friends.filter(x=>x.alive);if(f.length){const t=pick(f);t.rel=clamp(t.rel+6,0,100)}log('你和朋友們聚在一起，聊得很開心。','good')}},
-  {id:'newfriend',cat:'social',name:'認識新朋友',desc:'結交一位新朋友',ap:1,min:6,max:65,run:s=>{addNewFriend(true)}},
-  {id:'blinddate',cat:'social',name:'相親／交友軟體',desc:'認識適合交往的對象，花費 2,000',ap:1,min:20,cost:2000,
-    can:s=>s.partner?'你已有伴侶':'',
-    run:s=>{
-      if(Math.random()<0.55){
-        const ori=s.orientation;const gender=ori==='hetero'?(s.gender==='M'?'F':'M'):ori==='homo'?s.gender:(Math.random()<.5?'M':'F');
-        addNewFriend(true,{gender,minAge:Math.max(20,s.age-5),maxAge:Math.min(70,s.age+6),rel:ri(48,62),quiet:true});
-        const f=s.people.friends[s.people.friends.length-1];
-        log(`你和${f.name}（${f.age}歲，${identityOf(f.age,f.job)}）聊得來，互相交換了聯絡方式。可以到「關係」裡進一步發展。`,'good');
-      }else log('對方不太來電，你們禮貌地結束了這次見面。','bad');
-    }},
-  {id:'visit',cat:'social',name:'探望父母',desc:'家人關係 +6，心情 +3',ap:1,min:16,
-    can:s=>![s.people.dad,s.people.mom].some(p=>p&&!p.absent&&p.alive)?'父母已不在':'',
-    run:s=>{[s.people.dad,s.people.mom].filter(p=>p&&!p.absent&&p.alive).forEach(p=>p.rel=clamp(p.rel+6,0,100));s.mood+=3;s.moral+=1;log('你去探望了父母，聊了很多家常。','good')}},
-  {id:'tomb',cat:'social',name:'掃墓',desc:'道德 +4，心情 +3',ap:1,min:8,run:s=>{s.moral+=4;s.mood+=3;log('你去掃墓，慎終追遠，心中平靜而感念。','good')}},
-  {id:'help',cat:'life',name:'做義工',desc:'道德 +5，心情 +4',ap:1,min:10,run:s=>{s.moral+=5;s.mood+=4;log('你去幫助了需要幫助的人，內心溫暖。','good')}},
-  {id:'travel',cat:'life',name:'出門旅行',desc:'心情 +18，健康 +3，花費 3 萬',ap:1,min:10,cost:30000,run:s=>{s.mood+=18;s.health+=3;log('你去了很遠的地方旅行，見到了不一樣的風景。','good')}},
-  {id:'pet',cat:'life',name:'養寵物',desc:'心情 +12，每年花費約 3.6 萬，可陪你十多年',ap:1,min:10,cost:8000,
-    can:s=>s.pet>0?'已有寵物':'',
-    run:s=>{s.mood+=12;s.pet=ri(10,16);log('你領養了一隻毛小孩，生活多了很多樂趣。','good')}},
-  {id:'doctor',cat:'life',name:'健康檢查',desc:'健康 +4，可及早發現隱藏疾病，花費 1 萬',ap:1,min:10,cost:10000,
-    run:s=>{s.health+=4;
-      if(s.illness&&!s.illness.found&&Math.random()<0.8){s.illness.found=true;log('健檢報告出來了，醫師神情凝重，要你盡快回診。','bad');queue(offerTreatment)}
-      else log('你做了一次全身健康檢查，沒發現大問題。','good')}},
-  {id:'charity',cat:'life',name:'捐款行善',desc:'道德 +8，心情 +5，花費 1 萬',ap:1,min:18,cost:10000,run:s=>{s.moral+=8;s.mood+=5;s.renown+=2;log('你捐款給慈善機構，感受到助人的喜悅。','good')}},
-  {id:'parttime',cat:'career',name:'兼職打工',desc:'賺約 2–5 萬，健康 −4',ap:1,min:16,max:65,run:s=>{const m=Math.round(ri(20000,50000)*s.cpi);s.money+=m;s.health-=4;s.mood-=3;log(`你兼職打工，賺了 ${fmt(m)} 元。`)}},
-  {id:'finance',cat:'career',name:'研究理財',desc:'理財素養 +1（降低被騙機率、提升投資表現），智商 +2',ap:1,min:16,run:s=>{s.finLit+=1;s.iq+=2;log(`你研究了理財知識，理財素養提升到 ${Math.round(s.finLit)}/10。`)}},
-  {id:'network',cat:'career',name:'拓展人脈',desc:'情商 +3，知名度 +2，花費 2,000',ap:1,min:20,cost:2000,run:s=>{s.eq+=3;s.renown+=2;s.workYears+=s.job?0.5:0;log('你參加了產業聚會，認識了一些有用的人脈。','good')}},
-  {id:'license',cat:'career',name:'考取駕照',desc:'解鎖購車權限，花費 1.5 萬',ap:1,min:18,cost:15000,
-    can:s=>s.licenses.driver?'已有駕照':'',
-    run:s=>{s.licenses.driver=true;s.mood+=10;log('你考取了駕照，以後可以開車了。','good')}},
-  {id:'audition',cat:'career',name:'報名選秀/試鏡',desc:'嘗試進入娛樂圈，花費 2,000',ap:1,min:16,cost:2000,run:s=>{
-    const chance=clamp(0.2+s.eq*0.004+s.iq*0.002,0.1,0.6);
-    if(Math.random()<chance){s.renown+=ri(8,18);s.mood+=15;log('你在選秀/試鏡中表現亮眼，知名度提升！','good')}
-    else{s.mood-=5;log('你在選秀/試鏡中落選，有些失落。','bad')}}},
-  {id:'live',cat:'career',name:'街頭直播',desc:'知名度 +3，心情 +4，收入不固定',ap:1,min:14,run:s=>{
-    const r=ri(100,1500);s.money+=r;s.renown+=3;s.mood+=4;log(`你在街頭直播，打賞收入 ${fmt(r)} 元，知名度提升。`,'good')}},
-  {id:'gig',cat:'career',name:'接商業演出',desc:'需知名度 ≥30，收入 3–15 萬',ap:1,min:16,
-    can:s=>s.renown<30?'知名度不足':'',
-    run:s=>{const r=Math.round(ri(30000,150000)*s.cpi);s.money+=r;s.renown+=2;s.mood+=8;log(`你接到了一場商業演出，報酬 ${fmt(r)} 元。`,'good')}},
+  {id:'rest',cat:'daily',name:'休息放鬆',desc:'心情 +8，健康 +2',ap:1,min:0,run:s=>{s.mood+=8;s.health+=2;log('你好好休息了一段時間。','good')}},
+  {id:'sport',cat:'daily',name:'運動鍛鍊',desc:'健康 +6，心情 +3',ap:1,min:4,run:s=>{s.health+=6;s.mood+=3;log('你堅持運動。','good')}},
+  {id:'study',cat:'learn',name:'埋頭苦讀',desc:'智商 +4，心情 −4',ap:1,min:6,max:24,run:s=>{s.iq+=4;s.mood-=4;log('你埋頭苦讀。')}},
+  {id:'social',cat:'social',name:'與朋友聚會',desc:'情商 +4，心情 +6，花費 1,200',ap:1,min:6,cost:1200,run:s=>{s.eq+=4;s.mood+=6;log('你和朋友聚會。','good')}},
+  {id:'parttime',cat:'career',name:'兼職打工',desc:'賺取收入',ap:1,min:16,run:s=>{const m=ri(20000,50000);s.money+=m;log(`兼職賺了 ${fmt(m)} 元。`)}}
 ];
-function addNewFriend(active,o){
-  o=o||{};
-  const fr=S.people.friends;
-  if(fr.length>=10){const live=fr.filter(f=>f.alive).sort((a,b)=>a.rel-b.rel)[0];if(live&&live.rel<50)S.people.friends=fr.filter(f=>f!==live);else if(!o.quiet)return}
-  const g=o.gender||(Math.random()<.5?'M':'F');
-  const age=o.minAge?ri(o.minAge,o.maxAge):clamp(S.age+ri(-2,3),6,90);
-  const f={id:uid(),...randPerson(g),age,rel:o.rel||(active?ri(45,60):ri(30,50)),alive:true,job:null};
-  if(f.age>=22&&f.age<65)f.job=pick(JOB_POOL);
-  S.people.friends.push(f);
-  if(!o.quiet)log(`你認識了新朋友${f.name}（${f.gender==='M'?'男':'女'}，${f.age}歲，${identityOf(f.age,f.job)}）。`,'good');
-}
-function actReason(a){if(S.ap<a.ap)return'行動點不足';if(a.cost&&S.money<a.cost)return'金錢不足';return a.can?a.can(S):''}
+function actReason(a){if(S.ap<a.ap)return'行動點不足';if(a.cost&&S.money<a.cost)return'金錢不足';return''}
 const actCostHtml=(a,r)=>'−'+a.ap+(a.cost?' · −'+a.cost.toLocaleString():'')+(r?`<br><span class="w">${r}</span>`:'');
-function dim(key,before,f1,f2){if(S[key]>before){const f=before>85?f2:before>70?f1:1;S[key]=before+(S[key]-before)*f}}
+
 function openActivities(){
   if(S.over)return;
-  const list=ACTIONS.filter(a=>S.age>=a.min&&(!a.max||S.age<=a.max));
-  const byCat={};list.forEach(a=>{(byCat[a.cat]=byCat[a.cat]||[]).push(a)});
-  let html=`<p style="color:var(--ink3);font-size:12px;margin-bottom:8px">剩餘行動點 <b style="color:var(--amber)" id="apLine">${S.ap}</b> / ${S.maxAp}${S.maxAp<5?'（照顧幼兒佔去了你的時間）':''}</p><div id="actList" class="acts-list">`;
-  ['daily','leisure','learn','social','life','career'].forEach(cat=>{
-    if(!byCat[cat])return;
-    html+=`<div class="cat-title">${ACT_CATS[cat]}</div>`;
-    byCat[cat].forEach(a=>{const r=actReason(a);
-      html+=`<div class="it ${r?'off':''}" data-id="${a.id}"><div class="l"><div class="nm">${a.name}</div><div class="ds">${a.desc}</div></div><div class="dg">${actCostHtml(a,r)}</div></div>`});
+  let html=`<p style="color:var(--ink3);font-size:12px;margin-bottom:8px">剩餘行動點 <b style="color:var(--amber)" id="apLine">${S.ap}</b> / ${S.maxAp}</p><div id="actList" class="acts-list">`;
+  ACTIONS.forEach(a=>{
+    const r=actReason(a);
+    html+=`<div class="it ${r?'off':''}" data-id="${a.id}"><div class="l"><div class="nm">${a.name}</div><div class="ds">${a.desc}</div></div><div class="dg">${actCostHtml(a,r)}</div></div>`;
   });
   html+='</div>';
   sheet({title:'做點什麼',body:html,buttons:[{text:'關閉'}],onMount(){
     $('actList').addEventListener('click',e=>{
       const it=e.target.closest('.it');if(!it||it.classList.contains('off'))return;
       const a=ACTIONS.find(x=>x.id===it.dataset.id);if(!a)return;
-      const r=actReason(a);if(r)return toast(r);
-      const hb=S.health,ib=S.iq,eb=S.eq;
-      if(a.cost)S.money-=a.cost;S.ap-=a.ap;
-      const res=a.run(S);
-      if(res===false){S.ap+=a.ap;if(a.cost)S.money+=a.cost}
-      else{dim('health',hb,0.5,0.5);dim('iq',ib,0.5,0.25);dim('eq',eb,0.5,0.25)}
+      if(a.cost)S.money-=a.cost;S.ap-=a.ap;a.run(S);
       normalize();render();refreshActList();
     });
   }});
@@ -854,163 +656,25 @@ function refreshActList(){
   });
 }
 
-function openRelations(tab){
-  if(S.over)return;if(tab)_relTab=tab;
+function openRelations(){
   const p=S.people;
-  const famCount=(p.dad&&!p.dad.absent?1:0)+(p.mom&&!p.mom.absent?1:0);
-  const tabs=[{k:'fam',label:'家人',n:famCount},{k:'fri',label:'朋友',n:p.friends.filter(f=>f.alive).length},{k:'par',label:'伴侶',n:S.partner?1:0},{k:'chi',label:'子女',n:p.children.length}];
-  const body=`<div class="tabs">${tabs.map(t=>`<button data-tab="${t.k}" class="${_relTab===t.k?'on':''}">${t.label}<span class="cnt">${t.n}</span></button>`).join('')}</div><div id="tabBody"></div>`;
-  sheet({title:'關係',body,buttons:[{text:'關閉'}],onMount(){
-    const renderTab=()=>{
-      $('tabBody').innerHTML=_relTab==='fam'?tabFamily():_relTab==='fri'?tabFriends():_relTab==='par'?tabPartner():tabChildren();
-      document.querySelectorAll('.person .acts button').forEach(btn=>{btn.onclick=()=>handlePersonAction(btn.dataset.act,parseInt(btn.dataset.id))});
-    };
-    document.querySelectorAll('.tabs button').forEach(b=>{b.onclick=()=>{_relTab=b.dataset.tab;document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x.dataset.tab===_relTab));renderTab()}});
-    renderTab();
-  }});
+  let html=`<div class="sec">父親</div>`+
+    (p.dad.absent?'<div class="empty">無</div>':personCard({name:p.dad.name,gender:p.dad.gender,meta:p.dad.age+'歲',rel:p.dad.rel}))+
+    `<div class="sec">母親</div>`+
+    (p.mom.absent?'<div class="empty">無</div>':personCard({name:p.mom.name,gender:p.mom.gender,meta:p.mom.age+'歲',rel:p.mom.rel}));
+  sheet({title:'關係',body:html,buttons:[{text:'關閉'}]});
 }
-function personCard({name,gender,tag,tagCls,meta,rel,acts,dead}){
-  const avaCls=dead?'ava dead':(gender==='F'?'ava f':'ava');
-  const relColor=rel>=66?'var(--sage)':rel>=33?'var(--amber)':'var(--rust)';
-  return `<div class="person"><div class="${avaCls}">${dead?'—':name.charAt(0)}</div><div class="info"><div class="n">${name}${tag?`<span class="tag ${tagCls||''}">${tag}</span>`:''}</div><div class="meta">${meta}</div><div class="relbar"><i style="width:${rel}%;background:${relColor}"></i></div><div class="acts">${acts||''}</div></div></div>`;
+function personCard({name,gender,meta,rel}){
+  return `<div class="person"><div class="info"><div class="n">${name}</div><div class="meta">${meta}</div><div class="relbar"><i style="width:${rel}%;background:var(--sage)"></i></div></div></div>`;
 }
-function tabFamily(){
-  const p=S.people;
-  if(p.dad.absent&&p.mom.absent)return `<div class="empty">你沒有父母，一路走來都是靠自己。</div>`;
-  return [p.dad,p.mom].filter(w=>!w.absent).map(who=>{
-    const ageTxt=who.alive?`${who.age} 歲 · ${identityOf(who.age,who.job)}`:`<span class="dead">已故</span>`;
-    const acts=who.alive?`<button data-act="chat" data-id="${who.id}">聊天</button><button data-act="gift" data-id="${who.id}">送禮 1,500</button>${S.age<16?`<button data-act="ask" data-id="${who.id}">要零用錢</button>`:''}`:'';
-    return personCard({name:who.name,gender:who.gender,tag:who.role,tagCls:'par',meta:ageTxt,rel:Math.round(who.rel),acts,dead:!who.alive});
-  }).join('');
-}
-function tabFriends(){
-  const list=S.people.friends;
-  if(!list.length)return `<div class="empty">你還沒有朋友。在「活動」中認識新朋友吧。</div>`;
-  return list.map(f=>{
-    const dead=!f.alive;
-    const acts=dead?'':`<button data-act="fri_chat" data-id="${f.id}">聯絡</button>${canConfess(f)?`<button class="pri" data-act="confess" data-id="${f.id}">告白</button>`:''}`;
-    const meta=dead?`<span class="dead">已故</span>`:`${f.gender==='M'?'♂':'♀'} ${f.age} 歲 · ${identityOf(f.age,f.job)}`;
-    return personCard({name:f.name,gender:f.gender,meta,rel:Math.round(f.rel),acts,dead});
-  }).join('');
-}
-function tabPartner(){
-  if(!S.partner)return `<div class="empty">你目前單身。</div>`;
-  const p=S.partner;const rel=Math.round(p.rel);
-  let acts=`<button data-act="date" data-id="${p.id}">約會 3,000</button>`;
-  if(!S.married)acts+=`<button class="${rel>=80?'pri':''}" data-act="propose" data-id="${p.id}" ${(rel<80||S.age<18||p.age<18)?'disabled':''}>求婚${rel<80?'（需 80）':(S.age<18||p.age<18)?'（需滿 18）':''}</button>`;
-  else{
-    const same=p.gender===S.gender;
-    const fem=same?null:(S.gender==='F'?S:p);
-    const okAge=same?(S.age>=22&&S.age<=55):(S.age>=20&&p.age>=20&&fem.age<=46);
-    const cost=same?300000:50000;
-    acts+=`<button class="${okAge&&S.money>=cost?'pri':''}" data-act="birth" data-id="${p.id}" ${okAge&&S.money>=cost?'':'disabled'}>${same?'收養孩子 30萬':'生孩子 5萬'}</button>`;
-  }
-  acts+=`<button data-act="breakup" data-id="${p.id}" style="border-color:rgba(192,122,109,.4);color:var(--rust)">${S.married?'離婚':'分手'}</button>`;
-  const incTxt=S.married&&p.age>=22&&p.age<65&&p.inc?` · 年收入約 ${fmt(partnerIncome())}`:'';
-  return personCard({name:p.name,gender:p.gender,tag:S.married?'配偶':'戀人',tagCls:'fam',meta:`${p.gender==='M'?'♂':'♀'} ${p.age} 歲 · ${identityOf(p.age,p.job)}${S.married?' · 已婚'+incTxt:''}`,rel,acts});
-}
-function tabChildren(){
-  const c=S.people.children;
-  if(!c.length)return `<div class="empty">你還沒有孩子。</div>`;
-  return c.map(ch=>{
-    if(!ch.alive)return personCard({name:ch.name,gender:ch.gender,tag:ch.gender==='M'?'兒子':'女兒',tagCls:'chi',meta:'<span class="dead">已故</span>',rel:0,acts:'',dead:true});
-    const working=ch.age>=22&&(ch.job||ch.spouse);
-    let acts=`<button data-act="child_chat" data-id="${ch.id}">聊天</button><button data-act="child_gift" data-id="${ch.id}">給紅包 3,000</button>`;
-    if(working)acts+=`<button data-act="child_borrow" data-id="${ch.id}">借錢</button>`;
-    if(ch.age>=25&&!ch.spouse)acts+=`<button data-act="child_urge" data-id="${ch.id}">催婚</button>`;
-    const meta=`${ch.gender==='M'?'♂':'♀'} ${ch.age} 歲 · ${identityOf(ch.age,ch.job)}${ch.spouse?' · 已婚':''}${ch.kids?' · '+ch.kids+' 個孩子':''}${working?' · 已獨立':''}`;
-    return personCard({name:ch.name,gender:ch.gender,tag:ch.gender==='M'?'兒子':'女兒',tagCls:'chi',meta,rel:Math.round(ch.rel),acts});
-  }).join('');
-}
-function findPerson(id){const p=S.people;return [p.dad,p.mom,...p.friends,...p.children,S.partner].filter(Boolean).find(x=>x.id===id)}
-function canConfess(f){
-  if(S.married||S.partner||S.age<16||!f.alive||f.rel<50)return false;
-  if(S.age>=18){if(f.age<18||Math.abs(f.age-S.age)>10)return false}
-  else{if(f.age>=18||Math.abs(f.age-S.age)>3)return false}
-  const o=S.orientation||'hetero';
-  if(o==='hetero'&&f.gender===S.gender)return false;
-  if(o==='homo'&&f.gender!==S.gender)return false;
-  return true;
-}
-function doDivorce(why){
-  const p=S.partner;if(!p)return;
-  const share=Math.round(Math.max(0,S.money+S.deposit+S.etf+Object.values(S.stk||{}).reduce((a,b)=>a+b,0))*0.5);
-  let paid=Math.min(share,S.money);S.money-=paid;
-  let rest=share-paid;if(rest>0){const d=Math.min(rest,S.deposit);S.deposit-=d;rest-=d}
-  if(rest>0){const d=Math.min(rest,S.etf);S.etf-=d;rest-=d}
-  const kids=S.people.children.filter(c=>c.alive&&c.age<18).length;
-  S.partner=null;S.married=false;S.mood-=30;S.eq+=2;
-  log(`${why||'你們離婚了'}。依法平分婚後財產，你付出約 ${fmt(share)} 元${kids?`；${kids} 個未成年孩子由你扶養`:''}。`,'bad');
-}
-function wedding(p){
-  const opts=[
-    {t:'公證結婚（3,000）',cost:3000,gift:0,mood:20,ren:0},
-    {t:'小型家宴（15 萬，收禮金約 8 萬）',cost:150000,gift:80000,mood:28,ren:0},
-    {t:'傳統婚宴（60 萬，收禮金約 40 萬）',cost:600000,gift:400000,mood:35,ren:1},
-    {t:'豪華婚禮（200 萬，收禮金約 90 萬）',cost:2000000,gift:900000,mood:40,ren:4},
-  ];
-  sheet({title:'💍 籌備婚禮',body:`<p>${p.name}答應了你的求婚！你們想辦什麼樣的婚禮？</p><p class="note">婚禮費用要先墊付，禮金之後入帳。</p>`,closable:false,
-    buttons:opts.map(o=>({text:o.t,disabled:S.money<o.cost,onClick:()=>{
-      S.money-=o.cost;S.money+=Math.round(o.gift*(0.7+S.people.friends.length*0.05));
-      S.married=true;S.partner.rel=clamp(S.partner.rel+10,0,100);S.mood+=o.mood;S.moral+=2;S.renown+=o.ren;
-      if(S.partner.age>=22&&!S.partner.job)S.partner.job=pick(JOB_POOL);
-      if(S.partner.inc===undefined||S.partner.inc===0)S.partner.inc=incFor(S.partner.job);
-      log(`你和${S.partner.name}結婚了。${o.t.split('（')[0]}。`,'big');normalize();render();
-    }}))});
-}
-function handlePersonAction(act,id){
-  const p=findPerson(id);if(!p)return;
-  const done=()=>{normalize();render();openRelations(_relTab)};
-  const needAp=()=>{if(S.ap<1){toast('行動點不足');return true}return false};
-  switch(act){
-    case 'chat':if(needAp())return;S.ap--;p.rel+=5;S.mood+=3;S.eq+=1;log(`你和${p.role||p.name}聊了很久，彼此都感到溫暖。`,'good');done();break;
-    case 'gift':if(S.money<1500)return toast('金錢不足');if(needAp())return;S.ap--;S.money-=1500;p.rel+=10;S.moral+=2;log(`你送了一份禮物給${p.role||p.name}，對方很開心。`,'good');done();break;
-    case 'ask':{if(needAp())return;S.ap--;const m=Math.round(ri(500,2000)*S.cpi);S.money+=m;p.rel-=6;log(`你向${p.role}要了 ${fmt(m)} 元零用錢。`);done();break}
-    case 'fri_chat':if(needAp())return;S.ap--;p.rel+=6;S.mood+=3;S.eq+=1;log(`你和${p.name}聊了一會兒，關係更近了。`,'good');done();break;
-    case 'confess':{if(!canConfess(p))return toast('條件不符');if(needAp())return;S.ap--;
-      const chance=clamp(0.35+(p.rel-50)*0.022+S.eq*0.004,0.15,0.94);
-      if(Math.random()<chance){S.partner={...p,rel:clamp(p.rel+10,0,100),inc:incFor(p.job)};S.people.friends=S.people.friends.filter(x=>x.id!==p.id);S.mood+=28;S.eq+=2;log(`你向${p.name}告白，對方紅著臉答應了。你們開始交往。`,'big')}
-      else{p.rel-=12;S.mood-=14;S.eq+=2;log(`你向${p.name}告白，卻被婉拒了。心情 −14，情商 +2。`,'bad')}
-      done();break}
-    case 'date':if(S.money<3000)return toast('金錢不足');if(needAp())return;S.ap--;S.money-=3000;S.partner.rel+=ri(8,15);S.mood+=12;log(`你和${S.partner.name}度過了一個美好的約會。`,'good');done();break;
-    case 'propose':{if(S.married)return;if(S.partner.rel<80)return toast('關係不夠');if(S.age<18||S.partner.age<18)return toast('雙方須滿 18 歲');if(needAp())return;S.ap--;
-      const pc=clamp(0.65+(S.partner.rel-80)*0.018+S.eq*0.004,0.3,0.97);
-      if(Math.random()<pc){normalize();render();closeSheet();wedding(S.partner);return}
-      S.partner.rel-=15;S.mood-=25;log(`你向${S.partner.name}求婚，對方猶豫了很久，最後拒絕了。`,'bad');done();break}
-    case 'birth':{if(!S.married)return toast('必須已婚');if(needAp())return;
-      const same=S.partner.gender===S.gender;const cost=same?300000:50000;if(S.money<cost)return toast('金錢不足');
-      S.ap--;S.money-=cost;
-      if(!same){const fa=(S.gender==='F'?S.age:S.partner.age);const ch=fa<=34?0.85:fa<=39?0.55:fa<=44?0.25:0.05;
-        if(Math.random()>ch){S.mood-=8;log('你們努力了一年，還是沒有好消息。（年齡越大越不容易受孕）','bad');done();break}}
-      const g=Math.random()<.5?'M':'F';
-      const child={id:uid(),name:S.name.charAt(0)+(g==='M'?pick(NAME_M):pick(NAME_F)),gender:g,age:0,rel:80,alive:true,job:null,spouse:null,kids:0,major:null};
-      S.people.children.push(child);S.partner.rel+=8;S.mood+=26;
-      log(`你們迎來了${g==='M'?'兒子':'女兒'}${child.name}${same?'（收養）':''}。養育孩子之後，每年開銷和空閒時間都會改變。`,'big');done();break}
-    case 'breakup':{
-      if(S.married){doDivorce('你結束了這段婚姻')}else{S.partner=null;S.mood-=25;log('你們分手了。','bad')}
-      done();break}
-    case 'child_chat':if(needAp())return;S.ap--;p.rel+=7;S.mood+=4;S.eq+=1;log(`你和${p.name}聊了很久，親子關係更緊密了。`,'good');done();break;
-    case 'child_gift':if(S.money<3000)return toast('金錢不足');if(needAp())return;S.ap--;S.money-=3000;p.rel+=12;S.mood+=5;log(`你包了 3,000 元紅包給${p.name}，孩子很開心。`,'good');done();break;
-    case 'child_borrow':{if(needAp())return;S.ap--;const amt=Math.min(Math.round(ri(20000,80000)*S.cpi),Math.round(p.rel*1500));S.money+=amt;p.rel-=10;log(`你向${p.name}借了 ${fmt(amt)} 元，孩子雖然借了，但顯得有些為難。`,'bad');done();break}
-    case 'child_urge':{if(needAp())return;S.ap--;
-      if(p.age>=25&&!p.spouse&&Math.random()<0.4){p.spouse=pick(['一位溫柔的伴侶','一位開朗的伴侶','一位踏實的伴侶']);p.rel-=5;log(`${p.name} 聽了你的催促，不久後結了婚。`,'good')}
-      else{p.rel-=8;log(`${p.name} 覺得你管太多，有些不耐煩。`,'bad')}
-      done();break}
-  }
-}
-function openPartnerPanel(){if(!S.partner)return toast('你目前是單身');openRelations('par')}
+function openPartnerPanel(){if(!S.partner)return toast('目前單身');sheet({title:'伴侶',body:`<p>${S.partner.name}</p>`,buttons:[{text:'關閉'}]});}
 
-/* ══════ 財產與投資功能 ══════ */
-const LIFESTYLE=['節儉','普通','享受'];
+/* ── 財產與投資 Modal ── */
 function openProperty(){
-  if(S.age<16)return toast('未滿 16 歲，無法管理財產');
+  if(S.age<16)return toast('未滿 16 歲');
   if(S.over)return;
   const lc=livingCost();
   
-  const housesHtml=S.assets.houses.length?S.assets.houses.map((h,i)=>`<div class="asset-card"><div class="l"><div class="nm">${h.name}</div><div class="ds">${h.rented?'出租中 · 年租 '+fmt(h.price*0.022):'自住'}${h.loan>0?' · 貸款餘額 '+fmt(h.loan):' · 無貸款'}</div></div><div class="v">${fmt(h.price)}</div><button data-rent-house="${i}">${h.rented?'改自住':'出租'}</button><button data-sell-house="${i}">賣出</button></div>`).join(''):'<div class="empty" style="padding:12px">尚無房產</div>';
-  const carsHtml=S.assets.cars.length?S.assets.cars.map((c,i)=>`<div class="asset-card"><div class="l"><div class="nm">${c.name}</div><div class="ds">年養車費 ${fmt(c.cost*S.cpi)} · 每年折舊約 12%</div></div><div class="v">${fmt(c.price)}</div><button data-sell-car="${i}">賣出</button></div>`).join(''):'<div class="empty" style="padding:12px">尚無車輛</div>';
-  
-  // 個股投資明細與操作
   const stocksHtml=STOCK_MARKET.map(st=>{
     const shares=S.stk[st.id]||0;
     const totalVal=Math.round(shares*st.price);
@@ -1026,56 +690,26 @@ function openProperty(){
     </div>`;
   }).join('');
 
-  const ly=S.lastYear;
-  const lyHtml=ly?`<div class="row"><span class="k">去年收支 / 結餘</span><span class="v">${fmt(ly.income)} / ${fmt(ly.expense)} <span style="font-weight:400;color:var(--ink3)">(${fmt(ly.net)})</span></span></div>`:'';
-  
   const html=`
     <div class="row"><span class="k">現金</span><span class="v">${fmt(S.money)}</span></div>
-    <div class="row"><span class="k">定期存款 (年利 1.6%)</span><span class="v">${fmt(S.deposit)}</span></div>
-    <div class="row"><span class="k">指數型基金 ETF</span><span class="v">${fmt(S.etf)}</span></div>
-    ${S.trust>0?`<div class="row"><span class="k">信託基金 (年利 2.5%)</span><span class="v">${fmt(S.trust)}</span></div>`:''}
-    ${S.debt>0?`<div class="row"><span class="k">負債 (利率 4.5%)</span><span class="v neg">${fmt(S.debt)}</span></div>`:''}
-    <div class="row"><span class="k">總淨資產估算</span><span class="v">${fmt(netWorth())}</span></div>
-    ${lyHtml}
-    <div class="row"><span class="k">今年預估生活費</span><span class="v">${fmt(lc.total)}</span></div>
+    <div class="row"><span class="k">定期存款</span><span class="v">${fmt(S.deposit)}</span></div>
+    <div class="row"><span class="k">淨資產估算</span><span class="v">${fmt(netWorth())}</span></div>
+    <div class="row"><span class="k">預估生活費</span><span class="v">${fmt(lc.total)}</span></div>
     
-    <div class="sec">生活型態</div>
-    <div class="btnrow" style="margin-top:0">${LIFESTYLE.map((n,i)=>`<button data-life="${i}" class="${S.lifestyle===i?'on':''}">${n}</button>`).join('')}</div>
-    
-    <div class="sec">居住選擇</div>
-    <div class="btnrow" style="margin-top:0">${S.assets.houses.some(h=>!h.rented)?'<button class="on" disabled>住在自己的房子</button>':`<button data-home="parents" class="${S.home==='parents'?'on':''}" ${parentsAlive()?'':'disabled'}>與父母同住</button><button data-home="rent" class="${S.home==='rent'?'on':''}">自己租房</button>`}</div>
-    
-    <div class="sec">📈 股票與投資市集 <span style="font-size:11px;color:var(--amber);font-weight:normal">(今年剩餘變動次數: ${S.stockTradesLeft}/3)</span></div>
+    <div class="sec">📈 股票與投資市集 <span style="font-size:11px;color:var(--amber);font-weight:normal">(今年剩餘變動: ${S.stockTradesLeft}/3)</span></div>
     ${stocksHtml}
 
-    <div class="sec">資金調度與理財工具</div>
+    <div class="sec">資金操作</div>
     <input type="number" id="amt" placeholder="輸入金額 / 股數" min="1" inputmode="numeric">
     <div class="btnrow" style="margin-top:0">
       <button data-a="din" class="pri">存入定期</button><button data-a="dout">取出定期</button>
-      <button data-a="eb">買入 ETF</button><button data-a="es">賣出 ETF</button>
-      ${S.debt>0?'<button data-a="repay" class="warn">還款</button>':''}
-    </div>
-    <div class="btnrow">
-      ${S.trustActive?'<button data-a="tclose">結束信託</button>':'<button data-a="topen" class="pri">設立信託 (100萬起)</button>'}
       <button data-a="will">${S.will?'修改遺囑':'立遺囑'}</button>
-    </div>
-
-    <div class="sec">🏠 房產 (房價指數 ${S.houseIdx.toFixed(2)})</div>
-    ${housesHtml}
-    <div class="btnrow" style="margin-top:8px">${HOUSE_TYPES.map(h=>{const r=houseBlock(h);return `<button data-buy-house="${h.id}" ${r?'disabled style="opacity:.6"':''}>${h.name} ${fmt(h.price*S.houseIdx)}</button>`}).join('')}</div>
-    
-    <div class="sec">🚗 車輛 ${S.licenses.driver?'':'(需先考駕照)'}</div>
-    ${carsHtml}
-    <div class="btnrow" style="margin-top:8px">${CAR_TYPES.map(c=>`<button data-buy-car="${c.id}" ${!S.licenses.driver||S.money<c.price*S.cpi?'disabled':''}>${c.name} ${fmt(c.price*S.cpi)}</button>`)}</div>`;
+    </div>`;
 
   const readAmt=()=>{const v=Math.floor(parseFloat($('amt').value));if(!v||v<=0){toast('請輸入有效數值');return 0}return v};
   const redo=()=>{normalize();render();openProperty()};
 
   sheet({title:'財產與投資',body:html,buttons:[{text:'關閉'}],onMount(){
-    document.querySelectorAll('[data-life]').forEach(b=>{b.onclick=()=>{S.lifestyle=+b.dataset.life;redo()}});
-    document.querySelectorAll('[data-home]').forEach(b=>{b.onclick=()=>{S.home=b.dataset.home;redo()}});
-    
-    // 股票買賣按鈕
     document.querySelectorAll('[data-buy-st]').forEach(b=>{b.onclick=()=>{
       if(S.stockTradesLeft<=0)return toast('今年投資變動次數已達上限 (每年 3 次)');
       const stId=b.dataset.buySt;const st=STOCK_MARKET.find(x=>x.id===stId);
@@ -1085,7 +719,7 @@ function openProperty(){
       S.money-=cost;
       S.stk[stId]=(S.stk[stId]||0)+qty;
       S.stockTradesLeft--;
-      log(`你買入 ${qty} 股 ${st.name}，花費 ${fmt(cost)} 元。`,'good');
+      log(`你買入 ${qty} 股 ${st.name}。`,'good');
       redo();
     }});
     document.querySelectorAll('[data-sell-st]').forEach(b=>{b.onclick=()=>{
@@ -1099,254 +733,50 @@ function openProperty(){
       S.stk[stId]=owned-qty;
       if(S.stk[stId]<=0)delete S.stk[stId];
       S.stockTradesLeft--;
-      log(`你賣出 ${qty} 股 ${st.name}，獲得 ${fmt(revenue)} 元。`,'good');
+      log(`你賣出 ${qty} 股 ${st.name}。`,'good');
       redo();
     }});
 
     document.querySelectorAll('.btnrow [data-a]').forEach(b=>{
       b.onclick=()=>{const a=b.dataset.a;
         if(a==='will'){openWill();return}
-        if(a==='tclose'){S.money+=Math.round(S.trust*0.95);log(`你結束了信託基金，取回 ${fmt(S.trust*0.95)} 元。`);S.trust=0;S.trustActive=false;redo();return}
         const amt=readAmt();if(!amt)return;
-        if(a==='topen'){if(S.money<amt)return toast('現金不足');if(amt<1000000)return toast('信託最低 100 萬');S.money-=amt;S.trust+=amt;S.trustActive=true;log(`你設立了 ${fmt(amt)} 元的信託基金。`,'big');redo();return}
-        if(a==='din'){if(amt>S.money)return toast('現金不足');S.money-=amt;S.deposit+=amt;log(`你將 ${fmt(amt)} 元存入定期。`)}
-        if(a==='dout'){if(amt>S.deposit)return toast('定期不足');S.deposit-=amt;S.money+=amt;log(`你取出 ${fmt(amt)} 元定期。`)}
-        if(a==='eb'){if(amt>S.money)return toast('現金不足');S.money-=amt;S.etf+=amt;log(`你買入 ${fmt(amt)} 元 ETF。`)}
-        if(a==='es'){if(amt>S.etf)return toast('ETF 不足');S.etf-=amt;S.money+=amt;log(`你賣出 ${fmt(amt)} 元 ETF。`)}
-        if(a==='repay'){const x=Math.min(amt,S.money,S.debt);if(x<=0)return toast('現金不足');S.money-=x;S.debt-=x;log(`你還了 ${fmt(x)} 元債務。`,'good')}
+        if(a==='din'){if(amt>S.money)return toast('現金不足');S.money-=amt;S.deposit+=amt;log(`存入定期 ${fmt(amt)} 元。`)}
+        if(a==='dout'){if(amt>S.deposit)return toast('定期不足');S.deposit-=amt;S.money+=amt;log(`取出定期 ${fmt(amt)} 元。`)}
         redo()};
     });
-    document.querySelectorAll('[data-buy-house]').forEach(b=>{b.onclick=()=>confirmBuyHouse(b.dataset.buyHouse)});
-    document.querySelectorAll('[data-buy-car]').forEach(b=>{b.onclick=()=>{const c=CAR_TYPES.find(x=>x.id===b.dataset.buyCar);if(!c)return;const pr=Math.round(c.price*S.cpi);if(!S.licenses.driver)return toast('需先考駕照');if(S.money<pr)return toast('金錢不足');S.money-=pr;S.assets.cars.push({...c,price:pr});log(`你買下了${c.name}，價值 ${fmt(pr)} 元。`,'big');redo()}});
-    document.querySelectorAll('[data-sell-car]').forEach(b=>{b.onclick=()=>{const i=+b.dataset.sellCar;const c=S.assets.cars[i];if(!c)return;const sp=Math.round(c.price*0.92);S.money+=sp;S.assets.cars.splice(i,1);log(`你賣出了${c.name}，得 ${fmt(sp)} 元。`);redo()}});
-    document.querySelectorAll('[data-rent-house]').forEach(b=>{b.onclick=()=>{const h=S.assets.houses[+b.dataset.rentHouse];if(!h)return;h.rented=!h.rented;log(h.rented?`你把「${h.name}」出租。`:`你收回「${h.name}」自住。`);if(!h.rented)S.home='own';redo()}});
-    document.querySelectorAll('[data-sell-house]').forEach(b=>{b.onclick=()=>sellHouse(+b.dataset.sellHouse,redo)});
   }});
 }
-function houseBlock(h){
-  if(S.age<20)return'滿 20 歲才能買房';
-  const price=Math.round(h.price*S.houseIdx),down=Math.round(price*0.2),fee=Math.round(price*0.01);
-  if(S.money>=price+fee)return'';
-  if(S.money<down+fee)return`自備款不足`;
-  const loan=price-down,r=MORT_RATE,pay=Math.round(loan*r/(1-Math.pow(1+r,-30)));
-  const income=(S.salary||0)+partnerIncome()*0.8;
-  return pay<=income*0.5?'':'DTI 過高';
-}
-function confirmBuyHouse(id){
-  const h=HOUSE_TYPES.find(x=>x.id===id);if(!h)return;
-  if(S.age<20)return toast('滿 20 歲才能買房');
-  const price=Math.round(h.price*S.houseIdx);
-  const down=Math.round(price*0.2);const fee=Math.round(price*0.01);
-  const loan=price-down;const n=30;const r=MORT_RATE;
-  const pay=Math.round(loan*r/(1-Math.pow(1+r,-n)));
-  const income=(S.salary||0)+partnerIncome()*0.8;
-  const dti=pay<=income*0.5;
-  const html=`<p>${h.name}，總價 <b style="color:var(--amber)">${fmt(price)}</b>。</p>
-    <div class="row"><span class="k">頭期款＋規費</span><span class="v">${fmt(down+fee)}</span></div>
-    <div class="row"><span class="k">每年房貸</span><span class="v ${dti?'':'neg'}">${fmt(pay)}</span></div>`;
-  sheet({title:'購買'+h.name,body:html,buttons:[
-    {text:'貸款購入',cls:'pri',disabled:S.money<down+fee||!dti,onClick:()=>{S.money-=down+fee;S.assets.houses.push({...h,price,cost:price,boughtAge:S.age,rented:false,loan,pay,rate:r,left:n});S.home='own';log(`你貸款買下了${h.name}。`,'big');normalize();render();setTimeout(openProperty,60);return true}},
-    {text:'現金購入',disabled:S.money<price+fee,onClick:()=>{S.money-=price+fee;S.assets.houses.push({...h,price,cost:price,boughtAge:S.age,rented:false,loan:0,pay:0,rate:r,left:0});S.home='own';log(`你用現金買下了${h.name}。`,'big');normalize();render();setTimeout(openProperty,60);return true}},
-    {text:'返回',onClick:()=>{setTimeout(openProperty,60);return true}},
-  ]});
-}
-function sellHouse(i,redo){
-  const h=S.assets.houses[i];if(!h)return;
-  let sp=Math.round(h.price*0.97);
-  const gain=sp-(h.cost||h.price);const held=S.age-(h.boughtAge||S.age);
-  let tax=0;if(gain>0)tax=Math.round(gain*(held<2?0.45:held<10?0.2:0.15));
-  const payoff=h.loan||0;
-  S.money+=sp-tax-payoff;S.assets.houses.splice(i,1);
-  if(!S.assets.houses.some(x=>!x.rented)&&S.home==='own')S.home=parentsAlive()?'parents':'rent';
-  log(`你賣出了${h.name}，得 ${fmt(sp)} 元。`,'big');
-  redo();
-}
+
 function openWill(){
   const kids=S.people.children.filter(c=>c.alive);
-  if(!kids.length){sheet({title:'遺囑',body:`<div class="empty">你沒有存活的孩子，無法指定繼承人。</div>`,buttons:[{text:'關閉'}]});return}
-  const html=`<p style="margin-bottom:10px">選擇你的遺產分配方式：</p><div class="acts-list">
-      <div class="it" data-will="equal"><div class="l"><div class="nm">平均分配給子女</div><div class="ds">所有存活子女均分遺產</div></div></div>
-      ${kids.map(c=>`<div class="it" data-will="${c.id}"><div class="l"><div class="nm">全部給 ${c.name}</div><div class="ds">${c.gender==='M'?'兒子':'女兒'} · ${c.age} 歲</div></div></div>`).join('')}</div>`;
-  sheet({title:'立遺囑',body:html,buttons:[{text:'關閉'}]},{onMount(){
-    document.querySelectorAll('[data-will]').forEach(el=>{el.onclick=()=>{
-      const v=el.dataset.will;
-      if(v==='equal')S.will={type:'equal'};
-      else{const c=kids.find(k=>k.id===+v);if(!c)return;S.will={type:'single',heirId:c.id,heirName:c.name}}
-      log('你立下了遺囑。','good');closeSheet();setTimeout(openProperty,60);
-    }};
-  }});
+  if(!kids.length){sheet({title:'遺囑',body:`<div class="empty">尚無存活子女。</div>`,buttons:[{text:'關閉'}]});return}
+  sheet({title:'立遺囑',body:`<p>遺產將平均分配給所有子女。</p>`,buttons:[{text:'確認',onClick:()=>{S.will={type:'equal'};log('已立下遺囑。');openProperty();return true}},{text:'關閉'}]});
 }
 
-/* ══════ 學業與職涯 ══════ */
-function examScore(){return Math.round(clamp(300+S.iq*3+S.eq+rnd(-30,30),0,750))}
-function examHui(){
-  const sc=examScore();
-  let pool,tag;
-  if(sc>=620){pool=S.gender==='M'?HS_ELITE_M:HS_ELITE_F;tag='elite';S.iq+=3}
-  else if(sc>=500){pool=HS_GEN;tag='gen'}
-  else{pool=HS_VOC;tag='voc'}
-  const nm=pick(pool);
-  S.hs=nm;S.school=nm;S.eduName=nm;S.eduLevel=1;
-  log(`國中會考成績 ${sc} 分，你考上了${nm}。`,tag==='voc'?'bad':'big');
-  if(S.origin==='rich'&&(parentsAlive()||S.money>=1500000)){
-    queue(()=>{
-      sheet({
-        title:'✈️ 家族安排：赴海外就讀貴族高中',
-        body:`<p>父母提議送你前往歐美寄宿高中就讀（每年學費約 120 萬）。</p>`,
-        closable:false,
-        buttons:[
-          {text:'前往海外高中留學',cls:'pri',onClick:()=>{
-            S.hs='海外國際寄宿高中';S.school='海外國際寄宿高中';S.eduName='海外高中';
-            S.studyAbroad={stage:'hs',country:'歐美'};
-            S.eq+=6;S.iq+=4;S.renown+=4;
-            log('你飛往海外就讀國際寄宿高中！','big');
-            normalize();render();
-          }},
-          {text:'留在台灣就讀 '+nm,onClick:()=>{log(`你決定留在台灣就讀${nm}。`)}}
-        ]
-      });
-    });
-  }
-}
-function leaveSchool(msg,cls){
-  S.school='';S.eduName=(S.hs||'高中職')+'畢業';S.eduLevel=1;log(msg,cls||'big');S.pendingOffer=true;
-  queueJob();
-}
-function examXueCe(){
-  const goDomestic=()=>{
-    if(isVoc(S.school)){leaveSchool('你從高職畢業，準備進入社會。');return}
-    const sc=examScore();log(`國內升學考試放榜：${sc} 分。`,'big');
-    const available=MAJORS.filter(m=>m.score<=sc);
-    if(!available.length){leaveSchool('你的分數未達國內大學錄取線，決定先進入社會工作。','bad');return}
-    queue(()=>openMajorSelect(sc,available));
-  };
-  goDomestic();
-}
-function openMajorSelect(score,list){
-  const html=`<p style="margin-bottom:6px">你的升學考試成績為 <b style="color:var(--amber)">${score}</b> 分。</p><div class="acts-list" id="majorList">${list.map(m=>`<div class="it" data-id="${m.id}"><div class="l"><div class="nm">${m.name}</div><div class="ds">${m.tag} · 錄取線 ${m.score} 分</div></div><div class="dg">選擇</div></div>`).join('')}</div>`;
-  sheet({title:'選擇科系',body:html,buttons:[{text:'放棄升學，直接就業',cls:'warn',onClick:()=>{leaveSchool('你放棄升學，選擇直接就業。','bad')}}],onMount(){
-    $('majorList').addEventListener('click',e=>{
-      const it=e.target.closest('.it');if(!it)return;
-      const m=MAJORS.find(x=>x.id===it.dataset.id);if(!m)return;
-      S.major=m.id;S.university=pickUniversity(m,score);S.school=S.university+deptName(m);S.eduName=S.university;S.eduLevel=m.level;
-      log(`你考上了${S.university}${deptName(m)}。`,'big');normalize();render();closeSheet();
-    });
-  }});
-}
-function graduate(){
-  const m=MAJORS.find(x=>x.id===S.major);
-  S.school='';S.studyAbroad=null;
-  S.eduName=S.university?S.university+'畢業':((m?m.name:'大學')+'畢業');
-  log(`你從${S.university||'大學'}學成畢業！`,'big');
-  S.pendingOffer=true;
-  queueJob();
-}
-
-function jobReason(j){
-  if(j.need>S.eduLevel)return'學歷不足';
-  if(j.vol&&S.age>35)return'超過報考年齡';
-  if(j.major&&S.major!==j.major)return'科系不符';
-  if(j.lic&&!S.licenses[j.lic])return'需通過國家考試';
-  if(j.startup&&S.money<BIZ_START)return`需資金 ${fmt(BIZ_START)}`;
-  if(j.renown&&S.renown<j.renown)return`知名度不足`;
-  if(j.minHealth&&S.health<j.minHealth)return`健康不足`;
-  return'';
-}
 function openJobSearch(){
-  if(S.over||S.prison)return;
+  if(S.over)return;
   if(S.age<16)return toast('滿 16 歲才能求職');
-  if(S.school)return toast('求學期間無法全職工作');
-  if(S.military)return;
-  if(S.civil||S.politician||S.job){
-    sheet({title:'目前的工作',body:`<p>身份：<b>${currentPositionName()}</b></p>`,buttons:[{text:'換工作',onClick:()=>{setTimeout(()=>openJobList(true),60);return true}},{text:'辭職',cls:'warn',onClick:resignJob},{text:'返回'}]});
-    return;
-  }
-  openJobList(false);
-}
-function openJobList(switching){
-  if(S.apps<=0){sheet({title:'求職',body:'<p>今年投遞次數已用盡。</p>',buttons:[{text:'關閉'}]});return}
-  const ok=[];
-  JOBS.forEach(j=>{const r=jobReason(j);if(!r)ok.push(j)});
-  const html=`<p style="color:var(--ink3);font-size:12px;margin-bottom:8px">剩餘求職次數：${S.apps}</p><div class="acts-list" id="jobList">${ok.map(j=>`<div class="it" data-id="${j.id}"><div class="l"><div class="nm">${j.name}</div><div class="ds">年薪約 ${fmt(jobPay(j,0,0))}</div></div><div class="dg">應徵</div></div>`).join('')}</div>`;
+  const ok=JOBS.slice(0,6);
+  const html=`<div class="acts-list" id="jobList">${ok.map(j=>`<div class="it" data-id="${j.id}"><div class="l"><div class="nm">${j.name}</div><div class="ds">年薪約 ${fmt(jobPay(j,0,0))}</div></div><div class="dg">應徵</div></div>`).join('')}</div>`;
   sheet({title:'求職',body:html,buttons:[{text:'關閉'}],onMount(){
     $('jobList').addEventListener('click',e=>{
       const it=e.target.closest('.it');if(!it)return;
       const job=JOBS.find(j=>j.id===it.dataset.id);if(!job)return;
-      S.apps--;
-      S.job=job;S.payMod=1;S.salary=jobPay(job,0,0);S.working=true;S.jobPosition=0;S.workYears=0;
-      log(`你成為了一名「${job.name}」，年薪 ${fmt(S.salary)} 元。`,'big');normalize();render();closeSheet();
+      S.job=job;S.salary=jobPay(job,0,0);S.working=true;S.jobPosition=0;S.workYears=0;
+      log(`你成為了一名「${job.name}」。`,'big');normalize();render();closeSheet();
     });
   }});
 }
-function dropJob(silent){
-  if(!silent)log(`你辭去了工作。`,'bad');
-  S.civil=null;S.politician=null;S.job=null;S.salary=0;S.working=false;S.jobPosition=0;S.workYears=0;
-}
-function resignJob(){dropJob(false);normalize();render();closeSheet()}
 
-function openBusinesses(){
-  if(S.over)return;
-  if(!S.businesses.length){sheet({title:'產業',body:`<div class="empty">尚無企業。</div>`,buttons:[{text:'關閉'}]});return}
-  const html=S.businesses.map((c,i)=>`<div class="biz-card"><div class="t">${c.name}</div><div class="m">${c.typeName} · 去年獲利 ${fmt(c.lastProfit)}</div><div class="btnrow"><button data-biz-sell="${i}">出售</button></div></div>`).join('');
-  sheet({title:'我的產業',body:html,buttons:[{text:'關閉'}],onMount(){
-    document.querySelectorAll('[data-biz-sell]').forEach(b=>{b.onclick=()=>{
-      const i=+b.dataset.bizSell;const c=S.businesses[i];const v=Math.round(bizValue(c));
-      S.money+=v;S.businesses.splice(i,1);log(`你售出企業得 ${fmt(v)} 元。`,'big');normalize();render();openBusinesses();
-    }});
-  }});
-}
-
-function conscriptionDue(){return S.gender==='M'&&!S.militaryDone&&!S.military&&!S.prison&&!S.school&&S.age>=18&&S.age<=MIL_MAX_AGE}
-function queueMilitary(){
-  if(!conscriptionDue())return false;
-  queueOnce('mil',()=>enlist('conscript'));
-  return true;
-}
-function enlist(kind){
-  dropJob(true);S.militaryDone=true;
-  const rank={...MILITARY_RANKS[0],m:CONSCRIPT_M};
-  S.military={kind,rank,rankIndex:0,yearsServed:0,left:1};
-  S.salary=Math.round(rank.m*12*S.cpi);S.working=true;
-  log('你入伍服義務役，役期 1 年。','big');normalize();render();
-}
-function militaryYear(){
-  const m=S.military;m.yearsServed++;m.left--;
-  log('軍旅生涯進行中。');
-  if(m.left<=0){log('光榮退伍。','big');S.military=null;S.salary=0;S.working=false;queueJob()}
-  return S.salary;
-}
 function openCareer(){
   if(S.over)return;
   sheet({title:'職涯',body:`<p>目前職位：<b>${currentPositionName()}</b></p>`,buttons:[{text:'關閉'}]});
 }
 
-function workIncome(){
-  if(S.military)return militaryYear();
-  if(S.job){
-    S.workYears=(S.workYears||0)+1;
-    S.salary=jobPay(S.job,S.jobPosition,S.workYears);
-    return S.salary;
-  }
-  return 0;
-}
-
-function ageUpPeople(){
-  const p=S.people;
-  [p.dad,p.mom].forEach(w=>{if(w&&!w.absent&&w.alive)w.age++});
-  p.friends.forEach(f=>{if(f.alive)f.age++});
-  p.children.forEach(c=>{if(c.alive)c.age++});
-  if(S.partner)S.partner.age++;
-}
-function maybeNewFriend(){if(Math.random()<0.08)addNewFriend(false);}
-function checkPrison(){}
-function illnessYear(){}
-function fireEvent(){if(Math.random()<0.15)log('生活中發生了一些日常小插曲。');}
-function fireChoice(){}
-function checkAch(){}
-
 function nextYear(){
   if(S.over)return;
-  if(S.ap>0&&S.age>=6&&!S.prison){
+  if(S.ap>0&&S.age>=6){
     sheet({title:'度過這一年？',body:`<p>還有 <b style="color:var(--amber)">${S.ap}</b> 個行動點未用。</p>`,buttons:[{text:'返回'},{text:'確定度過',cls:'pri',onClick:()=>{setTimeout(doNextYear,60)}}]});
     return;
   }
@@ -1355,36 +785,18 @@ function nextYear(){
 
 function doNextYear(){
   if(S.over)return;closeSheet();
-  S.age++;S.apps=3;S.pendingOffer=false;
+  S.age++;S.apps=3;
   S.maxAp=hasChildUnder(3)?3:5;S.ap=S.maxAp;
-  S.stockTradesLeft=3; // 每年重置投資變動次數
+  S.stockTradesLeft=3; // 重置投資次數
   
   S.cpi*=1+0.02;
-  S.econ.stock=rnd(-0.15,0.25);
-  S.econ.housing=rnd(-0.05,0.08);
-  S.houseIdx*=1+S.econ.housing;
+  const income=S.job?S.salary:0;
+  const lc=livingCost();
+  S.money+=income-lc.total;
 
-  const L={wage:0,rent:0,biz:0,tax:0,living:0,loan:0,other:0};
-  L.wage=workIncome();
-
-  S.assets.houses.forEach(h=>{
-    if(h.rented)L.rent+=Math.round(h.price*0.022);
-    if(h.loan>0){const it=h.loan*h.rate;const pr=Math.min(h.loan,h.pay-it);h.loan-=pr;L.loan+=pr+it;if(h.left<=0)h.loan=0}
-    h.price=Math.round(h.price*(1+S.econ.housing));
-  });
-
-  const lc=livingCost();L.living=lc.total;
-  const income=L.wage+L.rent;
-  const expense=L.living+L.loan+L.other;
-  S.money+=income-expense;
-  S.lastYear={income:Math.round(income),expense:Math.round(expense),net:Math.round(income-expense),living:Math.round(L.living),loan:Math.round(L.loan)};
-
-  // 存款、ETF、個股年度結算
   if(S.deposit>0)S.deposit+=S.deposit*DEPOSIT_RATE;
-  if(S.trust>0)S.trust+=S.trust*TRUST_RATE;
-  if(S.etf>0)S.etf+=S.etf*S.econ.stock;
-  
-  // 個股市值與隨機波動
+  if(S.etf>0)S.etf+=S.etf*0.05;
+
   if(S.stk&&Object.keys(S.stk).length>0){
     STOCK_MARKET.forEach(st=>{
       if(S.stk[st.id]){
@@ -1395,51 +807,25 @@ function doNextYear(){
   }
 
   normalize();
-  ageUpPeople();
-
   if(S.age===6)S.school=schoolForAge(6);
-  if(S.age===15)examHui();
-  if(S.age===18)examXueCe();
-  if(S.age===65)retire('你屆齡退休了。');
+  if(S.age===65)S.job=null;
 
-  maybeNewFriend();
-  normalize();checkAch();render();
-
+  normalize();render();
   if(S.health<=0||S.age>=110){gameOver('你安詳地結束了一生。');return}
   setTimeout(flushQueue,100);
-}
-
-function retire(why){
-  S.job=null;S.salary=0;S.working=false;S.retired=true;
-  log(why,'big');
-}
-
-function evaluate(nw){
-  if(nw>1e8)return'億萬富豪';
-  if(nw>3e7)return'人生勝利組';
-  return'平凡一生';
 }
 
 function gameOver(reason){
   S.over=true;_q.length=0;clearSave();render();
   const nw=netWorth();
   const kids=S.people.children.filter(c=>c.alive);
-  const title=evaluate(nw);
   
-  const html=`
-    <p>${reason}</p>
-    <div class="row"><span class="k">評價</span><span class="v">${title}</span></div>
-    <div class="row"><span class="k">享年</span><span class="v">${S.age} 歲</span></div>
-    <div class="row"><span class="k">淨資產</span><span class="v">${fmt(nw)} 元</span></div>
-    <p class="note">你可以選擇一位子女繼承你的人生，伴侶與其他親友關係將完整保留。</p>`;
-  
+  const html=`<p>${reason}</p><p class="note">淨資產：${fmt(nw)}</p>`;
   const buttons=[];
   kids.forEach(c=>{
     buttons.push({text:`繼承 ${c.name}（${c.age}歲）`,cls:'pri',onClick:()=>{
       const share=Math.round(nw/kids.length);
       const biz=S.businesses.map(b=>({...b}));
-      
-      // 打包完整現有親友陣列傳遞給下一代
       const preservedPeople={
         dad:S.people.dad?{...S.people.dad}:null,
         mom:S.people.mom?{...S.people.mom}:null,
@@ -1447,11 +833,9 @@ function gameOver(reason){
         friends:S.people.friends.map(f=>({...f})),
         children:S.people.children.map(ch=>({...ch}))
       };
-
       newGameWithOrigin(null,{
         name:c.name,
         gender:c.gender,
-        orientation:S.orientation,
         _money:share,
         _age:c.age,
         _cpi:S.cpi,
@@ -1469,9 +853,9 @@ function gameOver(reason){
 $('resetBtn').onclick=()=>sheet({title:'重來',body:'確定重新開始？',buttons:[{text:'取消'},{text:'確定',cls:'warn',onClick:()=>{clearSave();openOriginSelect()}}]});
 $('btnActivity').onclick=openActivities;
 $('btnProperty').onclick=openProperty;
-$('btnRelation').onclick=()=>openRelations();
+$('btnRelation').onclick=openRelations;
 $('btnPartner').onclick=openPartnerPanel;
-$('btnBusiness').onclick=openBusinesses;
+$('btnBusiness').onclick=()=>sheet({title:'產業',body:'尚無產業',buttons:[{text:'關閉'}]});
 $('btnCareer').onclick=openCareer;
 $('btnNext').onclick=nextYear;
 
