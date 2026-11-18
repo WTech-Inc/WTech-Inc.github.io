@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>年歲 · 人生模擬</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#14161a;--bg2:#191c21;--card:#1e2126;--card2:#252931;--line:#2e333b;--line2:#3a404a;--ink:#dcd8d0;--ink2:#989da4;--ink3:#686d75;--amber:#d4a05a;--amber2:#a87c42;--sage:#8aa896;--rust:#c07a6d;--sky:#7d9cc0;--plum:#a88ab8}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--ink);padding:0 14px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:center;overflow-x:hidden;font-feature-settings:"tnum";line-height:1.5}
+body.locked{overflow:hidden}
+#app{width:100%;max-width:680px;padding-top:calc(14px + env(safe-area-inset-top))}
+.top{display:flex;align-items:flex-end;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.who{flex:1;min-width:0}
+.who-name{font-size:11.5px;color:var(--ink3);letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who-age{display:flex;align-items:baseline;gap:4px;line-height:1}
+.who-age b{font-family:Georgia,"Songti TC",serif;font-size:38px;font-weight:400;color:var(--ink);font-variant-numeric:tabular-nums}
+.who-age i{font-style:normal;font-size:12px;color:var(--ink3);padding-bottom:5px}
+.who-age b.bump{animation:bump .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes bump{0%{transform:scale(1)}45%{transform:scale(1.22)}100%{transform:scale(1)}}
+.purses{display:flex;flex-direction:column;align-items:flex-end;gap:3px;font-size:12px;color:var(--ink2)}
+.purses .p{display:flex;gap:6px;align-items:baseline;position:relative}
+.purses .p b{color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums}
+.purses .p.zero b{color:var(--rust)}
+.purses .p.debt b{color:var(--rust)}
+.purses .p .lbl{font-size:11px;color:var(--ink3)}
+.reset{width:32px;height:32px;flex-shrink:0;border-radius:8px;cursor:pointer;border:1px solid var(--line2);background:transparent;color:var(--ink2);font-size:15px;display:grid;place-items:center;transition:.15s;margin-bottom:1px}
+.reset:hover{border-color:var(--rust);color:var(--rust)}
+.fnum{position:absolute;right:0;top:-1px;font-size:11.5px;font-weight:700;pointer-events:none;white-space:nowrap;animation:fnum 1.1s ease-out forwards}
+.fnum.up{color:var(--sage)}.fnum.down{color:var(--rust)}
+@keyframes fnum{0%{opacity:0;transform:translateY(3px)}20%{opacity:1}100%{opacity:0;transform:translateY(-16px)}}
+.idbar{display:flex;flex-wrap:wrap;gap:0;align-items:center;font-size:12px;color:var(--ink2);padding:10px 0 12px}
+.idbar .cell{padding:0 10px;border-right:1px solid var(--line);white-space:nowrap}
+.idbar .cell:first-child{padding-left:0}
+.idbar .cell:last-child{border-right:0}
+.idbar .cell button{font:inherit;background:none;border:0;color:var(--amber);cursor:pointer;padding:0;border-bottom:1px dashed var(--amber2)}
+.idbar .warn{color:var(--rust)}
+.attrs{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;margin-bottom:14px}
+.attr-h{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2);margin-bottom:4px}
+.attr-h .v{color:var(--ink);font-variant-numeric:tabular-nums;font-size:12.5px}
+.attr-h .v .d{font-size:10.5px;font-weight:700;margin-left:3px;animation:dp 1.6s ease-out forwards}
+.attr-h .v .d.up{color:var(--sage)}.attr-h .v .d.down{color:var(--rust)}
+@keyframes dp{0%{opacity:0}20%{opacity:1}75%{opacity:1}100%{opacity:0}}
+.track{height:4px;background:#262b32;border-radius:2px;overflow:hidden}
+.track i{display:block;height:100%;border-radius:2px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.diary{border-top:1px solid var(--line);border-bottom:1px solid var(--line);height:214px;overflow-y:auto;margin-bottom:14px;padding:2px 0}
+.diary::-webkit-scrollbar{width:4px}
+.diary::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
+.e{display:flex;gap:10px;padding:7px 2px 7px 0;font-size:12.8px;line-height:1.55;animation:fe .3s ease;border-bottom:1px dashed rgba(58,64,74,.45)}
+.e:last-child{border-bottom:0}
+.e .t{flex-shrink:0;width:40px;font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums;padding-top:2px;text-align:right}
+.e .x{flex:1;color:var(--ink2)}
+.e.good .x{color:#a8c4b4}.e.bad .x{color:#d4a29a}.e.big .x{color:var(--ink);font-weight:600}.e.big .t{color:var(--amber)}
+@keyframes fe{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.diary:empty::after{content:'你的人生剛剛開始。';color:var(--ink3);font-size:12.5px;display:flex;align-items:center;justify-content:center;height:100%;font-family:Georgia,"Songti TC",serif;letter-spacing:.5px}
+.menu{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.menu button,.advance{font-family:inherit;font-size:12px;padding:11px 3px;border-radius:8px;cursor:pointer;border:1px solid var(--line2);background:transparent;color:var(--ink2);font-weight:500;transition:.15s;letter-spacing:.2px}
+.menu button:hover:not(:disabled){border-color:var(--amber2);color:var(--amber);background:rgba(212,160,90,.06)}
+.menu button:active:not(:disabled){transform:scale(.97)}
+.menu button:disabled{opacity:.28;cursor:not-allowed}
+.menu button .sub{display:block;font-size:9.5px;color:var(--ink3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.advance{width:100%;padding:14px;font-size:14px;font-weight:600;border-color:var(--amber2);color:var(--amber);background:rgba(212,160,90,.08);letter-spacing:1.5px;font-family:Georgia,"Songti TC",serif}
+.advance:hover:not(:disabled){background:rgba(212,160,90,.18)}
+.advance:disabled{opacity:.3;cursor:not-allowed}
+.advance.ready{animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{0%,100%{background:rgba(212,160,90,.08)}50%{background:rgba(212,160,90,.2)}}
+#ov{position:fixed;inset:0;background:rgba(10,11,13,.78);display:none;align-items:center;justify-content:center;padding:16px;z-index:99}
+#ov.show{display:flex}
+.sheet{width:100%;max-width:470px;max-height:84vh;overflow-y:auto;background:var(--card);border:1px solid var(--line2);border-radius:10px;padding:20px;animation:sp .22s cubic-bezier(.34,1.3,.64,1);box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.sheet::-webkit-scrollbar{width:4px}
+.sheet::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
+@keyframes sp{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.sheet h2{font-family:Georgia,"Songti TC",serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:14px;letter-spacing:.8px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.sheet .body{font-size:13px;line-height:1.7;color:var(--ink2)}
+.sheet .body p{margin-bottom:8px}
+.sheet .body p:last-child{margin-bottom:0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.row:last-child{border-bottom:0}
+.row .k{color:var(--ink2);font-size:12.5px;flex-shrink:0}
+.row .v{color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums;text-align:right;word-break:break-all}
+.row .v.neg{color:var(--rust)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.btnrow button{flex:1;min-width:100px;font-family:inherit;font-size:12.5px;padding:11px 10px;border-radius:7px;border:1px solid var(--line2);background:transparent;color:var(--ink2);cursor:pointer;font-weight:500;transition:.15s}
+.btnrow button:hover:not(:disabled){border-color:var(--amber2);color:var(--amber)}
+.btnrow button:disabled{opacity:.3;cursor:not-allowed}
+.btnrow button.pri{border-color:var(--amber2);color:var(--amber);background:rgba(212,160,90,.09)}
+.btnrow button.pri:hover:not(:disabled){background:rgba(212,160,90,.2)}
+.btnrow button.warn{border-color:rgba(192,122,109,.55);color:var(--rust)}
+.btnrow button.warn:hover:not(:disabled){background:rgba(192,122,109,.12)}
+.btnrow button.on{border-color:var(--amber2);color:var(--amber);background:rgba(212,160,90,.12)}
+.person{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.person:last-child{border-bottom:0}
+.person .ava{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-family:Georgia,"Songti TC",serif;font-size:15px;color:#14161a;font-weight:600;background:var(--amber);opacity:.85}
+.person .ava.f{background:var(--plum)}
+.person .ava.dead{background:#3a404a;color:var(--ink3)}
+.person .info{flex:1;min-width:0}
+.person .n{font-size:13.5px;color:var(--ink);font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.person .n .tag{font-size:10px;font-weight:500;color:var(--ink3);padding:1px 6px;border:1px solid var(--line2);border-radius:3px}
+.person .n .tag.fam{color:var(--plum);border-color:rgba(168,138,184,.4)}
+.person .n .tag.par{color:var(--amber);border-color:rgba(212,160,90,.4)}
+.person .n .tag.chi{color:var(--sage);border-color:rgba(138,168,150,.4)}
+.person .meta{font-size:11.5px;color:var(--ink3);margin:2px 0 6px;line-height:1.4}
+.person .meta .dead{color:var(--rust)}
+.person .relbar{height:3px;background:#262b32;border-radius:2px;overflow:hidden}
+.person .relbar i{display:block;height:100%;border-radius:2px;transition:width .4s}
+.person .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.person .acts button{font:inherit;font-size:11.5px;padding:5px 10px;border-radius:5px;border:1px solid var(--line2);background:transparent;color:var(--ink2);cursor:pointer;transition:.15s}
+.person .acts button:hover:not(:disabled){border-color:var(--amber2);color:var(--amber)}
+.person .acts button:disabled{opacity:.3;cursor:not-allowed}
+.person .acts button.pri{border-color:var(--amber2);color:var(--amber)}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:6px;overflow-x:auto}
+.tabs button{font:inherit;font-size:12.5px;padding:9px 12px;border:0;background:none;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s;white-space:nowrap}
+.tabs button.on{color:var(--amber);border-bottom-color:var(--amber)}
+.tabs button .cnt{font-size:10.5px;color:var(--ink3);margin-left:3px}
+.empty{color:var(--ink3);font-size:12.5px;padding:22px 0;text-align:center}
+.acts-list .it{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s}
+.acts-list .it:last-child{border-bottom:0}
+.acts-list .it:hover:not(.off){padding-left:4px}
+.acts-list .it.off{opacity:.35;cursor:not-allowed}
+.acts-list .it .l{flex:1;min-width:0}
+.acts-list .it .nm{font-size:13px;color:var(--ink)}
+.acts-list .it .ds{font-size:11.5px;color:var(--ink3);margin-top:1px}
+.acts-list .it .dg{font-size:11.5px;color:var(--amber);white-space:nowrap;font-variant-numeric:tabular-nums}
+.acts-list .it .dg .w{color:var(--rust)}
+.acts-list .it .dg{text-align:right;line-height:1.35}
+input[type=number],input[type=text]{width:100%;padding:11px 12px;border-radius:7px;border:1px solid var(--line2);background:var(--bg2);color:var(--ink);font-size:14px;font-family:inherit;outline:none;margin:10px 0;font-variant-numeric:tabular-nums}
+input:focus{border-color:var(--amber2)}
+.note{font-size:11.5px;color:var(--ink3);margin-top:10px;line-height:1.6}
+.origin{padding:12px 14px;border:1px solid var(--line2);border-radius:8px;cursor:pointer;transition:.15s;background:var(--bg2)}
+.origin:hover{border-color:var(--amber2);background:rgba(212,160,90,.05)}
+.origin .h{font-size:14px;color:var(--ink);font-weight:600;margin-bottom:3px;font-family:Georgia,"Songti TC",serif;letter-spacing:.5px}
+.origin .d{font-size:11.5px;color:var(--ink3);margin-bottom:6px}
+.origin .b{font-size:11.5px;color:var(--amber)}
+.origins{display:flex;flex-direction:column;gap:8px}
+.bizstat{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.bizstat .b{background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.bizstat .b .l{font-size:10.5px;color:var(--ink3)}
+.bizstat .b .v{font-size:13px;color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums}
+.emp{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-size:12px}
+.emp:last-child{border-bottom:0}
+.biz-card{padding:12px;border:1px solid var(--line2);border-radius:8px;background:var(--bg2);margin-bottom:8px}
+.biz-card .t{font-size:13.5px;color:var(--ink);font-weight:600;margin-bottom:4px}
+.biz-card .m{font-size:11.5px;color:var(--ink3);margin-bottom:8px}
+.asset-card{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:10px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.asset-card:last-child{border-bottom:0}
+.asset-card .l{flex:1;min-width:0}
+.asset-card .nm{color:var(--ink);font-weight:600}
+.asset-card .ds{color:var(--ink3);font-size:11px;margin-top:2px}
+.asset-card .v{color:var(--amber);font-variant-numeric:tabular-nums;white-space:nowrap;margin-right:4px}
+.asset-card button{font:inherit;font-size:11px;padding:4px 8px;border-radius:4px;border:1px solid var(--line2);background:transparent;color:var(--ink2);cursor:pointer;flex-shrink:0}
+.asset-card button:hover{border-color:var(--amber2);color:var(--amber)}
+.cat-title{font-size:12px;color:var(--ink3);letter-spacing:1px;margin:12px 0 4px;padding-bottom:4px;border-bottom:1px dashed var(--line)}
+.cat-title:first-child{margin-top:0}
+.sec{font-size:13px;color:var(--ink);margin:16px 0 8px;font-family:Georgia,"Songti TC",serif}
+#toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(14px);background:var(--card2);border:1px solid var(--line2);color:var(--ink);padding:10px 18px;border-radius:7px;font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:999;max-width:84vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:400px){.who-age b{font-size:32px}.attrs{gap:7px 14px}.menu{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="who"><div class="who-name" id="whoName">—</div><div class="who-age"><b id="ageNum">0</b><i>歲</i></div></div>
+    <div class="purses">
+      <div class="p" id="purseCash"><span class="lbl">現金</span><b id="moneyTxt">0</b></div>
+      <div class="p debt" id="purseDebt" style="display:none"><span class="lbl">負債</span><b id="debtTxt">0</b></div>
+      <div class="p" id="purseAP"><span class="lbl">行動</span><b><span id="apTxt">5</span>/<span id="apMax">5</span></b></div>
+    </div>
+    <button class="reset" id="resetBtn" title="重新開始">↺</button>
+  </header>
+  <div class="idbar" id="idbar"></div>
+  <div class="attrs" id="attrs"></div>
+  <div class="diary" id="diary"></div>
+  <div class="menu">
+    <button id="btnPartner">伴侶</button>
+    <button id="btnProperty">財產</button>
+    <button id="btnRelation">關係</button>
+    <button id="btnActivity">活動</button>
+    <button id="btnBusiness">產業</button>
+    <button id="btnCareer">職涯</button>
+  </div>
+  <button class="advance" id="btnNext">度 過 這 一 年</button>
+</div>
+<div id="ov"></div><div id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const ri=(a,b)=>Math.floor(rnd(a,b+1));
+const pick=a=>a[ri(0,a.length-1)];
+function fmt(n){n=Math.round(n);const neg=n<0?'−':'';n=Math.abs(n);if(n>=1e8)return neg+(n/1e8).toFixed(2)+'億';if(n>=1e4)return neg+(n/1e4).toFixed(1)+'萬';return neg+n.toLocaleString()}
+let _t;function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_t);_t=setTimeout(()=>el.classList.remove('show'),2000)}
+
+const _q=[];
+function queue(fn){_q.push(fn);setTimeout(flushQueue,60)}
+function flushQueue(){
+  if($('ov').classList.contains('show')||!_q.length)return;
+  const fn=_q.shift();fn();
+  if(!$('ov').classList.contains('show'))setTimeout(flushQueue,80);
+}
+function queueOnce(key,fn){if(_q.some(x=>x._k===key))return;const f=()=>fn();f._k=key;queue(f)}
+function queueJob(){queueOnce('job',openJobSearch);}
+
+const YEAR_M=13;
+const DEPOSIT_RATE=0.016;
+const SAVE_KEY='lifesim_tw_v6'; // 更換存檔 key 以強制重新開局
+
+const SURNAME=['王','李','張','劉','陳','楊','黃','趙','吳','周','徐','孫','馬','朱','胡','郭','何','高','林','羅','鄭','梁','謝','宋','許','鄧','馮','曹','彭','曾','蔡','葉','蘇','潘','蕭','江','洪'];
+const NAME_M=['志明','建宏','俊傑','家豪','冠宇','柏翰','承恩','品睿','子軒','宥廷','承翰','冠廷','宇軒','柏均','子毅','明遠','嘉文','書維','廷宇','冠霖','振業','文彬','俊宏','冠豪','世傑'];
+const NAME_F=['淑芬','美玲','雅婷','怡君','佳穎','詠晴','詩涵','子晴','語彤','品妍','芯羽','采潔','姵妤','思穎','若曦','雅雯','怡安','書瑤','庭瑄','心怡','淑惠','美華','慧敏','雅芳','怡婷'];
+function randPerson(g){const s=pick(SURNAME);return{name:s+(g==='M'?pick(NAME_M):pick(NAME_F)),gender:g,surname:s}}
+
+const ORIGINS=[
+  {id:'rich',name:'富商之家',desc:'父母經商，家底殷實',dadJob:'企業主',momJob:'家庭主婦',money:2000000,wealth:60000000,pay:true,dadRel:72,momRel:70,iq:50,eq:65,moral:45,health:85,bonus:'💰 起始 200 萬 · 父母資產約 6,000 萬'},
+  {id:'scholar',name:'書香門第',desc:'父母執教，重視學問',dadJob:'大學教授',momJob:'中學教師',money:300000,wealth:15000000,pay:true,dadRel:80,momRel:85,iq:68,eq:55,moral:65,health:85,bonus:'🧠 智商 +18 · 父母高關係'},
+  {id:'normal',name:'小康家庭',desc:'父母上班，溫飽無虞',dadJob:'公司職員',momJob:'會計',money:100000,wealth:8000000,pay:true,dadRel:75,momRel:80,iq:52,eq:52,moral:50,health:90,bonus:'⚖️ 各項均衡 · 父母有一間自住房'},
+  {id:'poor',name:'貧困家庭',desc:'父母務農或打零工',dadJob:'農民',momJob:'家庭主婦',money:10000,wealth:1000000,pay:false,dadRel:82,momRel:85,iq:45,eq:45,moral:72,health:82,bonus:'⚖️ 道德 +22 · 家庭關係極好'},
+  {id:'orphan',name:'孤兒',desc:'無父無母，由親戚撫養長大',dadJob:null,momJob:null,money:0,wealth:0,pay:false,dadRel:0,momRel:0,iq:55,eq:62,moral:50,health:78,bonus:'💬 情商 +12 · 無父母陪伴'},
+];
+
+const JOBS=[
+  {id:'waiter',name:'餐廳服務員',m:30000,need:0},
+  {id:'factory',name:'工廠作業員',m:36000,need:0},
+  {id:'delivery',name:'外送員',m:42000,need:0},
+  {id:'clerk',name:'公司文員',m:36000,need:1},
+  {id:'sales',name:'業務專員',m:40000,need:1},
+  {id:'engineer',name:'工程師',m:80000,need:3},
+];
+
+const STOCK_MARKET=[
+  {id:'tsmc',name:'台積電 (2330)',price:600,vol:0.18,desc:'護國神山'},
+  {id:'nvda',name:'輝達 (NVDA)',price:900,vol:0.32,desc:'AI 算力霸主'},
+  {id:'apple',name:'蘋果 (AAPL)',price:520,vol:0.15,desc:'消費電子巨頭'},
+  {id:'crypto',name:'比特幣 (BTCUSD)',price:2500000,vol:0.55,desc:'加密資產'},
+];
+
+function identityOf(age,job){
+  if(age<3)return'嬰兒';if(age<6)return'幼兒';if(age<12)return'國小生';if(age<15)return'國中生';if(age<18)return'高中生';
+  if(age>=65)return'退休';if(job)return job;if(age>=22)return'待業';return'學生';
+}
+function schoolForAge(a){if(a>=3&&a<6)return'幼兒園';if(a>=6&&a<12)return'國小';if(a>=12&&a<15)return'國中';if(a>=15&&a<18)return'高中';return'';}
+
+function blankState(){return{
+  name:'',gender:'M',origin:'normal',age:0,money:0,mood:70,health:90,iq:50,eq:50,moral:50,
+  ap:5,maxAp:5,apps:3,eduName:'嬰兒',eduLevel:0,school:'',job:null,salary:0,working:false,jobPosition:0,workYears:0,
+  businesses:[],assets:{houses:[],cars:[]},deposit:0,etf:0,stk:{},debt:0,
+  stockTradesLeft:3,cpi:1,lifestyle:1,home:'parents',married:false,partner:null,
+  people:{dad:absentP('父親','M'),mom:absentP('母親','F'),friends:[],children:[]},
+  logs:[],over:false
+}}
+const absentP=(role,g)=>({id:uid(),name:'—',gender:g,age:0,rel:0,alive:false,role,job:null,absent:true});
+let _uid=1;const uid=()=>_uid++;let _prev=null,_prevAgeShown=undefined,_sv=null;
+function log(text,cls=''){S.logs.unshift({age:S.age,text,cls});if(S.logs.length>200)S.logs.length=200}
+function snap(){return{mood:S.mood,health:S.health,iq:S.iq,eq:S.eq,moral:S.moral}}
+function parentsAlive(){return[S.people.dad,S.people.mom].some(p=>p&&!p.absent&&p.alive)}
+function hasChildUnder(n){return S.people.children.some(c=>c.alive&&c.age<n)}
+
+function normalize(){
+  S.mood=clamp(S.mood,0,100);S.health=clamp(S.health,0,100);S.iq=clamp(S.iq,0,100);S.eq=clamp(S.eq,0,100);S.moral=clamp(S.moral,0,100);
+  if(S.money<0){S.debt+=Math.round(-S.money);S.money=0}
+  S.deposit=Math.max(0,S.deposit);S.debt=Math.max(0,S.debt);
+  if(!S.stk||typeof S.stk!=='object')S.stk={};
+}
+
+function newGameWithOrigin(origin,inh){
+  const g=Math.random()<.5?'M':'F';
+  const base=inh?ORIGINS[2]:(ORIGINS.find(o=>o.id===origin)||ORIGINS[2]);
+  const me=inh?{name:inh.name,surname:inh.name.charAt(0)}:randPerson(g);
+  const oldBiz=inh?inh._biz:[];
+  const oldPeople=inh&&inh._people?inh._people:null;
+
+  S=blankState();_uid=100;_q.length=0;
+  S.name=me.name;S.gender=g;S.origin=inh?'inherit':base.id;
+  const orphan=!!inh||base.dadJob===null;
+
+  if(oldPeople){
+    S.people={
+      dad:oldPeople.dad?{...oldPeople.dad}:absentP('父親','M'),
+      mom:oldPeople.mom?{...oldPeople.mom}:absentP('母親','F'),
+      friends:(oldPeople.friends||[]).map(f=>({...f})),
+      children:(oldPeople.children||[]).map(c=>({...c}))
+    };
+    if(oldPeople.partner){
+      S.partner={...oldPeople.partner};
+      if(S.partner.alive&&S.partner.age<65)S.married=true;
+    }
+  }else if(!orphan){
+    S.people.dad={id:uid(),...randPerson('M'),name:me.surname+pick(NAME_M),age:ri(28,38),rel:base.dadRel,alive:true,role:'父親',job:base.dadJob};
+    S.people.mom={id:uid(),...randPerson('F'),name:pick(SURNAME)+pick(NAME_F),age:ri(26,36),rel:base.momRel,alive:true,role:'母親',job:base.momJob};
+  }
+
+  S.money=inh?Math.round(inh._money||0):base.money;
+  S.health=inh?clamp(95-Math.max(0,inh._age-30)*0.8,45,95):base.health;
+  S.iq=inh?60:base.iq;S.eq=inh?60:base.eq;S.moral=inh?60:base.moral;S.mood=inh?70:75;
+  S.home=orphan&&!inh?'rent':'parents';
+
+  if(inh){
+    S.age=inh._age;S.cpi=inh._cpi||1;S.home='rent';
+    S.businesses=(oldBiz||[]).map(b=>({...b,id:uid()}));
+    log(`你以${inh.name}（${S.age}歲）的身份接下這一代的人生，繼承了 ${fmt(S.money)} 元。`,'big');
+  }else if(orphan){log('你是個孤兒，由親戚撫養長大。','big')}
+  else{log(`你出生在一個${base.name}。父親是${S.people.dad.name}，母親是${S.people.mom.name}。`,'big')}
+  closeSheet();normalize();render();_prev=snap();
+}
+
+const ATTR_DEF=[{k:'mood',label:'心情',color:'var(--amber)'},{k:'health',label:'健康',color:'var(--rust)'},{k:'iq',label:'智商',color:'var(--sky)'},{k:'eq',label:'情商',color:'var(--plum)'},{k:'moral',label:'道德',color:'var(--sage)'}];
+function currentPositionName(){
+  if(S.job)return S.job.name;
+  return'無業';
+}
+function render(){
+  $('whoName').textContent=S.name+(S.gender==='M'?' ♂':' ♀');
+  const ageEl=$('ageNum');
+  if(S.age!==_prevAgeShown&&_prevAgeShown!==undefined){ageEl.classList.remove('bump');void ageEl.offsetWidth;ageEl.classList.add('bump')}
+  ageEl.textContent=S.age;_prevAgeShown=S.age;
+  const moneyEl=$('moneyTxt');
+  moneyEl.textContent=fmt(S.money);
+  $('purseCash').classList.toggle('zero',S.money===0);
+  $('apTxt').textContent=S.ap;$('apMax').textContent=S.maxAp;
+
+  const idc=[];
+  idc.push(`<span class="cell">${S.school||S.eduName}</span>`);
+  if(S.job)idc.push(`<span class="cell"><button onclick="openCareer()">${S.job.name}</button></span>`);
+  else idc.push(`<span class="cell"><button onclick="openJobSearch()">求職中</button></span>`);
+  if(S.married)idc.push(`<span class="cell">已婚</span>`);
+  else idc.push(`<span class="cell">單身</span>`);
+  $('idbar').innerHTML=idc.join('');
+
+  const prev=_prev||{};
+  $('attrs').innerHTML=ATTR_DEF.map(a=>{
+    const v=clamp(S[a.k],0,100);const pv=prev[a.k];let dv='';
+    if(pv!==undefined&&Math.round(pv)!==Math.round(v)){const d=Math.round(v)-Math.round(pv);dv=`<span class="d ${d>0?'up':'down'}">${d>0?'+':''}${d}</span>`}
+    return `<div class="attr"><div class="attr-h"><span>${a.label}</span><span class="v">${Math.round(v)}${dv}</span></div><div class="track"><i style="width:${v}%;background:${a.color}"></i></div></div>`;
+  }).join('');
+  _prev=snap();
+  {const dEl=$('diary'),st=dEl.scrollTop;dEl.innerHTML=S.logs.map(l=>`<div class="e ${l.cls}"><span class="t">${l.age}歲</span><span class="x">${l.text}</span></div>`).join('');dEl.scrollTop=st}
+
+  $('btnPartner').disabled=!S.partner||S.over;
+  $('btnProperty').disabled=S.age<16||S.over;
+  $('btnRelation').disabled=S.over;
+  $('btnActivity').disabled=S.over;
+  $('btnBusiness').disabled=S.over;
+  $('btnCareer').disabled=S.over;
+  const nb=$('btnNext');nb.disabled=S.over;nb.classList.toggle('ready',!S.over&&S.ap===0);
+  nb.textContent=S.over?'人 生 已 落 幕':(S.ap>0&&S.age>=6?`度過這一年（還有 ${S.ap} 行動點）`:'度 過 這 一 年');
+  clearTimeout(_sv);_sv=setTimeout(save,300);
+}
+
+function save(){try{if(S&&S.name&&!S.over)localStorage.setItem(SAVE_KEY,JSON.stringify({S,uid:_uid}))}catch(e){}}
+function loadSave(){
+  try{const t=localStorage.getItem(SAVE_KEY);if(!t)return false;const d=JSON.parse(t);
+    if(!d||!d.S||d.S.over)return false;S=Object.assign(blankState(),d.S);_uid=d.uid||_uid;
+    return true}catch(e){return false}
+}
+function clearSave(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}}
+
+function sheet({title,body,buttons,onMount,closable=true}){
+  const ov=$('ov');
+  ov.innerHTML=`<div class="sheet"><h2>${title}</h2><div class="body">${body}</div><div class="btnrow"></div></div>`;
+  const row=ov.querySelector('.btnrow');
+  (buttons||[{text:'關閉'}]).forEach(b=>{
+    const el=document.createElement('button');el.textContent=b.text;if(b.cls)el.className=b.cls;if(b.disabled)el.disabled=true;
+    el.onclick=()=>{const keep=b.onClick?b.onClick()===true:false;if(!keep)closeSheet()};
+    row.appendChild(el);
+  });
+  ov.classList.add('show');document.body.classList.add('locked');
+  ov.onclick=e=>{if(e.target===ov&&closable)closeSheet()};
+  if(onMount)onMount();
+}
+function closeSheet(){$('ov').classList.remove('show');$('ov').innerHTML='';document.body.classList.remove('locked');setTimeout(flushQueue,160)}
+
+function openOriginSelect(){
+  const body=`<p style="margin-bottom:12px;color:var(--ink2)">選擇你的人生起點：</p><div class="origins">${ORIGINS.map(o=>`<div class="origin" data-id="${o.id}"><div class="h">${o.name}</div><div class="d">${o.desc}</div><div class="b">${o.bonus}</div></div>`).join('')}</div>`;
+  sheet({title:'開始新人生',body,buttons:[],closable:false,onMount(){
+    document.querySelectorAll('.origin').forEach(el=>{el.onclick=()=>newGameWithOrigin(el.dataset.id)});
+  }});
+}
+
+function jobPay(job){return Math.round(job.m*YEAR_M*S.cpi)}
+function livingCost(){return{total:250000*S.cpi}}
+function netWorth(){
+  const stockVal=Object.entries(S.stk||{}).reduce((sum,[id,shares])=>{
+    const st=STOCK_MARKET.find(s=>s.id===id);
+    return sum+(st?shares*st.price:0);
+  },0);
+  return Math.round(S.money+S.deposit+stockVal-S.debt);
+}
+
+const ACTIONS=[
+  {id:'rest',name:'休息放鬆',desc:'心情 +8，健康 +2',ap:1,run:s=>{s.mood+=8;s.health+=2;log('你休息了一段時間。','good')}},
+  {id:'sport',name:'運動鍛鍊',desc:'健康 +6，心情 +3',ap:1,run:s=>{s.health+=6;s.mood+=3;log('你堅持運動。','good')}},
+  {id:'parttime',name:'兼職打工',desc:'賺取收入',ap:1,run:s=>{const m=30000;s.money+=m;log(`兼職賺了 ${fmt(m)} 元。`)}}
+];
+function openActivities(){
+  if(S.over)return;
+  let html=`<p style="color:var(--ink3);font-size:12px;margin-bottom:8px">剩餘行動點 <b style="color:var(--amber)" id="apLine">${S.ap}</b> / ${S.maxAp}</p><div id="actList" class="acts-list">`;
+  ACTIONS.forEach(a=>{
+    html+=`<div class="it" data-id="${a.id}"><div class="l"><div class="nm">${a.name}</div><div class="ds">${a.desc}</div></div><div class="dg">−1</div></div>`;
+  });
+  html+='</div>';
+  sheet({title:'做點什麼',body:html,buttons:[{text:'關閉'}],onMount(){
+    $('actList').addEventListener('click',e=>{
+      const it=e.target.closest('.it');if(!it)return;
+      const a=ACTIONS.find(x=>x.id===it.dataset.id);if(!a)return;
+      if(S.ap<1)return toast('行動點不足');
+      S.ap--;a.run(S);normalize();render();refreshActList();
+    });
+  }});
+}
+function refreshActList(){const el=$('apLine');if(el)el.textContent=S.ap;}
+
+function openRelations(){
+  const p=S.people;
+  let html=`<div class="sec">父親</div>`+
+    (p.dad.absent?'<div class="empty">無</div>':personCard({name:p.dad.name,meta:p.dad.age+'歲',rel:p.dad.rel}))+
+    `<div class="sec">母親</div>`+
+    (p.mom.absent?'<div class="empty">無</div>':personCard({name:p.mom.name,meta:p.mom.age+'歲',rel:p.mom.rel}));
+  sheet({title:'關係',body:html,buttons:[{text:'關閉'}]});
+}
+function personCard({name,meta,rel}){
+  return `<div class="person"><div class="info"><div class="n">${name}</div><div class="meta">${meta}</div><div class="relbar"><i style="width:${rel}%;background:var(--sage)"></i></div></div></div>`;
+}
+
+function openProperty(){
+  if(S.age<16)return toast('未滿 16 歲');
+  if(S.over)return;
+  
+  const stocksHtml=STOCK_MARKET.map(st=>{
+    const shares=S.stk[st.id]||0;
+    const totalVal=Math.round(shares*st.price);
+    return `<div class="asset-card">
+      <div class="l">
+        <div class="nm">${st.name}</div>
+        <div class="ds">現價: $${st.price.toLocaleString()} · 持有: ${shares} 股 (總值 ${fmt(totalVal)})</div>
+      </div>
+      <div style="display:flex;gap:4px">
+        <button data-buy-st="${st.id}">買</button>
+        <button data-sell-st="${st.id}">賣</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const html=`
+    <div class="row"><span class="k">現金</span><span class="v">${fmt(S.money)}</span></div>
+    <div class="row"><span class="k">定期存款</span><span class="v">${fmt(S.deposit)}</span></div>
+    <div class="row"><span class="k">淨資產</span><span class="v">${fmt(netWorth())}</span></div>
+    
+    <div class="sec">📈 股票投資 <span style="font-size:11px;color:var(--amber);font-weight:normal">(今年剩餘變動: ${S.stockTradesLeft}/3)</span></div>
+    ${stocksHtml}
+
+    <div class="sec">資金操作</div>
+    <input type="number" id="amt" placeholder="輸入金額或股數" min="1" inputmode="numeric">
+    <div class="btnrow" style="margin-top:0">
+      <button data-a="din" class="pri">存入定期</button><button data-a="dout">取出定期</button>
+    </div>`;
+
+  const readAmt=()=>{const v=Math.floor(parseFloat($('amt').value));if(!v||v<=0){toast('請輸入有效數值');return 0}return v};
+  const redo=()=>{normalize();render();openProperty()};
+
+  sheet({title:'財產與投資',body:html,buttons:[{text:'關閉'}],onMount(){
+    document.querySelectorAll('[data-buy-st]').forEach(b=>{b.onclick=()=>{
+      if(S.stockTradesLeft<=0)return toast('今年投資變動次數已達上限 (每年 3 次)');
+      const stId=b.dataset.buySt;const st=STOCK_MARKET.find(x=>x.id===stId);
+      const qty=readAmt();if(!qty)return;
+      const cost=qty*st.price;
+      if(S.money<cost)return toast('現金不足');
+      S.money-=cost;S.stk[stId]=(S.stk[stId]||0)+qty;S.stockTradesLeft--;
+      log(`你買入 ${qty} 股 ${st.name}。`,'good');redo();
+    }});
+    document.querySelectorAll('[data-sell-st]').forEach(b=>{b.onclick=()=>{
+      if(S.stockTradesLeft<=0)return toast('今年投資變動次數已達上限 (每年 3 次)');
+      const stId=b.dataset.sellSt;const st=STOCK_MARKET.find(x=>x.id===stId);
+      const qty=readAmt();if(!qty)return;
+      const owned=S.stk[stId]||0;
+      if(qty>owned)return toast('持有股數不足');
+      S.money+=qty*st.price;S.stk[stId]=owned-qty;if(S.stk[stId]<=0)delete S.stk[stId];S.stockTradesLeft--;
+      log(`你賣出 ${qty} 股 ${st.name}。`,'good');redo();
+    }});
+    document.querySelectorAll('.btnrow [data-a]').forEach(b=>{
+      b.onclick=()=>{const a=b.dataset.a;const amt=readAmt();if(!amt)return;
+        if(a==='din'){if(amt>S.money)return toast('現金不足');S.money-=amt;S.deposit+=amt;log(`存入定期 ${fmt(amt)} 元。`)}
+        if(a==='dout'){if(amt>S.deposit)return toast('定期不足');S.deposit-=amt;S.money+=amt;log(`取出定期 ${fmt(amt)} 元。`)}
+        redo()};
+    });
+  }});
+}
+
+function openJobSearch(){
+  if(S.over)return;
+  if(S.age<16)return toast('滿 16 歲才能求職');
+  const html=`<div class="acts-list" id="jobList">${JOBS.map(j=>`<div class="it" data-id="${j.id}"><div class="l"><div class="nm">${j.name}</div><div class="ds">年薪約 ${fmt(jobPay(j))}</div></div><div class="dg">應徵</div></div>`).join('')}</div>`;
+  sheet({title:'求職',body:html,buttons:[{text:'關閉'}],onMount(){
+    $('jobList').addEventListener('click',e=>{
+      const it=e.target.closest('.it');if(!it)return;
+      const job=JOBS.find(j=>j.id===it.dataset.id);if(!job)return;
+      S.job=job;S.salary=jobPay(job);S.working=true;
+      log(`你成為了一名「${job.name}」。`,'big');normalize();render();closeSheet();
+    });
+  }});
+}
+
+function openCareer(){
+  if(S.over)return;
+  sheet({title:'職涯',body:`<p>目前職位：<b>${S.job?S.job.name:'無業'}</b></p>`,buttons:[{text:'關閉'}]});
+}
+
+function nextYear(){
+  if(S.over)return;
+  if(S.ap>0&&S.age>=6){
+    sheet({title:'度過這一年？',body:`<p>還有 <b style="color:var(--amber)">${S.ap}</b> 個行動點未用。</p>`,buttons:[{text:'返回'},{text:'確定度過',cls:'pri',onClick:()=>{setTimeout(doNextYear,60)}}]});
+    return;
+  }
+  doNextYear();
+}
+
+function doNextYear(){
+  if(S.over)return;closeSheet();
+  S.age++;S.apps=3;S.ap=S.maxAp;S.stockTradesLeft=3;
+  S.cpi*=1+0.02;
+  const income=S.job?S.salary:0;
+  S.money+=income-livingCost().total;
+
+  if(S.deposit>0)S.deposit+=S.deposit*DEPOSIT_RATE;
+  if(S.stk&&Object.keys(S.stk).length>0){
+    STOCK_MARKET.forEach(st=>{
+      if(S.stk[st.id]){
+        st.price=Math.max(10,Math.round(st.price*(1+rnd(-st.vol,st.vol))));
+      }
+    });
+  }
+
+  normalize();
+  if(S.age===6)S.school=schoolForAge(6);
+  if(S.age===65)S.job=null;
+
+  render();
+  if(S.health<=0||S.age>=110){gameOver('你安詳地結束了一生。');return}
+  setTimeout(flushQueue,100);
+}
+
+function gameOver(reason){
+  S.over=true;_q.length=0;clearSave();render();
+  sheet({title:'人生落幕',body:`<p>${reason}</p><p class="note">淨資產：${fmt(netWorth())}</p>`,closable:false,buttons:[{text:'重新開始',onClick:openOriginSelect}]});
+}
+
+$('resetBtn').onclick=()=>sheet({title:'重來',body:'確定重新開始？',buttons:[{text:'取消'},{text:'確定',cls:'warn',onClick:()=>{clearSave();openOriginSelect()}}]});
+$('btnActivity').onclick=openActivities;
+$('btnProperty').onclick=openProperty;
+$('btnRelation').onclick=openRelations;
+$('btnPartner').onclick=()=>toast('目前單身');
+$('btnBusiness').onclick=()=>sheet({title:'產業',body:'尚無產業',buttons:[{text:'關閉'}]});
+$('btnCareer').onclick=openCareer;
+$('btnNext').onclick=nextYear;
+
+S=blankState();
+if(loadSave()){normalize();render();_prev=snap();toast('已載入上次進度')}
+else{render();openOriginSelect()}
+</script>
+</body>
+</html>
