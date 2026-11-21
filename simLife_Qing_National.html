@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>大清風華 · 九州人生模擬</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#151311;--bg2:#1c1916;--card:#221e1a;--card2:#2b2621;--line:#363029;--line2:#463e35;--ink:#e5dfd3;--ink2:#a89f91;--ink3:#756d62;--amber:#d9a45b;--amber2:#a6783a;--sage:#84a591;--rust:#c76d5d;--sky:#7b9cb8;--plum:#a686b5}
+html,body{height:100%}
+body{font-family:"PingFang TC","Songti TC","Microsoft JhengHei",serif;background:var(--bg);color:var(--ink);padding:0 14px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:center;overflow-x:hidden;font-feature-settings:"tnum";line-height:1.55}
+body.locked{overflow:hidden}
+#app{width:100%;max-width:680px;padding-top:calc(14px + env(safe-area-inset-top))}
+.hud-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--line2);border-radius:12px;margin-bottom:8px}
+.hud-bars{display:flex;flex-direction:column;gap:5px;width:128px;flex-shrink:0}
+.hbar{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink2)}
+.hbar i{font-style:normal;width:14px;text-align:center}
+.hbar .bg{flex:1;height:6px;background:#2a2520;border-radius:99px;overflow:hidden}
+.hbar .bg b{display:block;height:100%;border-radius:99px;transition:width .4s}
+.hud-mid{text-align:center;flex:1;min-width:0}
+.hud-mid .yr{font-size:20px;color:var(--ink);font-weight:700;line-height:1.15;letter-spacing:.5px}
+.hud-mid .era{font-size:10.5px;color:var(--ink3);margin-top:1px}
+.hud-mid .loc{font-size:11px;color:var(--amber);margin-top:2px;cursor:pointer;display:inline-block;border-bottom:1px dashed var(--amber2)}
+.hud-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.hud-cash{font-size:13.5px;font-weight:700;color:var(--amber);font-variant-numeric:tabular-nums;position:relative}
+.hud-cash.zero{color:var(--rust)}
+.hud-ap{font-size:11px;color:var(--ink2);background:var(--bg2);padding:2px 7px;border-radius:99px;border:1px solid var(--line2)}
+.hud-ap b{color:var(--sage)}
+.reset{width:26px;height:26px;flex-shrink:0;border-radius:7px;cursor:pointer;border:1px solid var(--line2);background:transparent;color:var(--ink2);font-size:13px;display:grid;place-items:center;transition:.15s}
+.reset:hover{border-color:var(--rust);color:var(--rust)}
+.fnum{position:absolute;right:0;top:-1px;font-size:11.5px;font-weight:700;pointer-events:none;white-space:nowrap;animation:fnum 1.1s ease-out forwards}
+.fnum.up{color:var(--sage)}.fnum.down{color:var(--rust)}
+@keyframes fnum{0%{opacity:0;transform:translateY(3px)}20%{opacity:1}100%{opacity:0;transform:translateY(-16px)}}
+
+.fam-strip{display:flex;gap:10px;overflow-x:auto;padding:8px 10px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;margin-bottom:8px;align-items:center}
+.fam-strip::-webkit-scrollbar{height:3px}
+.fam-node{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:56px;cursor:pointer;flex-shrink:0}
+.fam-node .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:700;color:#151311;background:var(--amber);border:2px solid var(--line2);transition:.15s}
+.fam-node .av.f{background:var(--plum)}
+.fam-node .av.me{border-color:var(--sage);box-shadow:0 0 0 2px rgba(132,165,145,.25)}
+.fam-node .av.dead{background:#38322c;color:var(--ink3);opacity:.65}
+.fam-node .nm{font-size:10.5px;color:var(--ink2);white-space:nowrap;max-width:64px;overflow:hidden;text-overflow:ellipsis}
+
+.profile-card{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;padding:10px 12px;background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:8px;font-size:12px}
+.p-meta{display:flex;flex-direction:column;gap:3px;border-right:1px solid var(--line);padding-right:10px}
+.p-meta .item{display:flex;justify-content:space-between;gap:6px;color:var(--ink3)}
+.p-meta .item b{color:var(--ink);font-weight:500;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+.p-meta .item b.link{color:var(--amber);cursor:pointer;text-decoration:underline dotted}
+.p-bars{display:flex;flex-direction:column;justify-content:center;gap:6px}
+.p-bar-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink2)}
+.p-bar-row span:first-child{width:32px;flex-shrink:0}
+.p-bar-row .trk{flex:1;height:6px;background:#2a2520;border-radius:99px;overflow:hidden}
+.p-bar-row .trk i{display:block;height:100%;border-radius:99px;transition:width .4s}
+.p-bar-row .num{width:24px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-size:10.5px}
+
+.diary{border-top:1px solid var(--line);border-bottom:1px solid var(--line);height:224px;overflow-y:auto;margin-bottom:10px;padding:2px 0;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif}
+.diary::-webkit-scrollbar{width:4px}
+.diary::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
+.e{display:flex;gap:10px;padding:7px 2px 7px 0;font-size:12.8px;line-height:1.55;animation:fe .3s ease;border-bottom:1px dashed rgba(70,62,53,.45)}
+.e:last-child{border-bottom:0}
+.e .t{flex-shrink:0;width:42px;font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums;padding-top:2px;text-align:right}
+.e .x{flex:1;color:var(--ink2)}
+.e.good .x{color:#a8c7b3}.e.bad .x{color:#d99b90}.e.big .x{color:var(--ink);font-weight:600}.e.big .t{color:var(--amber)}
+@keyframes fe{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.diary:empty::after{content:'九州風雲起，你的人生於大清天下啟程。';color:var(--ink3);font-size:12.5px;display:flex;align-items:center;justify-content:center;height:100%}
+
+.nav-dock{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:9px}
+.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 4px;border-radius:11px;border:1px solid var(--line2);background:var(--card);color:var(--ink2);cursor:pointer;transition:.16s;font-family:inherit}
+.nav-btn:hover:not(:disabled){border-color:var(--amber2);color:var(--amber);background:rgba(217,164,91,.09);transform:translateY(-1px)}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed}
+.nav-btn .ico{font-size:18px;line-height:1.1}
+.nav-btn .lbl{font-size:11.5px;font-weight:700;color:var(--ink);letter-spacing:.3px}
+.nav-btn .sub{font-size:9.5px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px}
+.nav-btn.primary{border-color:var(--amber2);background:linear-gradient(180deg,rgba(217,164,91,.18),rgba(217,164,91,.06))}
+
+.advance{width:100%;padding:14px;font-size:14.5px;font-weight:700;border-radius:9px;cursor:pointer;border:1px solid var(--amber2);color:var(--amber);background:rgba(217,164,91,.1);letter-spacing:2px;font-family:inherit;transition:.15s}
+.advance:hover:not(:disabled){background:rgba(217,164,91,.2)}
+.advance:disabled{opacity:.3;cursor:not-allowed}
+.advance.ready{animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{0%,100%{background:rgba(217,164,91,.09)}50%{background:rgba(217,164,91,.22)}}
+
+#ov{position:fixed;inset:0;background:rgba(10,9,8,.82);display:none;align-items:center;justify-content:center;padding:16px;z-index:99}
+#ov.show{display:flex}
+.sheet{width:100%;max-width:480px;max-height:85vh;overflow-y:auto;background:var(--card);border:1px solid var(--line2);border-radius:10px;padding:20px;animation:sp .22s cubic-bezier(.34,1.3,.64,1);box-shadow:0 24px 60px rgba(0,0,0,.65);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif}
+.sheet::-webkit-scrollbar{width:4px}
+.sheet::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
+@keyframes sp{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.sheet h2{font-family:"Songti TC",Georgia,serif;font-size:17.5px;font-weight:700;color:var(--ink);margin-bottom:14px;letter-spacing:.8px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.sheet .body{font-size:13px;line-height:1.7;color:var(--ink2)}
+.sheet .body p{margin-bottom:8px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.row:last-child{border-bottom:0}
+.row .k{color:var(--ink2);font-size:12.5px}
+.row .v{color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.row .v.neg{color:var(--rust)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.btnrow button{flex:1;min-width:100px;font-family:inherit;font-size:12.5px;padding:10px 9px;border-radius:7px;border:1px solid var(--line2);background:transparent;color:var(--ink2);cursor:pointer;font-weight:500;transition:.15s}
+.btnrow button:hover:not(:disabled){border-color:var(--amber2);color:var(--amber)}
+.btnrow button:disabled{opacity:.3;cursor:not-allowed}
+.btnrow button.pri{border-color:var(--amber2);color:var(--amber);background:rgba(217,164,91,.1)}
+.btnrow button.pri:hover:not(:disabled){background:rgba(217,164,91,.2)}
+.btnrow button.warn{border-color:rgba(199,109,93,.55);color:var(--rust)}
+.btnrow button.warn:hover:not(:disabled){background:rgba(199,109,93,.14)}
+.btnrow button.on{border-color:var(--amber2);color:var(--amber);background:rgba(217,164,91,.14)}
+
+.person{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.person:last-child{border-bottom:0}
+.person .ava{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-family:"Songti TC",serif;font-size:15px;color:#151311;font-weight:700;background:var(--amber);opacity:.88}
+.person .ava.f{background:var(--plum)}
+.person .ava.dead{background:#38322c;color:var(--ink3)}
+.person .info{flex:1;min-width:0}
+.person .n{font-size:13.5px;color:var(--ink);font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.person .n .tag{font-size:10px;font-weight:500;color:var(--ink3);padding:1px 6px;border:1px solid var(--line2);border-radius:3px}
+.person .n .tag.fam{color:var(--plum);border-color:rgba(166,134,181,.4)}
+.person .n .tag.par{color:var(--amber);border-color:rgba(217,164,91,.4)}
+.person .n .tag.chi{color:var(--sage);border-color:rgba(132,165,145,.4)}
+.person .meta{font-size:11.5px;color:var(--ink3);margin:2px 0 6px;line-height:1.4}
+.person .meta .dead{color:var(--rust)}
+.person .relbar{height:3px;background:#2a2520;border-radius:2px;overflow:hidden}
+.person .relbar i{display:block;height:100%;border-radius:2px;transition:width .4s}
+.person .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.person .acts button{font:inherit;font-size:11.5px;padding:5px 10px;border-radius:5px;border:1px solid var(--line2);background:transparent;color:var(--ink2);cursor:pointer;transition:.15s}
+.person .acts button:hover:not(:disabled){border-color:var(--amber2);color:var(--amber)}
+.person .acts button:disabled{opacity:.3;cursor:not-allowed}
+.person .acts button.pri{border-color:var(--amber2);color:var(--amber)}
+
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:8px;overflow-x:auto}
+.tabs button{font:inherit;font-size:12.5px;padding:8px 11px;border:0;background:none;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s;white-space:nowrap}
+.tabs button.on{color:var(--amber);border-bottom-color:var(--amber)}
+.tabs button .cnt{font-size:10.5px;color:var(--ink3);margin-left:3px}
+.empty{color:var(--ink3);font-size:12.5px;padding:22px 0;text-align:center}
+.acts-list .it{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s}
+.acts-list .it:last-child{border-bottom:0}
+.acts-list .it:hover:not(.off){padding-left:4px}
+.acts-list .it.off{opacity:.35;cursor:not-allowed}
+.acts-list .it .l{flex:1;min-width:0}
+.acts-list .it .nm{font-size:13px;color:var(--ink)}
+.acts-list .it .ds{font-size:11.5px;color:var(--ink3);margin-top:1px}
+.acts-list .it .dg{font-size:11.5px;color:var(--amber);white-space:nowrap;font-variant-numeric:tabular-nums;text-align:right;line-height:1.35}
+.acts-list .it .dg .w{color:var(--rust)}
+input[type=number],input[type=text]{width:100%;padding:10px 12px;border-radius:7px;border:1px solid var(--line2);background:var(--bg2);color:var(--ink);font-size:14px;font-family:inherit;outline:none;margin:8px 0;font-variant-numeric:tabular-nums}
+input:focus{border-color:var(--amber2)}
+.note{font-size:11.5px;color:var(--ink3);margin-top:8px;line-height:1.6}
+.origin{padding:12px 14px;border:1px solid var(--line2);border-radius:8px;cursor:pointer;transition:.15s;background:var(--bg2)}
+.origin:hover{border-color:var(--amber2);background:rgba(217,164,91,.06)}
+.origin .h{font-size:14px;color:var(--ink);font-weight:700;margin-bottom:3px;font-family:"Songti TC",serif;letter-spacing:.5px}
+.origin .d{font-size:11.5px;color:var(--ink3);margin-bottom:6px}
+.origin .b{font-size:11.5px;color:var(--amber)}
+.origins{display:flex;flex-direction:column;gap:8px}
+.gsel{display:flex;gap:8px;margin-bottom:14px}
+.gsel button{flex:1;padding:11px;border-radius:8px;border:1px solid var(--line2);background:transparent;color:var(--ink2);cursor:pointer;font-family:inherit;font-size:13px;font-weight:500;transition:.15s}
+.gsel button.on{border-color:var(--amber2);color:var(--amber);background:rgba(217,164,91,.1)}
+.bizstat{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.bizstat .b{background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.bizstat .b .l{font-size:10.5px;color:var(--ink3)}
+.bizstat .b .v{font-size:13px;color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums}
+.biz-card{padding:12px;border:1px solid var(--line2);border-radius:8px;background:var(--bg2);margin-bottom:8px}
+.biz-card .t{font-size:13.5px;color:var(--ink);font-weight:600;margin-bottom:4px}
+.biz-card .m{font-size:11.5px;color:var(--ink3);margin-bottom:8px}
+.asset-card{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:10px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.asset-card:last-child{border-bottom:0}
+.asset-card .l{flex:1}
+.asset-card .nm{color:var(--ink);font-weight:600}
+.asset-card .ds{color:var(--ink3);font-size:11px;margin-top:2px}
+.asset-card .v{color:var(--amber);font-variant-numeric:tabular-nums;white-space:nowrap;margin-right:4px}
+.asset-card button{font:inherit;font-size:11px;padding:4px 8px;border-radius:4px;border:1px solid var(--line2);background:transparent;color:var(--ink2);cursor:pointer}
+.asset-card button:hover{border-color:var(--amber2);color:var(--amber)}
+.cat-title{font-size:12px;color:var(--ink3);letter-spacing:1px;margin:12px 0 4px;padding-bottom:4px;border-bottom:1px dashed var(--line)}
+.cat-title:first-child{margin-top:0}
+.sec{font-size:13px;color:var(--ink);margin:14px 0 8px;font-family:"Songti TC",serif;font-weight:700}
+.prop-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.prop-box{background:var(--bg2);border:1px solid var(--line);border-radius:7px;padding:8px 10px}
+.prop-box .k{font-size:11px;color:var(--ink3);display:block}
+.prop-box .v{font-size:13.5px;color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px;display:block}
+.prop-box .v.neg{color:var(--rust)}
+#toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(14px);background:var(--card2);border:1px solid var(--line2);color:var(--ink);padding:10px 18px;border-radius:7px;font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:999;max-width:84vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.ms-card{border-radius:10px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden;border:1px solid var(--line2)}
+.ms-card.news{background:linear-gradient(135deg,#28221c,#181512);border-color:var(--amber2);box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.ms-card.news .ms-tag{display:inline-block;background:var(--rust);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:1px;margin-bottom:8px}
+.ms-card.news .ms-head{font-family:"Songti TC",serif;font-size:19px;font-weight:700;color:var(--ink);line-height:1.35;margin-bottom:8px;border-bottom:1px solid var(--line2);padding-bottom:8px}
+.ms-card.cert{background:linear-gradient(135deg,#1d2621,#151a17);border:1.5px solid var(--sage)}
+.ms-card.cert .ms-tag{display:inline-block;background:rgba(132,165,145,.2);color:var(--sage);border:1px solid var(--sage);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;letter-spacing:1px;margin-bottom:8px}
+.ms-card.cert .ms-head{font-family:"Songti TC",serif;font-size:18px;font-weight:700;color:#d6ebe0;line-height:1.35;margin-bottom:8px}
+.ms-card.court{background:linear-gradient(135deg,#2b1a18,#191312);border:1.5px solid var(--rust)}
+.ms-card.court .ms-tag{display:inline-block;background:var(--rust);color:#151311;font-size:10px;font-weight:800;padding:2px 8px;border-radius:3px;letter-spacing:1px;margin-bottom:8px}
+.ms-card.court .ms-head{font-family:"Songti TC",serif;font-size:18px;font-weight:700;color:#f0b8ae;line-height:1.35;margin-bottom:8px}
+.ms-card.gold{background:linear-gradient(135deg,#2e2416,#1b1712);border:1.5px solid var(--amber)}
+.ms-card.gold .ms-tag{display:inline-block;background:rgba(217,164,91,.22);color:var(--amber);border:1px solid var(--amber);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;letter-spacing:1px;margin-bottom:8px}
+.ms-card.gold .ms-head{font-family:"Songti TC",serif;font-size:18.5px;font-weight:700;color:#f5d59b;line-height:1.35;margin-bottom:8px}
+.ms-card .ms-body{font-size:13px;color:var(--ink2);line-height:1.65}
+.ms-card .ms-foot{margin-top:10px;padding-top:8px;border-top:1px dashed rgba(255,255,255,.12);font-size:11px;color:var(--ink3);display:flex;justify-content:space-between}
+@media(max-width:400px){.hud-bars{width:105px}.profile-card{grid-template-columns:1fr}.p-meta{border-right:0;border-bottom:1px solid var(--line);padding-bottom:6px;padding-right:0}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="hud-top">
+    <div class="hud-bars" id="hudBars"></div>
+    <div class="hud-mid">
+      <div class="yr"><span id="ageNum">0</span> 歲</div>
+      <div class="era" id="eraTxt">乾隆年間 · 九州天下</div>
+      <div class="loc" id="hudLoc" onclick="openTravelModal()">📍 順天府（京師）</div>
+    </div>
+    <div class="hud-right">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="hud-cash" id="purseCash"><span id="moneyTxt">0 兩</span></div>
+        <button class="reset" id="resetBtn" title="重開一世">↺</button>
+      </div>
+      <div id="purseDebt" style="display:none;font-size:10.5px;color:var(--rust)">欠債 <b id="debtTxt">0</b> 兩</div>
+      <div class="hud-ap">精力 <b><span id="apTxt">8</span>/<span id="apMax">8</span></b></div>
+    </div>
+  </header>
+
+  <div class="fam-strip" id="famStrip"></div>
+
+  <div class="profile-card">
+    <div class="p-meta" id="pMeta"></div>
+    <div class="p-bars" id="pBars"></div>
+  </div>
+
+  <div class="diary" id="diary"></div>
+
+  <div class="nav-dock">
+    <button class="nav-btn primary" id="btnRoleModal"><span class="ico" id="roleIco">📜</span><span class="lbl" id="roleLbl">營生/科舉</span><span class="sub" id="roleSub">—</span></button>
+    <button class="nav-btn" id="btnWealthHub"><span class="ico">🪙</span><span class="lbl">家產</span><span class="sub" id="subProp">0 兩</span></button>
+    <button class="nav-btn" id="btnSocialHub"><span class="ico">🏮</span><span class="lbl">宗族</span><span class="sub" id="subSoc">家人/親友</span></button>
+    <button class="nav-btn" id="btnCityHub"><span class="ico">🏯</span><span class="lbl">九州</span><span class="sub" id="subReg">地方百態</span></button>
+    <button class="nav-btn" id="btnDossierHub"><span class="ico">📖</span><span class="lbl">名錄</span><span class="sub" id="subAch">0/16</span></button>
+  </div>
+
+  <button class="advance" id="btnNext">度 過 此 年</button>
+</div>
+<div id="ov"></div><div id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const ri=(a,b)=>Math.floor(rnd(a,b+1));
+const pick=a=>a[ri(0,a.length-1)];
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+function fmt(n){
+  n=Math.round(n);const neg=n<0?'−':'';n=Math.abs(n);
+  if(n>=10000)return neg+(n/10000).toFixed(2)+'萬兩';
+  return neg+n.toLocaleString()+'兩';
+}
+let _t;function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_t);_t=setTimeout(()=>el.classList.remove('show'),2200)}
+
+const _q=[];
+function queue(fn){_q.push(fn);setTimeout(flushQueue,60)}
+function flushQueue(){
+  if($('ov').classList.contains('show')||!_q.length)return;
+  const fn=_q.shift();fn();
+  if(!$('ov').classList.contains('show'))setTimeout(flushQueue,80);
+}
+
+const SAVE_KEY='lifesim_qing_national_v1';
+
+/* ══════ 九州姓氏（漢姓 & 滿蒙八旗姓氏） ══════ */
+const SURNAME_HAN=['趙','錢','孫','李','周','吳','鄭','王','馮','陳','褚','衛','蔣','沈','韓','楊','朱','秦','尤','許','何','呂','施','張','孔','曹','嚴','華','鄧','廖','文','林','黃','劉','徐','馬','胡','郭','林','羅','梁','宋','唐','董','程','袁','盧','曾'];
+const SURNAME_BANNER=['愛新覺羅','鈕祜祿','瓜爾佳','富察','赫舍里','納蘭','索綽羅','佟佳','完顏','博爾濟吉特','烏拉那拉','馬佳'];
+const NAME_M=['文傑','世昌','祖蔭','廷桂','振邦','國華','家駒','兆熊','子明','瑞麟','啟泰','永年','耀祖','承恩','景雲','天賜','學禮','秉文','德彰','鴻漸','鐵柱','大牛','福生','順子','長生'];
+const NAME_F=['婉儀','淑貞','秀英','桂芳','玉蘭','瑞雲','素心','佩蘭','慧嫻','靜嫻','美玉','巧雲','月娥','金枝','清芬','采薇','碧雲','若蘭','明珠','雅琴','二丫','春花','秋菊'];
+function randPerson(g,isBanner=false){
+  const s=isBanner?pick(SURNAME_BANNER):pick(SURNAME_HAN);
+  return{name:s+(g==='M'?pick(NAME_M):pick(NAME_F)),gender:g,surname:s};
+}
+
+const QING_ERAS=[
+  {name:'順治',start:1644,len:18},{name:'康熙',start:1662,len:61},{name:'雍正',start:1723,len:13},
+  {name:'乾隆',start:1736,len:60},{name:'嘉慶',start:1796,len:25},{name:'道光',start:1821,len:30},{name:'咸豐',start:1851,len:11},
+];
+function eraTitle(startEraIdx,age){
+  let idx=startEraIdx,yr=1+age;
+  while(idx<QING_ERAS.length-1&&yr>QING_ERAS[idx].len){yr-=QING_ERAS[idx].len;idx++}
+  return `大清${QING_ERAS[idx].name}${yr===1?'元':yr}年`;
+}
+
+/* ══════ 大清九州十八行省疆域（從京師、江南、巴蜀、關東到嶺南新安縣） ══════ */
+const REGIONS=[
+  {id:'peking',name:'順天府（京師紫禁城／前門大街）',zone:0,costMod:1.95,landMod:2.80,desc:'大清帝國心臟，八旗雲集、六部九卿與前門大街票號字號林立'},
+  {id:'tianjin',name:'直隸天津衛（漕運海港）',zone:1,costMod:1.30,landMod:1.50,desc:'京畿門戶，長蘆鹽商巨賈雲集，南北漕運與海船匯聚'},
+  {id:'shengjing',name:'盛京奉天府（關東白山黑水）',zone:2,costMod:0.88,landMod:0.85,desc:'滿洲龍興之地，人參貂皮烏拉草集散，民風彪悍尚武'},
+  {id:'suzhou',name:'江蘇蘇州府（江南魚米絲綢之鄉）',zone:4,costMod:1.55,landMod:2.10,desc:'天下財賦半江南，絲綢織造、園林書畫與科舉狀元之鄉'},
+  {id:'hangzhou',name:'浙江杭州府（西湖／徽商茶市）',zone:4,costMod:1.45,landMod:1.90,desc:'人間天堂，龍井茶葉與兩浙鹽商匯聚，文人雅士雲集'},
+  {id:'wuchang',name:'湖廣武昌府（九省通衢漢口鎮）',zone:5,costMod:1.10,landMod:1.20,desc:'長江中游航運樞紐，漢口碼頭萬商雲集，茶葉米糧轉運中心'},
+  {id:'chengdu',name:'四川成都府（天府之國錦官城）',zone:7,costMod:0.85,landMod:0.90,desc:'沃野千里天府之國，蜀錦井鹽富庶安逸，茶館戲園遍布街巷'},
+  {id:'lanzhou',name:'陝甘蘭州府（絲路重鎮／九邊軍鎮）',zone:8,costMod:0.80,landMod:0.75,desc:'西北邊防要塞，駝隊商幫往來西域，綠營兵勇駐防重地'},
+  {id:'fuzhou',name:'福建福州府（三坊七巷／閩海船政）',zone:6,costMod:1.05,landMod:1.15,desc:'東南沿海重鎮，武夷茶葉與遠洋福船通商南洋諸國'},
+  {id:'guangzhou',name:'廣東廣州府（省城十三行）',zone:7,costMod:1.50,landMod:2.00,desc:'兩廣總督駐節之地，一口通商十三行洋貨白銀源源不絕'},
+  {id:'xinan',name:'廣東新安縣（寶安／錦田／九龍／港島）',zone:7,costMod:0.92,landMod:1.05,desc:'嶺南南海門戶，五大望族圍村與大鵬協水師駐防，盛產莞香與海鹽'},
+  {id:'kunming',name:'雲貴昆明府（彩雲之南／滇銅重鎮）',zone:9,costMod:0.82,landMod:0.80,desc:'西南邊陲春城，執掌朝廷鑄錢所需的雲南東川銅礦與普洱茶馬古道'},
+];
+const TRANSPORTS=[
+  {id:'walk',name:'🚶 徒步挑擔趕路',baseFare:0,mood:-2,health:2,seaOk:false,desc:'憑雙腳丈量九州大地，省下盤纏且強健筋骨'},
+  {id:'cart',name:'🐂 騾馬大車／蓬船',baseFare:3,mood:3,health:0,seaOk:false,desc:'民間商旅最常乘搭的車馬或內河烏篷船，價錢公道'},
+  {id:'horse',name:'🐎 快馬加鞭／驛站官馬',baseFare:7,mood:8,health:1,seaOk:false,desc:'日行三百里，江湖豪傑與急差最愛'},
+  {id:'sedan',name:'🏮 四人抬呢子大官轎',baseFare:12,mood:10,health:0,seaOk:false,desc:'前呼後擁鳴鑼開道，盡顯富貴體面'},
+  {id:'ship',name:'⛵ 漕運官船／福船海舶',baseFare:18,mood:12,health:1,seaOk:true,desc:'沿大運河或沿海航線南來北往，可通達閩粵海疆'},
+];
+function getRegion(id){return REGIONS.find(r=>r.id===(id||(S&&S.region)||'suzhou'))||REGIONS[3]}
+function calcFare(fromId,toId,tr){
+  const r1=getRegion(fromId),r2=getRegion(toId);
+  const dist=Math.max(1,Math.abs(r1.zone-r2.zone));
+  return Math.round(tr.baseFare*dist*(S?S.cpi:1));
+}
+
+/* ══════ 出身門第（涵蓋八旗、江南書香、晉徽商賈、平民農戶、江湖流民） ══════ */
+const ORIGINS=[
+  {id:'banner',name:'京師八旗世家（旗人出身）',isBanner:true,desc:'世居京師內城或盛京，享朝廷鐵桿莊稼旗糧，可走侍衛、筆帖式或八旗武職',dadJob:'正黃旗佐領（四品武官）',momJob:'八旗誥命夫人',money:1600,wealth:20000,pay:true,dadRel:75,momRel:78,iq:58,eq:65,moral:55,health:90,bonus:'🏹 旗人世家 · 起始紋銀 1,600 兩，從軍或入仕門檻大幅降低'},
+  {id:'scholar',name:'江南書香門第（蘇杭／新安望族）',desc:'世代耕讀傳家，藏書萬卷，族中屢出進士翰林',dadJob:'府學教授（舉人功名）',momJob:'書香大家閨秀',money:900,wealth:14000,pay:true,dadRel:80,momRel:84,iq:68,eq:60,moral:68,health:84,bonus:'📚 才學 +18 · 科舉童試與鄉試享書香門第加成'},
+  {id:'merchant',name:'晉商票號／徽商鹽商／十三行巨賈',desc:'父輩執掌跨省匯兌票號、兩淮鹽引或廣州洋貨貿易',dadJob:'大掌櫃／鹽商總商',momJob:'商號內當家',money:3600,wealth:36000,pay:true,dadRel:74,momRel:76,iq:58,eq:72,moral:48,health:85,bonus:'🪙 起始紋銀 3,600 兩 · 世故 +22 · 營商天賦極高'},
+  {id:'commoner',name:'九州平民百姓（自耕農／手藝人戶）',desc:'普普通通的大清良民，父輩種地、打鐵或跑船糊口，踏實過日子',dadJob:'自耕農／鐵匠師傅',momJob:'紡紗織布持家',money:60,wealth:500,pay:false,dadRel:85,momRel:86,iq:50,eq:52,moral:76,health:90,bonus:'🌾 仁德 +26 · 健康 90 · 自由選擇百業手藝、投軍吃糧或科舉逆襲'},
+  {id:'wanderer',name:'江湖流民／戲班孤兒',desc:'無父無母，自幼跟著走江湖的戲班或鏢局在市井闖蕩',dadJob:null,momJob:null,money:12,wealth:0,pay:false,dadRel:0,momRel:0,iq:52,eq:66,moral:52,health:86,bonus:'🎭 世故 +16 · 精通三教九流，當兵、走鏢、唱戲、經商百無禁忌'},
+];
+
+/* ══════ 軍旅系統：大清綠營／八旗士兵 → 基層軍官 → 封疆提督（可由普通士兵一步步立戰功升上去！） ══════ */
+const SOLDIER_RANKS=[
+  {name:'綠營守兵（普通士兵）',m:14,years:1,meritNeed:0,desc:'端鳥槍長矛站崗巡防，月領餉銀一兩有餘，雖微薄卻能混口飽飯'},
+  {name:'綠營戰兵／馬兵（精銳士兵）',m:22,years:2,meritNeed:25,desc:'配戰馬弓箭隨軍出征，軍餉翻倍，衝鋒陷陣立功機會大增'},
+  {name:'額外外委／伍長（軍中小頭目）',m:32,years:2,meritNeed:55,desc:'統帶十餘名弟兄巡防地方，在營中漸有威望'},
+  {name:'經制外委把總（基層軍官）',m:48,years:3,meritNeed:90,desc:'正式邁入大清武官行列，分防汛地，地方鄉紳亦要禮讓三分'},
+  {name:'正七品千總（營哨官兵）',m:75,years:3,meritNeed:135,desc:'統轄一哨官兵，駐守城門要塞或水師戰船'},
+  {name:'正五品守備（中級武官）',m:150,years:4,meritNeed:190,desc:'獨當一面執掌一營兵馬錢糧，威震一府之地'},
+  {name:'從三品遊擊／參將（高級將領）',m:300,years:4,meritNeed:260,desc:'統領數千精兵駐防重鎮（如九龍寨城、天津衛、蘭州軍鎮）'},
+  {name:'正二品副將／總兵（鎮守總兵官）',m:600,years:5,meritNeed:350,desc:'掛印總兵官，節制一鎮軍務，朝廷封疆武臣！'},
+  {name:'從一品全省水陸提督（提督軍門）',m:1100,years:6,meritNeed:460,desc:'執掌一省全部綠營官兵最高統帥，位極武臣！'},
+  {name:'正一品領侍衛內大臣／兵部尚書',m:2000,years:8,meritNeed:600,desc:'紫禁城御前宿衛最高統帥，出將入相，封侯拜相！'},
+];
+
+/* ══════ 科舉功名階梯（可選，非強制！不讀書照樣當兵、種田、做工、唱戲、經商） ══════ */
+const EXAMS=[
+  {level:1,name:'童試（縣試·府試·院試）',title:'秀才（生員）',minAge:14,needIq:55,fee:5,stipend:20,desc:'考取秀才功名，免除徭役、見縣官不跪，可開館教書'},
+  {level:2,name:'省城鄉試（秋闈）',title:'舉人老爺',minAge:18,needIq:68,fee:30,stipend:100,desc:'中舉即有做官資格（知縣起），亦可留在家鄉做鄉紳'},
+  {level:3,name:'京師會試（春闈）',title:'貢士',minAge:21,needIq:78,fee:120,stipend:220,desc:'進京趕考全國會試，取得殿試資格'},
+  {level:4,name:'保和殿殿試（天子親策）',title:'進士及第（翰林院）',minAge:22,needIq:85,fee:80,stipend:480,desc:'金榜題名！一甲賜進士及第（狀元/榜眼/探花）'},
+];
+
+const CIVIL_RANKS=[
+  {name:'九品巡檢／縣衙典史',m:42,years:2},{name:'正七品知縣（縣太爺）',m:120,years:3},
+  {name:'正五品知府（府台大人）',m:280,years:3},{name:'正四品按察使／道員',m:480,years:4},
+  {name:'從二品布政使（藩台）',m:850,years:4},{name:'正二品一省巡撫（撫台）',m:1400,years:5},
+  {name:'從一品總督（制台大人）',m:2400,years:5},{name:'正一品文華殿大學士（首輔）',m:4200,years:8},
+];
+
+/* ══════ 普通人百業生計（不需要功名也能快樂過一輩子！） ══════ */
+const JOBS=[
+  // 軍旅士兵路線（普通人零門檻即可投軍吃糧！）
+  {id:'join_army',name:'⚔️ 投軍吃糧（入伍當綠營／八旗士兵）',y:14,needEdu:0,cat:'軍旅',isSoldier:true,minHealth:55},
+  // 普通平民百業（零功名門檻）
+  {id:'farmer',name:'🌾 莊稼漢（種田／種桑養蠶）',y:26,needEdu:0,cat:'平民農漁'},
+  {id:'fisherman',name:'⛵ 漁夫／運河船夫',y:34,needEdu:0,cat:'平民農漁'},
+  {id:'blacksmith',name:'🔨 鐵匠／木匠／瓦匠手藝人',y:45,needEdu:0,cat:'市井手藝'},
+  {id:'waiter_qing',name:'🍵 茶館跑堂／酒樓店小二',y:36,needEdu:0,cat:'市井手藝'},
+  {id:'shop_clerk',name:'🧮 綢緞莊／藥材舖夥計',y:48,needEdu:0,cat:'市井商賈'},
+  {id:'storyteller',name:'🪭 茶樓說書先生／江湖賣藝人',y:55,needEdu:0,cat:'梨園江湖'},
+  {id:'opera_actor',name:'🎭 徽班／粵劇戲班名角（唱戲）',y:85,needEdu:0,cat:'梨園江湖',minEq:62},
+  {id:'bodyguard',name:'🗡️ 江湖鏢局鏢師／走鏢趟子手',y:78,needEdu:0,cat:'梨園江湖',minHealth:70},
+  {id:'barefoot_doc',name:'🌿 走方郎中（民間草藥大夫）',y:95,needEdu:0,cat:'醫道算命',minIq:60},
+  {id:'fortuneteller',name:'☯️ 街頭算命先生／風水堪輿師',y:80,needEdu:0,cat:'醫道算命',minEq:65},
+  // 讀書人與士紳職業（可選）
+  {id:'tutor',name:'📖 鄉村私塾先生（教蒙童識字）',y:85,needEdu:1,cat:'文教幕僚'},
+  {id:'accountant',name:'💰 票號／大商號帳房大朝奉',y:150,needEdu:1,cat:'市井商賈'},
+  {id:'litigation',name:'🖋️ 訟師（替人寫狀紙打官司）',y:185,needEdu:1,cat:'文教幕僚'},
+  {id:'advisor',name:'📜 衙門刑名／錢穀師爺',y:260,needEdu:2,cat:'文教幕僚'},
+  {id:'official_civil',name:'🏛️ 吏部掣籤做官（九品巡檢／知縣起）',y:120,needEdu:2,cat:'朝廷文官',isCivil:true},
+  // 自主經商創業
+  {id:'biz_start',name:'🏮 自立門戶開小店／商號／票號',y:0,needEdu:0,cat:'自立營商',startup:true},
+];
+
+const BIZ_TYPES=[
+  {id:'teahouse',name:'市井茶館／酒肆飯莊',startCost:120,base:320,margin:0.55,risk:0.40,desc:'本錢最小！街坊鄰里天天光顧，煙火氣十足'},
+  {id:'workshop',name:'鐵匠舖／織布坊／莞香作坊',startCost:250,base:600,margin:0.52,risk:0.45,desc:'靠手藝與貨真價實立身，穩紮穩打'},
+  {id:'pawnshop',name:'典當行（押店／當舖）',startCost:800,base:1450,margin:0.65,risk:0.35,desc:'九出十三歸，城鎮繁華地段最穩健的生財字號'},
+  {id:'piaohao',name:'匯兌票號／銀莊',startCost:2500,base:4200,margin:0.72,risk:0.75,desc:'執掌跨省銀兩匯兌與官府協餉，利厚風險高'},
+  {id:'hong_trade',name:'廣州十三行／南洋海貿洋行',startCost:3500,base:6800,margin:0.75,risk:0.85,desc:'朝廷特許對外通商洋行，生絲瓷器換白銀，暴利驚人'},
+];
+
+const HOUSE_TYPES=[
+  {id:'cottage',name:'土坯／青磚茅屋（安身小窩）',price:80},
+  {id:'courtyard',name:'市井一進小院',price:320},
+  {id:'farmland',name:'肥沃水田三十畝（年收租穀）',price:750,isFarm:true},
+  {id:'mansion',name:'三進雕花大宅院',price:2600},
+  {id:'estate',name:'千畝良田莊園別業',price:8500,isFarm:true},
+];
+const CAR_TYPES=[
+  {id:'donkey',name:'小毛驢／獨輪車',price:18,cost:2},
+  {id:'mule',name:'青布騾車',price:48,cost:6},
+  {id:'horse_ride',name:'蒙古駿馬（配銀鞍）',price:125,cost:14},
+  {id:'sedan_4',name:'四人抬呢子大官轎',price:280,cost:32},
+  {id:'sea_ship',name:'三桅遠洋福船（私家海船）',price:1200,cost:110},
+];
+
+/* ══════ 狀態與工具函數 ══════ */
+let S,_prev={},_prevAgeShown,_prevMoneyShown,_uid=1,_relTab='fam',_sv;
+const uid=()=>_uid++;
+const absentP=(role,g)=>({id:uid(),name:'—',gender:g,age:0,rel:0,alive:false,role,job:null,absent:true});
+
+function blankState(){return{
+  name:'',gender:'M',orientation:'hetero',origin:'commoner',isBanner:false,startEraIdx:3,age:0,
+  money:0,mood:74,health:90,iq:50,eq:50,moral:55,renown:0,
+  ap:8,maxAp:8,apps:5,
+  eduLevel:0,eduName:'一介布衣（平民）',inSchool:false,studyProg:0,
+  job:null,salary:0,jobYears:0,
+  soldier:null, // {rankIndex, yearsServed, yir, merit, kills, injured}
+  civil:null,
+  prison:null,crimeRecord:[],
+  businesses:[],assets:{houses:[],cars:[]},
+  deposit:0,debt:0,cpi:1,landIdx:1,lifestyle:1,home:'parents',
+  region:'suzhou',welfare:{charityGrain:false,forged:false},
+  illness:null,cured:false,married:false,partner:null,will:null,
+  originPay:true,parentWealth:0,
+  people:{dad:absentP('父親','M'),mom:absentP('母親','F'),siblings:[],friends:[],children:[]},
+  logs:[],over:false,retired:false,lastYear:null,ach:{},
+}}
+
+function log(text,cls=''){S.logs.unshift({age:S.age,text,cls});if(S.logs.length>200)S.logs.length=200}
+function snap(){return{mood:S.mood,health:S.health,iq:S.iq,eq:S.eq,moral:S.moral}}
+function ensureSiblingsArr(){if(!S.people.siblings)S.people.siblings=[]}
+function sibRoleLabel(sb){const older=sb.age>=S.age;return sb.gender==='M'?(older?'兄長':'胞弟'):(older?'姊姊':'胞妹')}
+function parentsAlive(){return[S.people.dad,S.people.mom].some(p=>p&&!p.absent&&p.alive)}
+function hasChildUnder(n){return S.people.children.some(c=>c.alive&&c.age<n)}
+
+function normalize(){
+  S.mood=clamp(S.mood,0,100);S.health=clamp(S.health,0,100);S.iq=clamp(S.iq,0,100);S.eq=clamp(S.eq,0,100);S.moral=clamp(S.moral,0,100);
+  if(S.money<0){S.debt+=Math.round(-S.money);S.money=0}
+  S.deposit=Math.max(0,S.deposit);S.debt=Math.max(0,S.debt);S.renown=clamp(S.renown,0,100);
+  const p=S.people;
+  [p.dad,p.mom].forEach(x=>{if(x&&!x.absent)x.rel=clamp(x.rel,0,100)});
+  (p.siblings||[]).forEach(x=>x.rel=clamp(x.rel,0,100));
+  p.friends.forEach(f=>f.rel=clamp(f.rel,0,100));
+  p.children.forEach(c=>c.rel=clamp(c.rel,0,100));
+  if(S.partner)S.partner.rel=clamp(S.partner.rel,0,100);
+}
+
+function netWorth(){
+  const h=S.assets.houses.reduce((a,x)=>a+x.price,0);
+  const c=S.assets.cars.reduce((a,x)=>a+x.price,0);
+  const b=S.businesses.reduce((a,x)=>a+bizValue(x),0);
+  return Math.round(S.money+S.deposit+h+c+b-S.debt);
+}
+const bizValue=c=>{
+  const licVal=((c.licenses&&c.licenses.piaohao)?3000:0)+((c.licenses&&c.licenses.hong)?5000:0)+((c.licenses&&c.licenses.salt)?1500:0);
+  return Math.round(licVal+Math.max(c.capital*(0.7+(c.rd||0)*0.2),(c.lastProfit>0?c.lastProfit*3.5:0)));
+};
+
+function currentPositionName(){
+  if(S.soldier)return SOLDIER_RANKS[S.soldier.rankIndex].name;
+  if(S.civil)return S.civil.rank.name;
+  if(S.job)return S.job.name;
+  if(S.retired)return'告老還鄉';
+  if(S.eduLevel>0)return S.eduName;
+  return S.age<14?'蒙童少年':'自由百姓';
+}
+
+/* ══════ 開局與繼承 ══════ */
+function newGameWithOrigin(origin,inh,forcedGender,forcedOri){
+  const g=inh?inh.gender:(forcedGender||'M');
+  const ori=inh?(inh.orientation||'hetero'):(forcedOri||'hetero');
+  const base=inh?ORIGINS[3]:(ORIGINS.find(o=>o.id===origin)||ORIGINS[3]);
+  const isBan=inh?!!inh._isBanner:!!base.isBanner;
+  const me=inh?{name:inh.name,surname:inh.name.charAt(0)}:randPerson(g,isBan);
+  S=blankState();_uid=100;_q.length=0;
+  S.name=me.name;S.gender=g;S.orientation=ori;S.origin=inh?'inherit':base.id;S.isBanner=isBan;
+  S.startEraIdx=inh?(inh._eraIdx??3):pick([1,2,3,4,5]);
+  S.region=inh?(inh._region||'suzhou'):(base.id==='banner'?pick(['peking','shengjing']):base.id==='scholar'?pick(['suzhou','hangzhou','xinan']):base.id==='merchant'?pick(['tianjin','guangzhou','wuchang']):base.id==='wanderer'?pick(['chengdu','wuchang','fuzhou']):pick(REGIONS).id);
+  const orphan=!inh&&base.dadJob===null;
+  if(inh){
+    if(inh._dad)S.people.dad={...inh._dad,id:uid(),role:'父親'};
+    if(inh._mom)S.people.mom={...inh._mom,id:uid(),role:'母親'};
+  }else if(!orphan){
+    S.people.dad={id:uid(),name:me.surname+pick(NAME_M),gender:'M',age:ri(25,38),rel:base.dadRel,alive:true,role:'父親',job:base.dadJob};
+    S.people.mom={id:uid(),name:pick(SURNAME_HAN)+pick(NAME_F),gender:'F',age:ri(23,35),rel:base.momRel,alive:true,role:'母親',job:base.momJob};
+  }
+  S.money=inh?Math.round(inh._money||0):base.money;
+  S.health=inh?clamp(92-Math.max(0,inh._age-30)*0.7,45,95):base.health;
+  S.iq=inh?58:base.iq;S.eq=inh?58:base.eq;S.moral=inh?60:base.moral;S.mood=75;
+  if(isBan){S.eduName='八旗子弟';S.renown=8;}
+  S.parentWealth=orphan?0:base.wealth;
+  S.originPay=!orphan&&base.pay;
+  S.home=orphan&&!inh?'rent':'parents';
+
+  if(inh){
+    S.age=inh._age;S.cpi=inh._cpi||1;S.landIdx=inh._landIdx||1;
+    S.assets.houses=(inh._houses||[]).map(h=>({...h}));
+    S.deposit=Math.round(inh._deposit||0);
+    S.businesses=(inh._biz||[]).map(b=>({...b,id:uid()}));
+    if(inh._partner){S.partner={...inh._partner,id:uid()};S.married=true;}
+    if(inh._children)S.people.children=inh._children.map(ch=>({...ch,id:uid()}));
+    if(inh._siblings)S.people.siblings=inh._siblings.map(sb=>({...sb,id:uid(),role:sibRoleLabel(sb)}));
+    log(`你以${S.name}（${S.age}歲）之身承繼門戶，繼承紋銀 ${fmt(S.money)}、田產房屋 ${S.assets.houses.length} 處、商號 ${S.businesses.length} 間。`,'big');
+  }else if(orphan){
+    log(`你在【${getRegion(S.region).name.split('（')[0]}】街頭孤身一人長大，吃百家飯穿百家衣，卻練就一身機靈與膽識。`,'big');
+  }else{
+    const r=Math.random();const cnt=r<0.50?0:(r<0.88?1:2);
+    for(let k=0;k<cnt;k++){
+      const sg=Math.random()<.5?'M':'F';
+      const sb={id:uid(),name:me.surname+(sg==='M'?pick(NAME_M):pick(NAME_F)),gender:sg,age:ri(2,8),rel:ri(70,86),alive:true,job:null};
+      sb.role=sibRoleLabel(sb);S.people.siblings.push(sb);
+    }
+    const sibStr=S.people.siblings.length?`家中還有${S.people.siblings.map(x=>`${x.role}${x.name}（${x.age}歲）`).join('、')}。`:'你是家中獨子／獨女。';
+    log(`你降生於【${getRegion(S.region).name.split('（')[0]}】的${base.name}。父親${S.people.dad.name}（${S.people.dad.job}），母親${S.people.mom.name}。${sibStr}`,'big');
+  }
+  closeSheet();normalize();render();_prev=snap();
+}
+
+/* ══════ 主畫面渲染 ══════ */
+function render(){
+  const ageEl=$('ageNum');
+  if(S.age!==_prevAgeShown&&_prevAgeShown!==undefined){ageEl.classList.remove('bump');void ageEl.offsetWidth;ageEl.classList.add('bump')}
+  ageEl.textContent=S.age;_prevAgeShown=S.age;
+
+  const curReg=getRegion(S.region);
+  $('eraTxt').textContent=eraTitle(S.startEraIdx,S.age);
+  $('hudLoc').textContent='📍 '+curReg.name.split('（')[0];
+
+  const moneyEl=$('moneyTxt'),oldMoney=_prevMoneyShown;
+  moneyEl.textContent=fmt(S.money);
+  if(oldMoney!==undefined&&oldMoney!==S.money){const d=S.money-oldMoney;const el=document.createElement('span');el.className='fnum '+(d>0?'up':'down');el.textContent=(d>0?'+':'−')+fmt(Math.abs(d));$('purseCash').appendChild(el);setTimeout(()=>el.remove(),1200)}
+  _prevMoneyShown=S.money;$('purseCash').classList.toggle('zero',S.money===0);
+  $('purseDebt').style.display=S.debt>0?'block':'none';$('debtTxt').textContent=Math.round(S.debt).toLocaleString();
+  $('apTxt').textContent=S.ap;$('apMax').textContent=S.maxAp;
+
+  $('hudBars').innerHTML=`
+    <div class="hbar"><i>❤️</i><div class="bg"><b style="width:${clamp(S.health,0,100)}%;background:var(--rust)"></b></div><span>${Math.round(S.health)}</span></div>
+    <div class="hbar"><i>😊</i><div class="bg"><b style="width:${clamp(S.mood,0,100)}%;background:var(--amber)"></b></div><span>${Math.round(S.mood)}</span></div>
+  `;
+
+  const nodes=[];
+  nodes.push(`<div class="fam-node" onclick="openRoleModal()"><div class="av me ${S.gender==='F'?'f':''}">${S.name?S.name.charAt(0):'我'}</div><div class="nm">(己身)${S.name}</div></div>`);
+  if(S.partner)nodes.push(`<div class="fam-node" onclick="openRelations('par')"><div class="av ${S.partner.gender==='F'?'f':''}">${S.partner.name.charAt(0)}</div><div class="nm">(${S.married?'正室':'紅顏'})${S.partner.name}</div></div>`);
+  [S.people.dad,S.people.mom].filter(p=>p&&!p.absent).forEach(w=>{
+    nodes.push(`<div class="fam-node" onclick="openRelations('fam')"><div class="av ${w.gender==='F'?'f':''} ${!w.alive?'dead':''}">${w.alive?w.name.charAt(0):'故'}</div><div class="nm">(${w.role})${w.name}</div></div>`);
+  });
+  (S.people.siblings||[]).forEach(sb=>{
+    nodes.push(`<div class="fam-node" onclick="openRelations('fam')"><div class="av ${sb.gender==='F'?'f':''} ${!sb.alive?'dead':''}">${sb.alive?sb.name.charAt(0):'故'}</div><div class="nm">(${sibRoleLabel(sb)})${sb.name}</div></div>`);
+  });
+  S.people.children.forEach(c=>{
+    nodes.push(`<div class="fam-node" onclick="openRelations('chi')"><div class="av ${c.gender==='F'?'f':''} ${!c.alive?'dead':''}">${c.alive?c.name.charAt(0):'故'}</div><div class="nm">(${c.gender==='M'?'子':'女'})${c.name}</div></div>`);
+  });
+  $('famStrip').innerHTML=nodes.join('');
+
+  let workDisplay=currentPositionName();
+  if(S.prison)workDisplay=`<b class="link" style="color:var(--rust)" onclick="openPrisonModal()">⛓️ ${S.prison.facility} (${S.prison.yearsLeft}年)</b>`;
+  else if(S.soldier||S.civil||S.job)workDisplay=`<b class="link" onclick="openCareerModal()">${currentPositionName()}</b>`;
+  else if(S.age>=14)workDisplay=`<b class="link" onclick="openRoleModal()">謀生／投軍／趕考</b>`;
+
+  $('pMeta').innerHTML=`
+    <div class="item"><span>功名：</span><b>${S.eduName}</b></div>
+    <div class="item"><span>營生：</span>${workDisplay}</div>
+    <div class="item"><span>家產：</span><b style="color:var(--amber)">${fmt(netWorth())}</b></div>
+    <div class="item"><span>字號：</span><b>${S.businesses.length} 間</b></div>
+  `;
+
+  $('pBars').innerHTML=[
+    {l:'才學',v:S.iq,c:'var(--sky)'},
+    {l:'世故',v:S.eq,c:'var(--plum)'},
+    {l:'仁德',v:S.moral,c:'var(--sage)'},
+    {l:'聲望',v:S.renown,c:'var(--amber)'},
+  ].map(x=>`<div class="p-bar-row"><span>${x.l}</span><div class="trk"><i style="width:${clamp(x.v,0,100)}%;background:${x.c}"></i></div><span class="num">${Math.round(x.v)}</span></div>`).join('');
+  _prev=snap();
+
+  const dEl=$('diary'),st=dEl.scrollTop;
+  dEl.innerHTML=S.logs.map(l=>`<div class="e ${l.cls}"><span class="t">${l.age}歲</span><span class="x">${l.text}</span></div>`).join('');
+  dEl.scrollTop=st;
+
+  $('btnRoleModal').disabled=S.over;
+  if(S.prison){$('roleIco').textContent='⛓️';$('roleLbl').textContent='大牢';$('roleSub').textContent=`剩${S.prison.yearsLeft}年`;}
+  else if(S.soldier){$('roleIco').textContent='⚔️';$('roleLbl').textContent='軍營';$('roleSub').textContent=`戰功${S.soldier.merit}`;}
+  else if(S.civil||S.job){$('roleIco').textContent='💼';$('roleLbl').textContent='營生';$('roleSub').textContent=currentPositionName();}
+  else{$('roleIco').textContent='🏮';$('roleLbl').textContent='百業/投軍';$('roleSub').textContent='自由擇業';}
+
+  $('btnWealthHub').disabled=S.age<14||S.over;
+  $('subProp').textContent=fmt(netWorth());
+  $('btnSocialHub').disabled=S.over;
+  $('subSoc').textContent=S.partner?S.partner.name:`${(S.people.siblings||[]).length+S.people.friends.filter(f=>f.alive).length}親友`;
+  $('btnCityHub').disabled=S.over||!!S.prison;
+  $('subReg').textContent=`${S.ap}精力 · ${curReg.name.split('（')[0].slice(0,4)}`;
+  $('btnDossierHub').disabled=S.over;
+  $('subAch').textContent=`成就 ${Object.keys(S.ach).length}/${ACH.length}`;
+
+  const nb=$('btnNext');nb.disabled=S.over;nb.classList.toggle('ready',!S.over&&S.ap===0);
+  nb.textContent=S.over?'百 年 歸 寂':(S.prison?'戴 枷 服 刑 （度過此年）':(S.ap>0&&S.age>=6?`度過此年（尚餘 ${S.ap} 精力）`:'度 過 此 年'));
+  clearTimeout(_sv);_sv=setTimeout(save,300);
+}
+
+/* ══════ 彈窗與視覺卡片 ══════ */
+function sheet({title,body,buttons,onMount,closable=true}){
+  const ov=$('ov');
+  ov.innerHTML=`<div class="sheet"><h2>${title}</h2><div class="body">${body}</div><div class="btnrow"></div></div>`;
+  const row=ov.querySelector('.btnrow');
+  (buttons||[{text:'合上'}]).forEach(b=>{
+    const el=document.createElement('button');el.textContent=b.text;if(b.cls)el.className=b.cls;if(b.disabled)el.disabled=true;
+    el.onclick=()=>{const keep=b.onClick?b.onClick()===true:false;if(!keep)closeSheet()};
+    row.appendChild(el);
+  });
+  ov.classList.add('show');document.body.classList.add('locked');
+  ov.onclick=e=>{if(e.target===ov&&closable)closeSheet()};
+  if(onMount)onMount();
+}
+function closeSheet(){$('ov').classList.remove('show');$('ov').innerHTML='';document.body.classList.remove('locked');setTimeout(flushQueue,160)}
+
+function showMilestoneCard({theme='news',tag='大清京報',headline,body,btnText='繼續'}){
+  queue(()=>{
+    if(S.over)return;
+    const html=`<div class="ms-card ${theme}"><div class="ms-tag">${tag}</div><div class="ms-head">${headline}</div><div class="ms-body">${body}</div><div class="ms-foot"><span>${eraTitle(S.startEraIdx,S.age)} · ${S.age} 歲</span><span>${getRegion(S.region).name.split('（')[0]}</span></div></div>`;
+    sheet({title:'✨ 人生重大時刻',body:html,closable:false,buttons:[{text:btnText,cls:'pri'}]});
+  });
+}
+
+function openOriginSelect(){
+  let selGender='M';let selOri='hetero';
+  const body=`
+    <p style="margin-bottom:6px;color:var(--ink);font-weight:600">① 選擇性別</p>
+    <div class="gsel"><button data-g="M" class="on">♂ 男丁</button><button data-g="F">♀ 女子</button></div>
+    <p style="margin-bottom:6px;color:var(--ink);font-weight:600">② 選擇情緣取向</p>
+    <div class="gsel" style="margin-bottom:14px"><button data-o="hetero" class="on" style="font-size:11.5px">男女之情</button><button data-o="homo" style="font-size:11.5px">斷袖／磨鏡</button><button data-o="bi" style="font-size:11.5px">兼愛不拘</button></div>
+    <p style="margin-bottom:6px;color:var(--ink);font-weight:600">③ 選擇大清九州出身門第</p>
+    <div class="origins">${ORIGINS.map(o=>`<div class="origin" data-id="${o.id}"><div class="h">${o.name}</div><div class="d">${o.desc}</div><div class="b">${o.bonus}</div></div>`).join('')}</div>`;
+  sheet({title:'🏮 投胎大清九州天下',body,buttons:[],closable:false,onMount(){
+    document.querySelectorAll('[data-g]').forEach(b=>{b.onclick=()=>{selGender=b.dataset.g;document.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('on',x.dataset.g===selGender))}});
+    document.querySelectorAll('[data-o]').forEach(b=>{b.onclick=()=>{selOri=b.dataset.o;document.querySelectorAll('[data-o]').forEach(x=>x.classList.toggle('on',x.dataset.o===selOri))}});
+    document.querySelectorAll('.origin').forEach(el=>{el.onclick=()=>newGameWithOrigin(el.dataset.id,null,selGender,selOri)});
+  }});
+}
+
+/* ══════ 角色主面板：普通人百業生計、投軍當兵、可選科舉趕考 ══════ */
+function openRoleModal(){
+  if(S.over)return;
+  if(S.prison){openPrisonModal();return;}
+  if(S.soldier||S.civil||S.job){openCareerModal();return;}
+  openJobAndStudyModal();
+}
+
+function openJobAndStudyModal(){
+  const byCat={};
+  JOBS.forEach(j=>{(byCat[j.cat]=byCat[j.cat]||[]).push(j)});
+  const nextEx=EXAMS.find(e=>e.level===S.eduLevel+1);
+  const canExam=nextEx&&S.age>=nextEx.minAge&&S.iq>=nextEx.needIq&&S.money>=nextEx.fee&&S.ap>=1;
+
+  let jobsHtml='';
+  ['軍旅','平民農漁','市井手藝','梨園江湖','醫道算命','市井商賈','文教幕僚','朝廷文官','自立營商'].forEach(cat=>{
+    if(!byCat[cat])return;
+    jobsHtml+=`<div class="cat-title">${cat}</div>`;
+    byCat[cat].forEach(j=>{
+      let blk='';
+      if(S.age<14)blk='未滿 14 歲';
+      else if(S.eduLevel<j.needEdu)blk=`需功名 Lv.${j.needEdu}`;
+      else if(j.minHealth&&S.health<j.minHealth)blk=`健康需 ${j.minHealth}`;
+      else if(j.minIq&&S.iq<j.minIq)blk=`才學需 ${j.minIq}`;
+      else if(j.minEq&&S.eq<j.minEq)blk=`世故需 ${j.minEq}`;
+      else if(j.startup&&S.money<120)blk='起家需 120 兩';
+      jobsHtml+=`<div class="it ${blk?'off':''}" data-jid="${j.id}">
+        <div class="l"><div class="nm">${j.name}</div><div class="ds">${j.startup?'開茶館、作坊、當舖或票號（本銀 120 兩起）':j.isSoldier?'從普通守兵／戰兵做起，立戰功可一路升為官兵將領！':`年收約 ${fmt(j.y*S.cpi)}`}</div></div>
+        <div class="dg">${blk?`<span class="w">${blk}</span>`:'入行'}</div>
+      </div>`;
+    });
+  });
+
+  const html=`
+    <p style="font-size:12px;color:var(--ink3);margin-bottom:8px">在大清天下，你既可以做一名踏實的普通百姓、手藝人、戲子、鏢師，也可以投軍吃糧從普通士兵做起，或者寒窗苦讀走科舉仕途！</p>
+    <div class="acts-list" id="qAllJobs">${jobsHtml}</div>
+    <div class="sec">📖 科舉功名（可選之路 · 當前：${S.eduName}）</div>
+    <div class="btnrow" style="margin-top:0">
+      <button id="btnStudyQing" ${S.ap<1?'disabled':''}>🕯️ 讀書識字 (-1精力 · +才學)</button>
+      <button id="btnTakeExam" ${!canExam?'disabled':''}>${nextEx?`✍️ 赴考【${nextEx.name}】(${fmt(nextEx.fee)})`:'🏆 已金榜題名'}</button>
+    </div>`;
+
+  sheet({title:'🏮 九州百業謀生與軍旅科舉',body:html,buttons:[{text:'合上'}],onMount(){
+    $('btnStudyQing').onclick=()=>{
+      if(S.ap<1)return toast('精力不足');
+      S.ap--;S.iq+=ri(3,5);S.studyProg=Math.min(10,S.studyProg+2);S.mood-=1;
+      log(`你抽空研讀詩書，才學增至 ${Math.round(S.iq)}（備考進度 ${S.studyProg}/10）。`,'good');
+      normalize();render();openJobAndStudyModal();
+    };
+    const exBtn=$('btnTakeExam');
+    if(exBtn)exBtn.onclick=()=>{
+      if(!canExam)return;
+      S.ap--;S.money-=nextEx.fee;
+      const chance=clamp(0.24+S.studyProg*0.055+(S.iq-nextEx.needIq)*0.015+(S.origin==='scholar'?0.12:0),0.12,0.92);
+      if(Math.random()<chance){
+        S.eduLevel=nextEx.level;S.eduName=nextEx.title;S.studyProg=0;S.renown+=nextEx.level*7;S.mood+=22;
+        if(nextEx.level===4)S.eduName=pick(['狀元及第','榜眼及第','探花及第','二甲進士']);
+        log(`🎉 捷報傳來！你通過【${nextEx.name}】，高中【${S.eduName}】！`,'big');
+        closeSheet();normalize();render();
+        if(nextEx.level>=2)showMilestoneCard({theme:'gold',tag:'大清禮部捷報',headline:`${S.name}高中【${S.eduName}】！`,body:`十年寒窗一舉成名，捷報傳遍九州鄉里！`});
+      }else{
+        S.mood-=8;log(`你在【${nextEx.name}】中名落孫山，未能中榜。`,'bad');
+        normalize();render();openJobAndStudyModal();
+      }
+    };
+    $('qAllJobs').addEventListener('click',e=>{
+      const it=e.target.closest('.it');if(!it||it.classList.contains('off'))return;
+      const j=JOBS.find(x=>x.id===it.dataset.jid);if(!j)return;
+      if(j.startup){closeSheet();startBusiness();return;}
+      if(S.apps<=0)return toast('今年求職次數已用盡');
+      S.apps--;
+      if(j.isSoldier){
+        const startIdx=S.isBanner?2:0; // 八旗子弟起步為伍長，普通百姓從普通守兵做起
+        S.soldier={rankIndex:startIdx,yearsServed:0,yir:0,merit:startIdx*25,battles:0};
+        S.salary=Math.round(SOLDIER_RANKS[startIdx].m*S.cpi);
+        log(`⚔️ 你前往【${getRegion(S.region).name.split('（')[0]}】兵營報名投軍，正式成為一名【${SOLDIER_RANKS[startIdx].name}】，年餉紋銀 ${fmt(S.salary)}！`,'big');
+      }else if(j.isCivil){
+        const rIdx=S.eduLevel>=4?2:(S.eduLevel>=3?1:0);
+        S.civil={rank:{...CIVIL_RANKS[rIdx]},rankIndex:rIdx,yir:0,score:70,treasury:5000,approval:68};
+        S.salary=Math.round(CIVIL_RANKS[rIdx].m*S.cpi);
+        log(`🏛️ 你獲吏部掣籤授官，出任【${CIVIL_RANKS[rIdx].name}】，年俸紋銀 ${fmt(S.salary)}！`,'big');
+      }else{
+        S.job=j;S.jobYears=0;S.salary=Math.round(j.y*S.cpi);
+        log(`你開始以【${j.name}】為生，每年進項約紋銀 ${fmt(S.salary)}。`,'big');
+      }
+      closeSheet();normalize();render();
+    });
+  }});
+}
+
+function openCareerModal(){
+  // 1. 士兵／官兵軍旅面板（支援從普通士兵一步步立戰功升為官兵將領！）
+  if(S.soldier){
+    const m=S.soldier;const rk=SOLDIER_RANKS[m.rankIndex];
+    const nextRk=SOLDIER_RANKS[m.rankIndex+1];
+    const isOfficer=m.rankIndex>=3; // 把總以上正式成為「官兵」武官
+    const html=`
+      <div class="bizstat">
+        <div class="b"><div class="l">軍中身分</div><div class="v" style="font-size:11.5px">${rk.name}</div></div>
+        <div class="b"><div class="l">年餉銀兩</div><div class="v">${fmt(S.salary)}</div></div>
+        <div class="b"><div class="l">累積戰功</div><div class="v">${m.merit} 分${nextRk?` (下階需${nextRk.meritNeed})`:''}</div></div>
+        <div class="b"><div class="l">軍旅年資 / 身分</div><div class="v">${m.yearsServed}年 · ${isOfficer?'朝廷官兵':'普通士兵'}</div></div>
+      </div>
+      <p class="note" style="margin-top:0;margin-bottom:8px">${rk.desc}</p>
+      <div class="sec">⚔️ 軍營操練與出征立功（消耗 1 精力）</div>
+      <div class="btnrow" style="margin-top:0">
+        <button data-sol="drill" class="pri" ${S.ap<1?'disabled':''}>🏹 校場操練弓馬火器 (+戰功/健康)</button>
+        <button data-sol="mission" class="pri" ${S.ap<1?'disabled':''}>🔥 奉命剿匪／平叛／海防巡哨 (+大量戰功/賞銀)</button>
+        <button data-sol="guard" ${S.ap<1?'disabled':''}>🛡️ 駐守城門關隘當差 (+微薄賞錢)</button>
+      </div>
+      ${isOfficer?`<div class="sec">⚠️ 官兵將領暗盤</div><div class="btnrow" style="margin-top:0"><button data-sol="skimp" class="warn">💸 剋扣兵餉／虛報兵額</button></div>`:''}`;
+    sheet({title:isOfficer?'🎖️ 大清官兵將領軍帳':'⚔️ 大清軍營士兵名冊',body:html,buttons:[
+      {text:'解甲歸田（退伍回鄉）',cls:'warn',onClick:()=>{S.soldier=null;S.salary=0;log('你卸下盔甲兵器，解甲歸田做回普通百姓。','big');normalize();render()}},
+      {text:'合上'}
+    ],onMount(){
+      document.querySelectorAll('[data-sol]').forEach(b=>{b.onclick=()=>{
+        const op=b.dataset.sol;
+        if(op==='skimp'){
+          const gain=Math.round(ri(80,600)*S.cpi);S.money+=gain;S.moral-=15;
+          log(`你暗中剋扣麾下士兵糧餉 ${fmt(gain)} 入私囊！`,'bad');
+          if(Math.random()<0.28){closeSheet();goPrison('剋扣軍餉及激起兵變重罪',ri(4,10),gain*1.5);normalize();render();return;}
+          normalize();render();openCareerModal();return;
+        }
+        if(S.ap<1)return toast('精力不足');
+        S.ap--;
+        if(op==='drill'){
+          const g=ri(6,12);m.merit+=g;S.health+=3;
+          log(`你在校場頂著烈日苦練刀槍弓箭，體魄更健，戰功 +${g}！`,'good');
+        }else if(op==='guard'){
+          const tip=Math.round(ri(3,10)*S.cpi);S.money+=tip;m.merit+=4;S.eq+=1;
+          log(`你在城門盤查往來商旅，得過路茶水錢 ${fmt(tip)}，戰功 +4。`);
+        }else if(op==='mission'){
+          m.battles++;
+          const winProb=clamp(0.48+(S.health-50)*0.004+(S.iq-50)*0.002+m.rankIndex*0.02,0.35,0.88);
+          if(Math.random()<winProb){
+            const g=ri(18,35);const prize=Math.round(ri(15,80)*(1+m.rankIndex*0.4)*S.cpi);
+            m.merit+=g;S.money+=prize;S.renown+=3;
+            const foes=['南海海盜','川楚白蓮教匪','西北馬賊','太湖水寇'];
+            log(`⚔️ 捷報！你隨軍清剿「${pick(foes)}」奮勇殺敵，立下戰功 +${g}，獲頒賞銀 ${fmt(prize)}！`,'big');
+          }else{
+            const inj=ri(8,18);S.health-=inj;m.merit+=5;
+            log(`🩸 戰事慘烈！你在陣前搏殺負傷（健康 −${inj}），所幸大難不死，記戰功 +5。`,'bad');
+          }
+        }
+        // 檢查是否達成晉升條件（從普通士兵一路晉升為官兵將領！）
+        if(nextRk&&m.merit>=nextRk.meritNeed){
+          m.rankIndex++;S.salary=Math.round(SOLDIER_RANKS[m.rankIndex].m*S.cpi);S.mood+=18;S.renown+=5;
+          const becameOfficer=m.rankIndex===3;
+          log(`🎖️ 軍功累積達標！你獲主帥保舉，正式晉升為【${SOLDIER_RANKS[m.rankIndex].name}】${becameOfficer?'，從普通士兵一躍成為朝廷命官「官兵」將領！':'！'}`,'big');
+          if(becameOfficer||m.rankIndex===8){
+            closeSheet();normalize();render();
+            showMilestoneCard({theme:'gold',tag:'兵部軍功捷報',headline:`${S.name} 戰功彪炳，晉升【${SOLDIER_RANKS[m.rankIndex].name}】！`,body:becameOfficer?'從一介普通守兵在刀光劍影中拼殺而出，正式授朝廷武官銜，光宗耀祖！':'執掌一省水陸兵馬，威震九州！'});
+            return;
+          }
+        }
+        normalize();render();openCareerModal();
+      }});
+    }});
+    return;
+  }
+
+  // 2. 文官衙門面板
+  if(S.civil){
+    const c=S.civil;const rk=CIVIL_RANKS[c.rankIndex];
+    const unitCost=Math.round((c.rankIndex+1)*350*S.cpi);
+    const html=`
+      <div class="bizstat">
+        <div class="b"><div class="l">現任官職</div><div class="v" style="font-size:12px">${rk.name}</div></div>
+        <div class="b"><div class="l">年俸（含養廉銀）</div><div class="v">${fmt(S.salary)}</div></div>
+        <div class="b"><div class="l">官庫銀兩</div><div class="v">${fmt(c.treasury)}</div></div>
+        <div class="b"><div class="l">百姓口碑 / 政績</div><div class="v">${Math.round(c.approval)}% / ${Math.round(c.score)}</div></div>
+      </div>
+      <div class="btnrow">
+        <button data-off="judge" class="pri" ${S.ap<1?'disabled':''}>🔨 升堂斷案 (+口碑/政績)</button>
+        <button data-off="water" ${S.ap<1||c.treasury<unitCost?'disabled':''}>🌊 興修水利 (${fmt(unitCost)})</button>
+        <button data-off="embezzle" class="warn" ${c.treasury<unitCost?'disabled':''}>💸 貪墨庫銀</button>
+      </div>`;
+    sheet({title:'🏛️ 衙門理政',body:html,buttons:[
+      {text:'辭官歸隱',cls:'warn',onClick:()=>{S.civil=null;S.salary=0;log('你掛冠辭官，回歸平民生活。','bad');normalize();render()}},
+      {text:'合上'}
+    ],onMount(){
+      document.querySelectorAll('[data-off]').forEach(b=>{b.onclick=()=>{
+        const op=b.dataset.off;
+        if(op==='embezzle'){
+          const steal=Math.round(Math.min(c.treasury*0.3,ri(300,2000)*S.cpi));
+          c.treasury-=steal;S.money+=steal;S.moral-=18;
+          log(`你暗中截留庫銀 ${fmt(steal)} 入私囊……`,'bad');
+          if(Math.random()<0.30){closeSheet();goPrison('貪墨庫銀重罪（都察院參奏拿問）',ri(5,12),steal*1.5);normalize();render();return;}
+          normalize();render();openCareerModal();return;
+        }
+        if(S.ap<1)return toast('精力不足');
+        S.ap--;
+        if(op==='judge'){c.score=clamp(c.score+8,0,100);c.approval=clamp(c.approval+7,0,100);S.moral+=2;log('你公正斷案，百姓稱頌！','good');}
+        else{c.treasury-=unitCost;c.score=clamp(c.score+10,0,100);c.approval=clamp(c.approval+9,0,100);log('你撥款修築水利堤防，民生大安！','good');}
+        normalize();render();openCareerModal();
+      }});
+    }});
+    return;
+  }
+
+  // 3. 普通百業生計面板（農夫、手藝人、戲班、鏢師、郎中、說書人等）
+  const j=S.job;
+  const actLabel=j.cat==='平民農漁'?'🌾 下田辛勤耕作／出海捕魚':j.cat==='梨園江湖'?'🎭 登台獻藝／走鏢護送':j.cat==='醫道算命'?'🌿 坐堂施診／擺攤測字':'🔨 精進手藝多接活計';
+  sheet({title:`💼 平民生計：${j.name}`,body:`<p>你是一名 <b>${j.name}</b>（${j.cat}），已從業 <b>${S.jobYears} 年</b>，年進項約 <b>${fmt(S.salary)}</b>。</p><p class="note">在市井民間勤懇營生，雖無官袍加身，卻也自在安樂、積少成多！</p><div class="btnrow"><button id="btnWorkHard" class="pri" ${S.ap<1?'disabled':''}>${actLabel} (-1精力 · 賺外快)</button><button id="btnQuitJob" class="warn">改行（重新擇業／投軍／趕考）</button></div>`,buttons:[{text:'合上'}],onMount(){
+    $('btnWorkHard').onclick=()=>{
+      if(S.ap<1)return toast('精力不足');
+      S.ap--;
+      const ex=Math.round(S.salary*rnd(0.20,0.45));
+      S.money+=ex;S.jobYears+=0.5;
+      if(j.cat==='梨園江湖')S.renown+=2;
+      if(j.cat==='平民農漁')S.health+=1;
+      log(`你勤懇幹活（${actLabel.replace(/^[^\s]+\s/,'')}），額外賺得銀兩 ${fmt(ex)}！`,'good');
+      normalize();render();openCareerModal();
+    };
+    $('btnQuitJob').onclick=()=>{S.job=null;S.salary=0;log(`你辭去了「${j.name}」的營生，準備另謀出路。`);closeSheet();normalize();render()};
+  }});
+}
+
+/* ══════ 家產、商號、宗族、九州地方、刑部大牢與年度推進 ══════ */
+let _wTab='bank';
+function openWealthHub(tab){
+  if(S.age<14)return toast('年滿 14 歲後方可掌管銀兩家產');
+  if(S.over)return;
+  if(tab)_wTab=tab;
+  const nav=`<div class="tabs" style="margin:-6px 0 12px">
+    <button data-wt="bank" class="${_wTab==='bank'?'on':''}">🏦 銀號借貸</button>
+    <button data-wt="land" class="${_wTab==='land'?'on':''}">🏡 田產房屋</button>
+    <button data-wt="biz" class="${_wTab==='biz'?'on':''}">🏮 商號行棧(${S.businesses.length})</button>
+  </div>`;
+  const reg=getRegion(S.region);
+  let body='';
+  if(_wTab==='bank'){
+    const maxLoan=Math.max(0,Math.round(((S.salary||60)*2+netWorth()*0.25)*S.cpi)-S.debt);
+    body=`
+      <div class="prop-grid">
+        <div class="prop-box"><span class="k">🪙 隨身紋銀</span><span class="v">${fmt(S.money)}</span></div>
+        <div class="prop-box"><span class="k">💎 家產總值</span><span class="v">${fmt(netWorth())}</span></div>
+        <div class="prop-box"><span class="k">🏦 銀號存銀 (年息2分)</span><span class="v">${fmt(S.deposit)}</span></div>
+        <div class="prop-box"><span class="k">📉 印子錢欠債 (年息8分)</span><span class="v ${S.debt>0?'neg':''}">${fmt(S.debt)}</span></div>
+      </div>
+      <input type="number" id="wAmt" placeholder="輸入銀兩數目" min="1" inputmode="numeric">
+      <div class="btnrow" style="margin-top:4px">
+        <button data-wa="dep" class="pri">存入銀號</button>
+        <button data-wa="wd">提取存銀</button>
+        <button data-wa="loan" ${maxLoan<=0?'disabled':''}>借貸周轉 (上限${fmt(maxLoan)})</button>
+        ${S.debt>0?'<button data-wa="repay" class="warn">償還欠債</button>':''}
+      </div>
+      <div class="btnrow">
+        <button data-wa="will">${S.will?'修改分家遺囑':'立分家遺囑'}</button>
+        <button data-wa="rob_pawn" class="warn" ${S.ap<1?'disabled':''}>🎭 蒙面打劫大當舖 (-1精力)</button>
+      </div>`;
+  }else if(_wTab==='land'){
+    const hList=S.assets.houses.length?S.assets.houses.map((h,i)=>`<div class="asset-card"><div class="l"><div class="nm">${h.name}</div><div class="ds">${h.isFarm?'年收田租 '+fmt(h.price*0.06):(h.rented?'出租收銀 '+fmt(h.price*0.04):'自住宅院')}</div></div><div class="v">${fmt(h.price)}</div>${!h.isFarm?`<button data-rh="${i}">${h.rented?'改自住':'出租'}</button>`:''}<button data-sh="${i}">變賣</button></div>`).join(''):'<div class="empty" style="padding:10px">名下尚無田產房屋</div>';
+    const cList=S.assets.cars.length?S.assets.cars.map((c,i)=>`<div class="asset-card"><div class="l"><div class="nm">${c.name}</div><div class="ds">年養護銀 ${fmt(c.cost*S.cpi)}</div></div><div class="v">${fmt(c.price)}</div><button data-sc="${i}">變賣</button></div>`).join(''):'<div class="empty" style="padding:10px">名下尚無騾馬船隻</div>';
+    body=`
+      <div class="sec" style="margin-top:0">🏡 置辦田產與房屋（當前地段：${reg.name.split('（')[0]}）</div>
+      ${hList}
+      <div class="btnrow" style="margin-top:8px">${HOUSE_TYPES.map(h=>{const pr=Math.round(h.price*S.landIdx*reg.landMod);return `<button data-bh="${h.id}" ${S.money<pr?'disabled':''}>${h.name} (${fmt(pr)})</button>`}).join('')}</div>
+      <div class="sec">🐎 騾馬官轎與海船</div>
+      ${cList}
+      <div class="btnrow" style="margin-top:8px">${CAR_TYPES.map(c=>{const pr=Math.round(c.price*S.cpi);return `<button data-bc="${c.id}" ${S.money<pr?'disabled':''}>${c.name} (${fmt(pr)})</button>`}).join('')}</div>
+      <div class="sec">🍵 日常排場用度</div>
+      <div class="btnrow" style="margin-top:0">${['粗茶淡飯','小康溫飽','鐘鳴鼎食'].map((n,i)=>`<button data-lf="${i}" class="${S.lifestyle===i?'on':''}">${n}</button>`).join('')}</div>`;
+  }else{
+    const bList=S.businesses.length?S.businesses.map((c,i)=>`<div class="biz-card"><div class="t">${c.name}</div><div class="m">${c.typeName} · 經營 ${c.years} 年 · 夥計 ${c.employees.length} 人 · 去年${c.lastProfit>=0?'盈餘':'虧損'} ${fmt(Math.abs(c.lastProfit))}</div><div class="row" style="border:0;padding:4px 0"><span class="k">字號聲望 / 估值</span><span class="v">${Math.round(c.reputation)} / ${fmt(bizValue(c))}</span></div><div class="btnrow" style="margin-top:6px"><button data-bi="${i}" data-bo="manage" class="pri">掌櫃經營</button><button data-bi="${i}" data-bo="sell">盤出套現</button></div></div>`).join(''):'<div class="empty">尚未開立任何小店或商號</div>';
+    body=bList+(S.businesses.length<3?`<div class="btnrow"><button id="btnNewQingBiz" class="pri">➕ 開立新茶館／作坊／商號／票號</button></div>`:'');
+  }
+
+  const redo=()=>{normalize();render();openWealthHub(_wTab)};
+  sheet({title:'🪙 銀兩家產與商號',body:nav+body,buttons:[{text:'合上'}],onMount(){
+    document.querySelectorAll('[data-wt]').forEach(b=>{b.onclick=()=>{_wTab=b.dataset.wt;openWealthHub(_wTab)}});
+    const nb=$('btnNewQingBiz');if(nb)nb.onclick=()=>{closeSheet();startBusiness()};
+    document.querySelectorAll('[data-bi]').forEach(b=>{b.onclick=()=>{
+      const idx=+b.dataset.bi;const c=S.businesses[idx];if(!c)return;
+      if(b.dataset.bo==='manage')manageBusiness(idx);
+      else{const v=bizValue(c);S.money+=v;S.businesses.splice(idx,1);log(`你將「${c.name}」盤讓與他人，得銀 ${fmt(v)}。`,'big');redo();}
+    }});
+    document.querySelectorAll('[data-wa]').forEach(b=>{b.onclick=()=>{
+      const a=b.dataset.wa;
+      if(a==='will'){openWill();return;}
+      if(a==='rob_pawn'){
+        if(S.ap<1)return toast('精力不足');S.ap--;S.moral-=25;
+        if(Math.random()<clamp(0.18+(S.health-50)*0.004,0.12,0.38)){
+          const loot=Math.round(ri(400,2200)*S.cpi);S.money+=loot;
+          log(`🚨 你夜闖${reg.name.split('（')[0]}大當舖洗劫銀庫，得手贓銀 ${fmt(loot)}！`,'big');
+          closeSheet();normalize();render();
+        }else{
+          closeSheet();goPrison('蒙面持械劫掠當舖重罪（官府拿辦）',ri(5,12),500);normalize();render();
+        }
+        return;
+      }
+      const v=Math.floor(parseFloat($('wAmt').value));if(!v||v<=0)return toast('請輸入銀兩數目');
+      if(a==='dep'){if(v>S.money)return toast('隨身紋銀不足');S.money-=v;S.deposit+=v;log(`你將 ${fmt(v)} 存入銀號。`);}
+      if(a==='wd'){if(v>S.deposit)return toast('存銀不足');S.deposit-=v;S.money+=v;log(`你從銀號取出 ${fmt(v)}。`);}
+      if(a==='loan'){S.money+=v;S.debt+=v;log(`你向銀號借銀 ${fmt(v)}（年息八分）。`,'bad');}
+      if(a==='repay'){const x=Math.min(v,S.money,S.debt);S.money-=x;S.debt-=x;log(`你償還了 ${fmt(x)} 欠債。`,'good');}
+      redo();
+    }});
+    document.querySelectorAll('[data-bh]').forEach(b=>{b.onclick=()=>{
+      const h=HOUSE_TYPES.find(x=>x.id===b.dataset.bh);const pr=Math.round(h.price*S.landIdx*reg.landMod);
+      if(S.money<pr)return toast('紋銀不足');
+      S.money-=pr;S.assets.houses.push({...h,name:reg.name.split('（')[0]+h.name,price:pr,rented:false});
+      if(!h.isFarm)S.home='own';
+      log(`你斥資 ${fmt(pr)} 置辦了【${reg.name.split('（')[0]}${h.name}】！`,'big');redo();
+    }});
+    document.querySelectorAll('[data-rh]').forEach(b=>{b.onclick=()=>{const h=S.assets.houses[+b.dataset.rh];h.rented=!h.rented;redo()}});
+    document.querySelectorAll('[data-sh]').forEach(b=>{b.onclick=()=>{const i=+b.dataset.sh;const h=S.assets.houses[i];const sp=Math.round(h.price*0.95);S.money+=sp;S.assets.houses.splice(i,1);log(`你變賣了「${h.name}」，得銀 ${fmt(sp)}。`);redo()}});
+    document.querySelectorAll('[data-bc]').forEach(b=>{b.onclick=()=>{const c=CAR_TYPES.find(x=>x.id===b.dataset.bc);const pr=Math.round(c.price*S.cpi);if(S.money<pr)return toast('紋銀不足');S.money-=pr;S.assets.cars.push({...c,price:pr});log(`你購置了【${c.name}】，花費 ${fmt(pr)}。`,'big');redo()}});
+    document.querySelectorAll('[data-sc]').forEach(b=>{b.onclick=()=>{const i=+b.dataset.sc;const c=S.assets.cars[i];S.money+=Math.round(c.price*0.85);S.assets.cars.splice(i,1);redo()}});
+    document.querySelectorAll('[data-lf]').forEach(b=>{b.onclick=()=>{S.lifestyle=+b.dataset.lf;redo()}});
+  }});
+}
+
+function startBusiness(){
+  const html=`
+    <p style="margin-bottom:4px">① 自訂字號招牌（留空則自動擬號）：</p>
+    <input type="text" id="qBizName" placeholder="例如：悅來老茶館 / 瑞豐祥票號" maxlength="20">
+    <p style="margin-bottom:6px">② 選擇行當開立字號：</p>
+    <div class="acts-list" id="qBizList">${BIZ_TYPES.map(b=>{
+      const off=S.money<b.startCost;
+      return `<div class="it ${off?'off':''}" data-bid="${b.id}"><div class="l"><div class="nm">🏮 ${b.name}</div><div class="ds">${b.desc}</div></div><div class="dg">本銀 ${fmt(b.startCost)}</div></div>`;
+    }).join('')}</div>`;
+  sheet({title:'🏮 開立茶館／作坊／商號',body:html,buttons:[{text:'罷了'}],onMount(){
+    $('qBizList').addEventListener('click',e=>{
+      const it=e.target.closest('.it');if(!it||it.classList.contains('off'))return;
+      const b=BIZ_TYPES.find(x=>x.id===it.dataset.bid);if(!b||S.money<b.startCost)return;
+      let nm=($('qBizName').value||'').trim();
+      if(!nm)nm=pick(['悅來','同順興','義和隆','廣聚源','永安堂','瑞豐祥'])+b.name.slice(0,2);
+      S.money-=b.startCost;
+      S.businesses.push({id:uid(),name:nm,type:b.id,typeName:b.name,capital:b.startCost,employees:[],reputation:52,years:0,lastProfit:0,loss:0,rd:0,licenses:{piaohao:false,hong:false,salt:false},complianceRisk:10,ledgerIntact:true});
+      log(`你備妥本銀 ${fmt(b.startCost)}，在【${getRegion(S.region).name.split('（')[0]}】正式開立【${nm}】！`,'big');
+      closeSheet();normalize();render();
+    });
+  }});
+}
+
+function manageBusiness(i){
+  const c=S.businesses[i];if(!c)return;
+  c.licenses=c.licenses||{piaohao:false,hong:false,salt:false};
+  const val=bizValue(c);
+  const canSalt=!c.licenses.salt&&c.capital>=800&&S.money>=250;
+  const canPiaohao=!c.licenses.piaohao&&c.capital>=2800&&c.reputation>=65&&S.money>=700;
+  const canHong=!c.licenses.hong&&c.capital>=5500&&c.reputation>=75&&S.money>=1800;
+  const html=`
+    <div class="bizstat">
+      <div class="b"><div class="l">字號招牌</div><div class="v" style="font-size:12px">${c.name}</div></div>
+      <div class="b"><div class="l">行當 / 估值</div><div class="v" style="font-size:11.5px">${c.typeName} · ${fmt(val)}</div></div>
+      <div class="b"><div class="l">本銀 / 夥計</div><div class="v">${fmt(c.capital)} / ${c.employees.length}人</div></div>
+      <div class="b"><div class="l">聲望 / 官府稽查風險</div><div class="v">${Math.round(c.reputation)} / ${Math.round(c.complianceRisk||10)}%</div></div>
+    </div>
+    <div class="sec">📜 朝廷特許引票與行帖申請</div>
+    <div class="btnrow" style="margin-top:0">
+      <button data-bo="lic_salt" ${!canSalt?'disabled':''}>${c.licenses.salt?'✅ 已領官鹽引票':'申領官鹽引票 (250兩)'}</button>
+      <button data-bo="lic_piaohao" ${!canPiaohao?'disabled':''}>${c.licenses.piaohao?'✅ 已領票號官帖':'申領票號官帖 (700兩)'}</button>
+      <button data-bo="lic_hong" ${!canHong?'disabled':''}>${c.licenses.hong?'✅ 十三行行商':'捐納十三行行商 (1,800兩)'}</button>
+    </div>
+    <div class="sec">⚖️ 掌櫃日常與暗盤操作</div>
+    <div class="btnrow" style="margin-top:0">
+      <button data-bo="hire" class="pri" ${S.money<30?'disabled':''}>招募夥計 (30兩)</button>
+      <button data-bo="inject" ${S.money<150?'disabled':''}>增資擴股 (150兩)</button>
+      <button data-bo="market" ${S.money<100?'disabled':''}>懸燈結彩揚名 (100兩)</button>
+    </div>
+    <div class="btnrow" style="margin-top:6px">
+      <button data-bo="embezzle" class="warn" ${c.capital<300?'disabled':''}>💸 挪用字號公銀</button>
+      <button data-bo="burn_ledger" class="warn" ${!c.ledgerIntact?'disabled':''}>🔥 焚毀陰陽流水帳簿</button>
+    </div>`;
+  sheet({title:`🏮 ${c.name}`,body:html,buttons:[{text:'返回',onClick:()=>{setTimeout(()=>openWealthHub('biz'),60);return true}},{text:'合上'}],onMount(){
+    document.querySelectorAll('[data-bo]').forEach(b=>{b.onclick=()=>{
+      const op=b.dataset.bo;
+      if(op==='hire'){S.money-=30;c.employees.push({name:randPerson('M').name,salary:28});log(`「${c.name}」招募了一名得力夥計。`);}
+      if(op==='inject'){S.money-=150;c.capital+=150;c.reputation=clamp(c.reputation+3,0,100);log(`你向「${c.name}」增資 150 兩本銀。`,'good');}
+      if(op==='market'){S.money-=100;c.reputation=clamp(c.reputation+8,0,100);log(`「${c.name}」張燈結彩酬賓，聲望大增！`,'good');}
+      if(op==='lic_salt'){S.money-=250;c.licenses.salt=true;log(`「${c.name}」獲鹽運使司頒發官鹽引票！`,'big');}
+      if(op==='lic_piaohao'){S.money-=700;c.licenses.piaohao=true;log(`「${c.name}」獲准開辦匯兌票號！`,'big');}
+      if(op==='lic_hong'){S.money-=1800;c.licenses.hong=true;S.renown+=12;log(`「${c.name}」躋身廣州十三行行商之列！`,'big');}
+      if(op==='embezzle'){
+        const st=Math.round(Math.min(c.capital*0.4,ri(200,1500)));c.capital-=st;S.money+=st;S.moral-=15;c.complianceRisk=(c.complianceRisk||10)+30;
+        log(`你暗中從字號帳房抽走公銀 ${fmt(st)} 入私囊！`,'bad');
+        if(Math.random()<(c.ledgerIntact?0.35:0.15)){closeSheet();S.businesses.splice(i,1);goPrison('商業欺詐及侵吞合夥銀兩罪',ri(3,8),st);normalize();render();return;}
+      }
+      if(op==='burn_ledger'){c.ledgerIntact=false;c.complianceRisk=Math.max(5,(c.complianceRisk||10)-20);S.moral-=10;log('你深夜將舊帳冊付之一炬，銷毀了異常往來痕跡！','bad');}
+      normalize();render();manageBusiness(i);
+    }});
+  }});
+}
+
+function companyYear(c){
+  c.years++;const bt=BIZ_TYPES.find(b=>b.id===c.type)||BIZ_TYPES[0];
+  let rev=bt.base*S.cpi*(1+c.employees.length*0.45)*(0.5+c.reputation/100)*Math.max(0.35,1+gauss()*0.2);
+  if(c.licenses&&c.licenses.salt)rev+=450*S.cpi;
+  if(c.licenses&&c.licenses.piaohao)rev+=1200*S.cpi;
+  if(c.licenses&&c.licenses.hong)rev+=2500*S.cpi;
+  const wages=c.employees.reduce((a,e)=>a+e.salary,0)*S.cpi;
+  const profit=rev*bt.margin-bt.base*0.25*S.cpi-wages;
+  c.lastProfit=profit;
+  log(`【${c.name}】今年營生${profit>=0?'淨賺':'虧蝕'}紋銀 ${fmt(Math.abs(profit))}。`,profit>=0?'good':'bad');
+  if(!c.ledgerIntact&&Math.random()<0.20){S.businesses=S.businesses.filter(x=>x.id!==c.id);goPrison('蓄意焚毀商號帳簿抗拒官府稽查罪',ri(2,6),500);}
+  return profit;
+}
+
+/* ══════ 宗族親友與自訂轉帳送銀系統 ══════ */
+function openTransferMoneyModal(personId){
+  const p=findPerson(personId);if(!p||!p.alive)return;
+  if(S.money<=0)return toast('隨身並無紋銀可贈');
+  const label=p.role||(p===S.partner?(S.married?'正室':'紅顏'):'親友');
+  const presets=[5,20,100,500].filter(v=>v<=S.money);
+  const html=`
+    <div class="prop-grid">
+      <div class="prop-box"><span class="k">👤 受贈之人</span><span class="v" style="font-size:12.5px">${p.name}（${label}）</span></div>
+      <div class="prop-box"><span class="k">🪙 隨身紋銀</span><span class="v">${fmt(S.money)}</span></div>
+    </div>
+    <input type="number" id="giftSilverAmt" placeholder="輸入贈送紋銀兩數" min="1" max="${S.money}" inputmode="numeric">
+    ${presets.length?`<div class="btnrow" style="margin-top:0">${presets.map(v=>`<button data-pa="${v}">${fmt(v)}</button>`).join('')}<button data-pa="${S.money}">傾囊相贈</button></div>`:''}`;
+  sheet({title:`💸 贈送紋銀予 ${p.name}`,body:html,buttons:[
+    {text:'確認贈銀',cls:'pri',onClick:()=>{
+      const amt=Math.floor(parseFloat($('giftSilverAmt').value));
+      if(!amt||amt<=0||amt>S.money){toast('銀兩數目有誤');return true}
+      S.money-=amt;
+      const gain=clamp(Math.round(3+Math.log10(1+amt/15)*14),2,30);
+      p.rel=clamp(p.rel+gain,0,100);S.moral+=1;
+      if(p===S.people.dad||p===S.people.mom)S.parentWealth+=Math.round(amt*0.7);
+      log(`💸 你贈予${label}${p.name}紋銀 ${fmt(amt)}，對方感激涕零，情誼 +${gain}！`,'good');
+      normalize();render();setTimeout(()=>openRelations(_relTab),60);return true;
+    }},
+    {text:'返回',onClick:()=>{setTimeout(()=>openRelations(_relTab),60);return true}}
+  ],onMount(){document.querySelectorAll('[data-pa]').forEach(b=>{b.onclick=()=>{$('giftSilverAmt').value=b.dataset.pa}})}});
+}
+
+function openRelations(tab){
+  if(S.over)return;if(tab)_relTab=tab;
+  ensureSiblingsArr();const p=S.people;
+  const famCnt=(p.dad&&!p.dad.absent?1:0)+(p.mom&&!p.mom.absent?1:0)+p.siblings.length;
+  const tabs=[{k:'fam',label:'宗族家人',n:famCnt},{k:'fri',label:'街坊同袍',n:p.friends.filter(f=>f.alive).length},{k:'par',label:'良緣伴侶',n:S.partner?1:0},{k:'chi',label:'膝下子嗣',n:p.children.length}];
+  sheet({title:'🏮 宗族人倫與同袍知交',body:`<div class="tabs">${tabs.map(t=>`<button data-rt="${t.k}" class="${_relTab===t.k?'on':''}">${t.label}<span class="cnt">${t.n}</span></button>`).join('')}</div><div id="rBody"></div>`,buttons:[{text:'合上'}],onMount(){
+    const draw=()=>{
+      $('rBody').innerHTML=_relTab==='fam'?tabFamily():_relTab==='fri'?tabFriends():_relTab==='par'?tabPartner():tabChildren();
+      document.querySelectorAll('.person .acts button').forEach(btn=>{btn.onclick=()=>handlePersonAction(btn.dataset.act,+btn.dataset.id)});
+    };
+    document.querySelectorAll('[data-rt]').forEach(b=>{b.onclick=()=>{_relTab=b.dataset.rt;document.querySelectorAll('[data-rt]').forEach(x=>x.classList.toggle('on',x.dataset.rt===_relTab));draw()}});
+    draw();
+  }});
+}
+function personCard({name,gender,tag,tagCls,meta,rel,acts,dead}){
+  const avaCls=dead?'ava dead':(gender==='F'?'ava f':'ava');
+  const col=rel>=66?'var(--sage)':rel>=33?'var(--amber)':'var(--rust)';
+  return `<div class="person"><div class="${avaCls}">${dead?'—':name.charAt(0)}</div><div class="info"><div class="n">${name}${tag?`<span class="tag ${tagCls||''}">${tag}</span>`:''}</div><div class="meta">${meta}</div><div class="relbar"><i style="width:${rel}%;background:${col}"></i></div><div class="acts">${acts||''}</div></div></div>`;
+}
+function tabFamily(){
+  ensureSiblingsArr();const p=S.people;
+  const pars=[p.dad,p.mom].filter(w=>!w.absent);
+  if(!pars.length&&!p.siblings.length)return '<div class="empty">父母雙親俱已不在，亦無兄弟姊妹。</div>';
+  return pars.map(w=>{
+    const meta=w.alive?`${w.age} 歲 · ${w.job||'居家'}`:'<span class="dead">已故</span>';
+    const acts=w.alive?`<button data-act="chat" data-id="${w.id}">請安問好</button><button class="pri" data-act="transfer" data-id="${w.id}">💸 孝敬銀兩</button>${S.age<16?`<button data-act="ask" data-id="${w.id}">討零用錢</button>`:''}`:'';
+    return personCard({name:w.name,gender:w.gender,tag:w.role,tagCls:'par',meta,rel:Math.round(w.rel),acts,dead:!w.alive});
+  }).join('')+p.siblings.map(sb=>{
+    const rl=sibRoleLabel(sb);sb.role=rl;
+    const meta=sb.alive?`${sb.gender==='M'?'♂':'♀'} ${sb.age} 歲 · ${sb.job||'在家做活'}`:'<span class="dead">已故</span>';
+    const acts=sb.alive?`<button data-act="chat" data-id="${sb.id}">手足敘舊</button><button class="pri" data-act="transfer" data-id="${sb.id}">💸 贈銀</button>`:'';
+    return personCard({name:sb.name,gender:sb.gender,tag:rl,tagCls:'fam',meta,rel:Math.round(sb.rel),acts,dead:!sb.alive});
+  }).join('');
+}
+function tabFriends(){
+  if(!S.people.friends.length)return '<div class="empty">尚無結交好友，可往「九州 → 民間活動」結識同袍街坊。</div>';
+  return S.people.friends.map(f=>{
+    const meta=f.alive?`${f.gender==='M'?'♂':'♀'} ${f.age} 歲 · ${f.job||'布衣'}`:'<span class="dead">已故</span>';
+    const acts=f.alive?`<button data-act="chat" data-id="${f.id}">把酒言歡</button><button data-act="transfer" data-id="${f.id}">💸 贈銀</button>${!S.partner&&S.age>=15&&f.age>=15&&f.rel>=55?`<button class="pri" data-act="confess" data-id="${f.id}">媒妁提親</button>`:''}`:'';
+    return personCard({name:f.name,gender:f.gender,meta,rel:Math.round(f.rel),acts,dead:!f.alive});
+  }).join('');
+}
+function tabPartner(){
+  if(!S.partner)return '<div class="empty">尚無婚配對象。</div>';
+  const p=S.partner;
+  let acts=`<button data-act="date" data-id="${p.id}">逛廟會賞燈 (3兩)</button><button class="pri" data-act="transfer" data-id="${p.id}">💸 贈銀</button>`;
+  if(!S.married)acts+=`<button class="pri" data-act="propose" data-id="${p.id}" ${p.rel<75?'disabled':''}>三書六禮成親 (30兩)</button>`;
+  else acts+=`<button class="pri" data-act="birth" data-id="${p.id}">祈求添丁開枝散葉</button>`;
+  acts+=`<button data-act="breakup" data-id="${p.id}" style="color:var(--rust)">${S.married?'和離':'斷絕往來'}</button>`;
+  return personCard({name:p.name,gender:p.gender,tag:S.married?'正室':'定情',tagCls:'fam',meta:`${p.gender==='M'?'♂':'♀'} ${p.age} 歲`,rel:Math.round(p.rel),acts});
+}
+function tabChildren(){
+  if(!S.people.children.length)return '<div class="empty">膝下尚無子嗣。</div>';
+  return S.people.children.map(ch=>{
+    const meta=ch.alive?`${ch.gender==='M'?'♂':'♀'} ${ch.age} 歲 · ${ch.job||'幼童'}`:'<span class="dead">夭折／已故</span>';
+    const acts=ch.alive?`<button data-act="chat" data-id="${ch.id}">親子談心</button><button class="pri" data-act="transfer" data-id="${ch.id}">💸 賞賜銀兩</button>`:'';
+    return personCard({name:ch.name,gender:ch.gender,tag:ch.gender==='M'?'兒子':'女兒',tagCls:'chi',meta,rel:Math.round(ch.rel),acts,dead:!ch.alive});
+  }).join('');
+}
+function findPerson(id){const p=S.people;return [p.dad,p.mom,...(p.siblings||[]),...p.friends,...p.children,S.partner].filter(Boolean).find(x=>x.id===id)}
+function handlePersonAction(act,id){
+  const p=findPerson(id);if(!p)return;
+  if(act==='transfer'){openTransferMoneyModal(id);return;}
+  if(S.ap<1)return toast('精力不足');
+  S.ap--;
+  if(act==='chat'){p.rel=clamp(p.rel+7,0,100);S.mood+=4;S.eq+=1;log(`你與${p.name}促膝長談，情誼更篤。`,'good');}
+  if(act==='ask'){const m=ri(1,6);S.money+=m;p.rel-=5;log(`你向${p.role}討得零用紋銀 ${fmt(m)}。`);}
+  if(act==='confess'){
+    S.partner={...p,rel:clamp(p.rel+12,0,100)};S.people.friends=S.people.friends.filter(x=>x.id!==p.id);
+    log(`你託媒人向${p.name}提親納采，兩家喜結秦晉之好！`,'big');
+  }
+  if(act==='date'){if(S.money<3){S.ap++;return toast('紋銀不足')}S.money-=3;p.rel=clamp(p.rel+10,0,100);S.mood+=10;log(`你與${p.name}攜手逛廟會看花燈，感情升溫。`,'good');}
+  if(act==='propose'){
+    if(S.money<30){S.ap++;return toast('成親禮金需 30 兩')}
+    S.money-=30;S.married=true;S.mood+=28;S.renown+=4;
+    log(`🎊 花燭之喜！你與${p.name}依大清禮制拜堂成親，宴請街坊鄰里！`,'big');
+  }
+  if(act==='birth'){
+    const g=Math.random()<.5?'M':'F';
+    const ch={id:uid(),name:S.name.charAt(0)+(g==='M'?pick(NAME_M):pick(NAME_F)),gender:g,age:0,rel:85,alive:true,job:null};
+    S.people.children.push(ch);S.mood+=25;
+    log(`👶 喜獲${g==='M'?'兒子':'女兒'}「${ch.name}」，家門添丁進口！`,'big');
+  }
+  if(act==='breakup'){S.partner=null;S.married=false;S.mood-=20;log('你們寫下和離書，從此各自安好。','bad');}
+  normalize();render();openRelations(_relTab);
+}
+
+/* ══════ 九州地方樞紐：民間活動、義倉慈善、水陸出行、縣衙賑濟 ══════ */
+function openCityHub(){
+  if(S.over||S.prison)return;
+  const reg=getRegion(S.region);
+  const html=`
+    <div class="prop-grid">
+      <div class="prop-box"><span class="k">📍 當前所在</span><span class="v" style="font-size:12px">${reg.name.split('（')[0]}</span></div>
+      <div class="prop-box"><span class="k">⚡ 剩餘精力</span><span class="v">${S.ap} / ${S.maxAp}</span></div>
+    </div>
+    <div class="acts-list" id="qCityList">
+      <div class="it" data-qc="act"><div class="l"><div class="nm">🍵 茶館聽書、習武打拳與市井交遊</div><div class="ds">聽說書、逛廟會、練拳腳、酒肆結交軍中同袍與江湖朋友</div></div><div class="dg">前往 →</div></div>
+      <div class="it" data-qc="charity"><div class="l"><div class="nm">🏮 義倉賑災與修橋補路慈善盛會</div><div class="ds">捐銀施粥賑濟災民、修繕學堂，博取「樂善好施」牌匾與名望</div></div><div class="dg">行善 →</div></div>
+      <div class="it" data-qc="travel"><div class="l"><div class="nm">⛵ 九州水陸出行（京師／江南／巴蜀／關東／嶺南）</div><div class="ds">周遊大清十二大重鎮，體驗各地風土人情與地價物價</div></div><div class="dg">啟程 →</div></div>
+      <div class="it" data-qc="relief"><div class="l"><div class="nm">🏛️ 地方官府常平倉賑濟申請</div><div class="ds">赤貧無田產戶可領取朝廷賑濟糧銀（亦可賄賂里正開假印結冒領）</div></div><div class="dg">申領 →</div></div>
+    </div>`;
+  sheet({title:'🏯 大清九州地方百態',body:html,buttons:[{text:'合上'}],onMount(){
+    $('qCityList').addEventListener('click',e=>{
+      const it=e.target.closest('.it');if(!it)return;
+      const k=it.dataset.qc;closeSheet();
+      if(k==='act')setTimeout(openQingActivities,60);
+      else if(k==='charity')setTimeout(openQingCharityModal,60);
+      else if(k==='travel')setTimeout(openTravelModal,60);
+      else if(k==='relief')setTimeout(openQingReliefModal,60);
+    });
+  }});
+}
+
+function openQingActivities(){
+  const acts=[
+    {id:'tea',name:'🍵 茶館聽說書／看戲班演出',desc:'心情 +8，世故 +2（花費 1 兩）',cost:1,run:()=>{S.mood+=8;S.eq+=2;log('你在茶館聽說書人講《水滸傳》，喝得滿口生津。','good')}},
+    {id:'kungfu',name:'🥋 校場／空地練拳腳弓馬',desc:'健康 +7，心情 +3',cost:0,run:()=>{S.health+=7;S.mood+=3;log('你每日勤練拳腳筋骨，身手愈發矯健。','good')}},
+    {id:'temple',name:'🏮 逛城隍廟會猜燈謎',desc:'才學 +2，心情 +9（花費 1 兩）',cost:1,run:()=>{S.iq+=2;S.mood+=9;log('你在廟會上猜中了幾盞花燈謎語，贏了幾塊桂花糕。','good')}},
+    {id:'friend',name:'🤝 酒肆結交新友／同袍',desc:'結識一位當地鄉親、士兵或客商（花費 2 兩）',cost:2,run:()=>{
+      if(S.people.friends.length>=10)return toast('知交已滿');
+      const g=Math.random()<.65?'M':'F';
+      const f={id:uid(),...randPerson(g),age:clamp(S.age+ri(-4,6),12,70),rel:ri(48,65),alive:true,job:pick(['綠營戰兵','鐵匠','戲班花旦','藥材掌櫃','鏢師','莊稼漢'])};
+      S.people.friends.push(f);log(`你在酒肆結識了新朋友【${f.name}】（${f.job}）。`,'good');
+    }},
+    {id:'doctor',name:'🩺 延請郎中把脈抓藥',desc:'健康 +8，可診治暗疾（花費 6 兩）',cost:6,run:()=>{
+      S.health+=8;
+      if(S.illness){S.illness=null;S.cured=true;log('郎中開出良方，你的頑疾藥到病除！','big');}
+      else log('郎中把脈後說你體魄健朗，開了幾帖補氣湯藥。','good');
+    }},
+  ];
+  sheet({title:'🍵 市井日常與交遊',body:`<p style="font-size:12px;color:var(--ink3);margin-bottom:8px">剩餘精力：<b>${S.ap}</b></p><div class="acts-list" id="qaList">${acts.map(a=>`<div class="it ${S.ap<1||S.money<a.cost?'off':''}" data-qid="${a.id}"><div class="l"><div class="nm">${a.name}</div><div class="ds">${a.desc}</div></div><div class="dg">−1 精力</div></div>`).join('')}</div>`,buttons:[{text:'合上'}],onMount(){
+    $('qaList').addEventListener('click',e=>{
+      const it=e.target.closest('.it');if(!it||it.classList.contains('off'))return;
+      const a=acts.find(x=>x.id===it.dataset.qid);if(!a)return;
+      if(S.ap<1||S.money<a.cost)return toast('精力或銀兩不足');
+      S.ap--;S.money-=a.cost;a.run();normalize();render();openQingActivities();
+    });
+  }});
+}
+
+function openQingCharityModal(){
+  if(S.age<16)return toast('年滿 16 歲後方可捐銀行善');
+  const opts=[
+    {id:'porridge',name:'🥣 城隍廟施粥賑濟流民',cost:25,moral:8,renown:4,desc:'廣施熱粥救濟貧苦，街坊交口稱讚'},
+    {id:'bridge',name:'🌉 捐資修築石橋官道',cost:180,moral:15,renown:10,desc:'造福往來商旅，地方官親題功德碑'},
+    {id:'school',name:'🏫 捐建義學書院資助寒門',cost:900,moral:25,renown:20,desc:'獲督撫奏請朝廷賜「樂善好施」金匾！'},
+  ];
+  sheet({title:'🏮 義倉賑災與慈善盛會',body:`<div class="acts-list" id="qcList">${opts.map(o=>{
+    const pr=Math.round(o.cost*S.cpi);
+    return `<div class="it ${S.ap<1||S.money<pr?'off':''}" data-cid="${o.id}"><div class="l"><div class="nm">${o.name}</div><div class="ds">${o.desc} · 仁德 +${o.moral}、聲望 +${o.renown}</div></div><div class="dg">捐銀 ${fmt(pr)}</div></div>`;
+  }).join('')}</div>`,buttons:[{text:'合上'}],onMount(){
+    $('qcList').addEventListener('click',e=>{
+      const it=e.target.closest('.it');if(!it||it.classList.contains('off'))return;
+      const o=opts.find(x=>x.id===it.dataset.cid);const pr=Math.round(o.cost*S.cpi);
+      if(S.ap<1||S.money<pr)return toast('精力或紋銀不足');
+      S.ap--;S.money-=pr;S.moral+=o.moral;S.renown+=o.renown;S.mood+=12;
+      log(`🏮 你慷慨解囊捐銀 ${fmt(pr)}（${o.name.replace(/^[^\s]+\s/,'')}），善名遠播！`,'big');
+      closeSheet();normalize();render();
+      if(o.cost>=900)showMilestoneCard({theme:'gold',tag:'朝廷旌表 · 樂善好施',headline:`${S.name}捐銀興辦義學，獲賜「樂善好施」金匾！`,body:`地方督撫上疏奏報善舉，朝廷特旨旌表，鄉里立牌坊紀念！`});
+    });
+  }});
+}
+
+function openTravelModal(){
+  const cur=getRegion(S.region);let sel=REGIONS.find(r=>r.id!==cur.id).id;
+  const draw=()=>{
+    const dest=getRegion(sel);
+    const html=`
+      <div class="row"><span class="k">當前所在</span><span class="v">📍 ${cur.name}</span></div>
+      <p style="font-size:11.5px;color:var(--ink3);margin-top:4px">${cur.desc}</p>
+      <div class="sec">① 選擇前往州府</div>
+      <div class="btnrow" style="margin-top:0">${REGIONS.filter(r=>r.id!==cur.id).map(r=>`<button data-qd="${r.id}" class="${sel===r.id?'on':''}" style="min-width:95px;padding:6px 4px;font-size:11px">${r.name.split('（')[0]}</button>`).join('')}</div>
+      <div class="sec">② 選擇水陸交通（前往 ${dest.name.split('（')[0]}）</div>
+      <div class="acts-list" id="qtList">${TRANSPORTS.map(tr=>{
+        const fare=calcFare(cur.id,dest.id,tr);
+        const blk=S.ap<1?'精力不足':(S.money<fare?'盤纏不足':'');
+        return `<div class="it ${blk?'off':''}" data-qtr="${tr.id}"><div class="l"><div class="nm">${tr.name}</div><div class="ds">${tr.desc}</div></div><div class="dg">${fare>0?fmt(fare):'免費'}<br><span style="font-size:10px">${blk?`<span class="w">${blk}</span>`:'啟程'}</span></div></div>`;
+      }).join('')}</div>`;
+    sheet({title:'⛵ 九州水陸出行',body:html,buttons:[{text:'合上'}],onMount(){
+      document.querySelectorAll('[data-qd]').forEach(b=>{b.onclick=()=>{sel=b.dataset.qd;draw()}});
+      $('qtList').addEventListener('click',e=>{
+        const it=e.target.closest('.it');if(!it||it.classList.contains('off'))return;
+        const tr=TRANSPORTS.find(x=>x.id===it.dataset.qtr);const fare=calcFare(cur.id,dest.id,tr);
+        if(S.ap<1||S.money<fare)return toast('精力或盤纏不足');
+        S.ap--;S.money-=fare;S.region=dest.id;S.mood+=tr.mood;S.health+=tr.health;
+        log(`你乘「${tr.name.split(' ')[1]}」抵達【${dest.name}】落腳。`,'good');
+        closeSheet();normalize();render();
+      });
+    }});
+  };
+  draw();
+}
+
+function openQingReliefModal(){
+  const nw=netWorth();const hasLand=S.assets.houses.length>0;
+  const ok=!hasLand&&nw<=60*S.cpi;
+  const html=`
+    <div class="row"><span class="k">名下家產總值</span><span class="v">${fmt(nw)}</span></div>
+    <p class="note">朝廷規定：無田產房屋且家產低於 60 兩之赤貧百姓，方可向地方官府申領常平倉賑濟糧銀（每年 16 兩）。</p>
+    <div class="btnrow">
+      <button id="btnNormRelief" class="pri" ${!ok||S.welfare.charityGrain?'disabled':''}>${S.welfare.charityGrain?'✅ 已在領取賑濟':'按制申領常平倉賑濟'}</button>
+      <button id="btnFakeRelief" class="warn" ${S.ap<1||S.money<12||S.welfare.charityGrain?'disabled':''}>🎭 賄賂里正開假貧戶印結冒領 (12兩)</button>
+    </div>`;
+  sheet({title:'🏛️ 地方官府常平倉賑濟',body:html,buttons:[{text:'合上'}],onMount(){
+    const nb=$('btnNormRelief');if(nb)nb.onclick=()=>{S.welfare.charityGrain=true;log('官府核准你的貧戶印結，每年可領常平倉賑濟糧銀！','good');closeSheet();normalize();render()};
+    const fb=$('btnFakeRelief');if(fb)fb.onclick=()=>{
+      S.ap--;S.money-=12;S.moral-=15;
+      if(!hasLand&&Math.random()<0.45){S.welfare.charityGrain=true;S.welfare.forged=true;log('🕵️ 你買通里正開具假印結，瞞過官府書吏冒領了朝廷賑濟！','big');closeSheet();normalize();render();}
+      else{closeSheet();goPrison('冒領朝廷賑濟錢糧及偽造官印結狀罪',ri(2,5),100);normalize();render();}
+    };
+  }});
+}
+
+/* ══════ 刑部大牢系統 ══════ */
+function goPrison(reason,years,fine=0){
+  const fac=years>=5?'省城按察使司重監':'州縣衙門大牢';
+  S.prison={yearsLeft:years,reason,facility:fac,behavior:50};
+  S.crimeRecord=S.crimeRecord||[];S.crimeRecord.push({age:S.age,reason,years});
+  S.soldier=null;S.civil=null;S.job=null;S.salary=0;
+  if(fine>0){const f=Math.round(fine*S.cpi);S.money-=f;log(`⚖️ 升堂宣判：你因「${reason}」罪名成立，判入【${fac}】監禁 ${years} 年，並抄沒罰銀 ${fmt(f)}！`,'bad');}
+  else log(`⚖️ 升堂宣判：你因「${reason}」罪名成立，押入【${fac}】監禁 ${years} 年！`,'bad');
+  S.mood-=35;S.renown=Math.max(0,S.renown-20);
+  showMilestoneCard({theme:'court',tag:`${fac} · 刑部判詞`,headline:`罪名成立：判監 ${years} 年`,body:`人犯 <b>${S.name}</b> 因「<b>${reason}</b>」罪證確鑿，即時戴枷押入【<b>${fac}</b>】服刑！`});
+}
+function openPrisonModal(){
+  const p=S.prison;if(!p)return;
+  const bail=Math.round(p.yearsLeft*220*S.cpi);
+  sheet({title:`⛓️ ${p.facility}`,body:`<p>定罪：<b>${p.reason}</b> · 尚餘刑期：<b>${p.yearsLeft} 年</b> · 獄中表現：${p.behavior}/100</p><div class="btnrow"><button id="btnPWork" class="pri" ${S.ap<1?'disabled':''}>苦役悔過 (+表現)</button><button id="btnPBail" ${S.money<bail?'disabled':''}>上下打點納銀贖罪 (${fmt(bail)})</button><button id="btnPEsc" class="warn" ${S.ap<1?'disabled':''}>🗡️ 策劃劫獄逃亡</button></div>`,buttons:[{text:'合上'}],onMount(){
+    $('btnPWork').onclick=()=>{S.ap--;p.behavior=clamp(p.behavior+15,0,100);log('你在大牢內安分服役，獄卒對你頗為寬待。','good');normalize();render();openPrisonModal()};
+    $('btnPBail').onclick=()=>{S.money-=bail;S.prison=null;log(`你花費 ${fmt(bail)} 打點上下官吏，獲准保外釋放！`,'big');closeSheet();normalize();render()};
+    $('btnPEsc').onclick=()=>{
+      S.ap--;
+      if(Math.random()<0.18){S.prison=null;S.moral-=20;log('🚨 你趁夜深砸開枷鎖逃出大牢，遁入深山老林成為江湖草莽！','big');closeSheet();normalize();render();}
+      else{p.yearsLeft+=3;S.health-=15;log('🚓 越獄失手被衙役亂棍打傷，加判監禁 3 年！','bad');normalize();render();openPrisonModal();}
+    };
+  }});
+}
+
+function openWill(){
+  const kids=S.people.children.filter(c=>c.alive);
+  if(!kids.length)return toast('膝下無子嗣可立遺囑');
+  sheet({title:'📜 立分家遺囑',body:`<div class="acts-list">${kids.map(c=>`<div class="it" data-wid="${c.id}"><div class="l"><div class="nm">指定 ${c.name}（${c.age}歲）承繼全部家業香火</div></div><div class="dg">立囑</div></div>`).join('')}</div>`,buttons:[{text:'合上'}],onMount(){
+    document.querySelectorAll('[data-wid]').forEach(el=>{el.onclick=()=>{const c=kids.find(x=>x.id===+el.dataset.wid);S.will={heirId:c.id,heirName:c.name};log(`你立下分家遺囑，指定由${c.name}承繼家業。`,'good');closeSheet()}});
+  }});
+}
+
+const ACH=[
+  ['soldier1','⚔️ 投軍吃糧（入伍當兵）',s=>!!s.soldier],
+  ['officer','🎖️ 士兵立功升任官兵（把總以上）',s=>s.soldier&&s.soldier.rankIndex>=3],
+  ['general','🐉 封疆大將（總兵／提督）',s=>s.soldier&&s.soldier.rankIndex>=7],
+  ['xiucai','📜 考取秀才功名',s=>s.eduLevel>=1],
+  ['jinshi','👑 金榜題名（進士及第）',s=>s.eduLevel>=4],
+  ['viceroy','🏛️ 位極人臣（總督／大學士）',s=>s.civil&&s.civil.rankIndex>=6],
+  ['land1','🏡 置辦第一處田產房屋',s=>s.assets.houses.length>0],
+  ['biz1','🏮 開立市井茶館或商號',s=>s.businesses.length>0],
+  ['hong','🚢 捐納廣州十三行行商',s=>s.businesses.some(b=>b.licenses&&b.licenses.hong)],
+  ['w10k','🪙 家產萬貫（破一萬兩）',s=>netWorth()>=10000],
+  ['w100k','💎 富可敵國（破十萬兩）',s=>netWorth()>=100000],
+  ['wed','💍 三書六禮成親',s=>s.married],
+  ['par','👶 開枝散葉為人父母',s=>s.people.children.length>0],
+  ['opera','🎭 梨園名角／江湖豪傑（聲望≥75）',s=>s.renown>=75],
+  ['saint','😇 仁德兼備（仁德 ≥ 90）',s=>s.age>=35&&s.moral>=90],
+  ['old','🎂 古稀之年（活過 70 歲）',s=>s.age>=70],
+];
+function checkAch(){ACH.forEach(([id,nm,fn])=>{if(!S.ach[id]&&fn(S)){S.ach[id]=S.age;log(`🏆 達成人生成就：${nm}`,'big');toast('🏆 '+nm)}})}
+
+function openDossierHub(){
+  const ly=S.lastYear;
+  const achHtml=ACH.map(([id,nm])=>`<div class="row"><span class="k" style="color:${S.ach[id]?'var(--ink)':'var(--ink3)'}">${nm}</span><span class="v" style="color:${S.ach[id]?'var(--sage)':'var(--ink3)'}">${S.ach[id]?S.ach[id]+' 歲達成':'未達成'}</span></div>`).join('');
+  const html=`
+    <div class="bizstat">
+      <div class="b"><div class="l">姓名／紀年</div><div class="v" style="font-size:11.5px">${S.name} · ${eraTitle(S.startEraIdx,S.age)}</div></div>
+      <div class="b"><div class="l">當前身分</div><div class="v" style="font-size:11.5px">${currentPositionName()}</div></div>
+    </div>
+    ${ly?`<div class="sec">📊 去年收支帳目</div>
+    <div class="row"><span class="k">全年進項</span><span class="v" style="color:var(--sage)">+${fmt(ly.income)}</span></div>
+    <div class="row"><span class="k">用度開銷</span><span class="v neg">−${fmt(ly.expense)}</span></div>
+    <div class="row"><span class="k">年度結餘</span><span class="v ${ly.net>=0?'':'neg'}">${ly.net>=0?'+':''}${fmt(ly.net)}</span></div>`:''}
+    <div class="sec">🏆 人生功名成就 (${Object.keys(S.ach).length}/${ACH.length})</div>
+    ${achHtml}`;
+  sheet({title:'📖 宗族名錄與生平紀事',body:html,buttons:[{text:'合上'}]});
+}
+
+/* ══════ 年度推進結算 ══════ */
+function nextYear(){
+  if(S.over)return;
+  if(S.ap>0&&S.age>=6&&!S.prison){
+    sheet({title:'度過此年？',body:`<p>尚餘 <b style="color:var(--amber)">${S.ap}</b> 點精力未用，確定直接度過今年嗎？</p>`,buttons:[{text:'先去安排'},{text:'確定度過',cls:'pri',onClick:()=>{setTimeout(doNextYear,60)}}]});
+    return;
+  }
+  doNextYear();
+}
+function doNextYear(){
+  if(S.over)return;closeSheet();
+  S.age++;S.apps=5;
+  let baseAp=hasChildUnder(3)?5:8;
+  if(S.health<30)baseAp=4;else if(S.health>=85||S.lifestyle===2)baseAp=9;
+  S.maxAp=baseAp;S.ap=S.maxAp;
+  S.cpi*=1+clamp(0.012+gauss()*0.008,-0.01,0.04);
+  S.landIdx*=1+clamp(0.02+gauss()*0.04,-0.12,0.15);
+  if(S.age>35)S.health-=0.5;if(S.age>55)S.health-=0.8;if(S.age>70)S.health-=1.2;
+
+  let income=0,expense=0;
+  if(S.prison){
+    S.prison.yearsLeft--;S.mood-=6;S.health-=3;
+    log(`你在【${S.prison.facility}】戴枷服刑，尚餘刑期 ${S.prison.yearsLeft} 年。`,'bad');
+    if(S.prison.yearsLeft<=0){S.prison=null;log('你刑滿出獄，重見天日！','big');}
+  }else{
+    if(S.soldier){
+      const m=S.soldier;m.yearsServed++;m.yir++;m.merit+=4;
+      const pay=Math.round(SOLDIER_RANKS[m.rankIndex].m*S.cpi);
+      income+=pay;S.salary=pay;
+      const nextRk=SOLDIER_RANKS[m.rankIndex+1];
+      if(nextRk&&m.merit>=nextRk.meritNeed){
+        m.rankIndex++;S.salary=Math.round(SOLDIER_RANKS[m.rankIndex].m*S.cpi);
+        log(`🎖️ 軍中論功行賞，你晉升為【${SOLDIER_RANKS[m.rankIndex].name}】！`,'big');
+      }
+    }else if(S.civil){
+      const c=S.civil;c.yir++;
+      const pay=Math.round(CIVIL_RANKS[c.rankIndex].m*S.cpi);income+=pay;S.salary=pay;
+      if(c.yir>=CIVIL_RANKS[c.rankIndex].years&&c.score>=75&&c.rankIndex<CIVIL_RANKS.length-1){
+        c.rankIndex++;c.yir=0;S.salary=Math.round(CIVIL_RANKS[c.rankIndex].m*S.cpi);
+        log(`🎉 吏部考績上上，你獲朝廷擢升為【${CIVIL_RANKS[c.rankIndex].name}】！`,'big');
+      }
+    }else if(S.job){
+      S.jobYears++;const pay=Math.round(S.job.y*(1+Math.min(S.jobYears,15)*0.02)*S.cpi);
+      income+=pay;S.salary=pay;
+    }else if(S.eduLevel>=1&&S.age>=15){
+      const stip=Math.round(EXAMS[S.eduLevel-1].stipend*S.cpi);
+      income+=stip;log(`領取朝廷廩膳膏火銀 ${fmt(stip)}。`,'good');
+    }
+
+    S.businesses.slice().forEach(b=>{income+=companyYear(b)});
+    S.assets.houses.forEach(h=>{
+      if(h.isFarm)income+=Math.round(h.price*0.06);
+      else if(h.rented)income+=Math.round(h.price*0.04);
+      h.price=Math.round(h.price*(1+clamp(0.02+gauss()*0.03,-0.1,0.12)));
+    });
+    if(S.welfare&&S.welfare.charityGrain){
+      if(S.welfare.forged&&Math.random()<0.18){
+        S.welfare.charityGrain=false;S.welfare.forged=false;
+        goPrison('官府清查常平倉揭發冒領賑濟罪',ri(2,5),120);
+      }else{income+=Math.round(16*S.cpi);log(`領取官府常平倉賑濟糧銀 ${fmt(16*S.cpi)}。`,'good');}
+    }
+    if(S.age>=16){
+      const lm=[0.65,1,1.8][S.lifestyle];
+      const regMod=getRegion(S.region).costMod;
+      const baseCost=(S.home==='parents'&&parentsAlive())?6:Math.round(24*S.cpi*regMod*lm*(S.married?1.5:1));
+      const carCost=S.assets.cars.reduce((a,c)=>a+Math.round(c.cost*S.cpi),0);
+      expense+=baseCost+carCost;
+    }
+    S.money+=income-expense;
+    S.lastYear={income:Math.round(income),expense:Math.round(expense),net:Math.round(income-expense)};
+    if(income>0||expense>0)log(`【歲末盤帳】進項 ${fmt(income)}，用度 ${fmt(expense)} → 結餘 ${fmt(income-expense)}`,income>=expense?'good':'bad');
+    if(S.deposit>0){const it=Math.round(S.deposit*0.02);S.deposit+=it;if(it>0)log(`銀號存銀生息 ${fmt(it)}。`,'good')}
+    if(S.debt>0){S.debt=Math.round(S.debt*1.08);log(`印子錢利滾利，欠債增至 ${fmt(S.debt)}。`,'bad')}
+  }
+
+  const p=S.people;ensureSiblingsArr();
+  [p.dad,p.mom].forEach(w=>{
+    if(w.absent||!w.alive)return;w.age++;
+    if(w.age>=62&&Math.random()<0.08){
+      w.alive=false;S.mood-=25;log(`${w.role}${w.name}壽終正寢（享年 ${w.age} 歲）。`,'bad');
+      if(!parentsAlive()&&S.parentWealth>0){
+        const heirs=1+p.siblings.filter(x=>x.alive).length;
+        const share=Math.round(S.parentWealth*S.cpi/heirs);
+        S.money+=share;S.parentWealth=0;
+        log(`雙親俱逝，祖產田銀${heirs>1?`與 ${heirs-1} 位手足均分後`:''}你承繼了 ${fmt(share)}。`,'big');
+      }
+    }
+  });
+  p.siblings.forEach(sb=>{if(!sb.alive)return;sb.age++;sb.role=sibRoleLabel(sb);if(sb.age>=18&&!sb.job)sb.job=pick(['綠營戰兵','鐵匠','商號夥計','自耕農','私塾先生']);});
+  p.friends.forEach(f=>{if(f.alive)f.age++});
+  p.children.forEach(c=>{if(c.alive)c.age++});
+  if(S.partner)S.partner.age++;
+
+  normalize();checkAch();render();
+  if(S.health<=0||S.age>=95){
+    S.over=true;clearSave();render();
+    const kids=S.people.children.filter(c=>c.alive);
+    const heir=S.will?kids.find(k=>k.id===S.will.heirId):kids[0];
+    const btns=[];
+    if(heir){
+      btns.push({text:`👶 繼承子嗣 ${heir.name}（${heir.age}歲）`,cls:'pri',onClick:()=>{
+        const sibs=kids.filter(x=>x.id!==heir.id).map(x=>({name:x.name,gender:x.gender,age:x.age,rel:75,alive:true,job:x.job}));
+        newGameWithOrigin(null,{name:heir.name,gender:heir.gender,orientation:S.orientation,_isBanner:S.isBanner,_eraIdx:S.startEraIdx,_region:S.region,_money:S.money,_deposit:S.deposit,_houses:S.assets.houses,_biz:S.businesses,_age:heir.age,_cpi:S.cpi,_landIdx:S.landIdx,_siblings:sibs});
+        return true;
+      }});
+    }
+    btns.push({text:'重開大清一世',onClick:()=>{setTimeout(openOriginSelect,60)}});
+    sheet({title:'🕯️ 百年歸寂',body:`<p>享年 <b>${S.age}</b> 歲，終老於【${getRegion(S.region).name}】。</p><div class="row"><span class="k">生前最高身分</span><span class="v">${currentPositionName()}</span></div><div class="row"><span class="k">傳世家產總值</span><span class="v">${fmt(netWorth())}</span></div>`,closable:false,buttons:btns});
+  }
+}
+
+function save(){try{if(S&&S.name&&!S.over)localStorage.setItem(SAVE_KEY,JSON.stringify({S,uid:_uid}))}catch(e){}}
+function loadSave(){try{const t=localStorage.getItem(SAVE_KEY);if(!t)return false;const d=JSON.parse(t);if(!d||!d.S||d.S.over)return false;S=Object.assign(blankState(),d.S);_uid=d.uid||_uid;return true}catch(e){return false}}
+function clearSave(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}}
+
+$('resetBtn').onclick=()=>sheet({title:'重開一世',body:'<p>確定要結束當前人生，重新投胎大清九州嗎？</p>',buttons:[{text:'罷了'},{text:'確定重開',cls:'warn',onClick:()=>{clearSave();setTimeout(openOriginSelect,50)}}]});
+$('btnRoleModal').onclick=openRoleModal;
+$('btnWealthHub').onclick=()=>openWealthHub('bank');
+$('btnSocialHub').onclick=()=>openRelations('fam');
+$('btnCityHub').onclick=openCityHub;
+$('btnDossierHub').onclick=openDossierHub;
+$('btnNext').onclick=nextYear;
+
+S=blankState();
+if(loadSave()){normalize();render();_prev=snap();toast('已載入大清九州前塵舊檔')}
+else{render();openOriginSelect()}
+</script>
+</body>
+</html>
